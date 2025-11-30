@@ -14,7 +14,7 @@ export function FloatingSidebarTrigger() {
       variant="ghost"
       size="icon"
       className={cn(
-        "fixed z-50 h-8 w-8 rounded-full border bg-white shadow-md transition-all duration-300 hover:bg-gray-100",
+        "fixed z-50 h-7 w-7 cursor-pointer rounded-full border bg-white shadow-md transition-all duration-300 hover:bg-gray-100",
         isCollapsed
           ? "left-20 top-20 -translate-x-1/2"
           : "left-72 top-20 -translate-x-1/2"

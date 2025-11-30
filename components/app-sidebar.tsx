@@ -27,7 +27,7 @@ import Link from "next/link";
 const items = [
   {
     title: "Overview",
-    url: "/",
+    url: "/dashboard/overview",
     icon: LayoutGrid,
   },
   {
