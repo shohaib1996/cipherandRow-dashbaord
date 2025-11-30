@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Send, Moon, Sun, X, MessageCircle } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import Link from "next/link";
 
 interface Message {
   role: "user" | "bot";
@@ -443,7 +444,7 @@ export default function ChatWidget() {
 
             {/* Input Area */}
             <div
-              className={`p-[12px] flex items-center gap-[8px] ${
+              className={`p-[12px] flex flex-col items-center gap-[8px] ${
                 dark
                   ? "border-t border-[#374151] bg-[#1F2937]"
                   : "border-t border-[#E5E7EB] bg-[#FBFBFD]"
@@ -474,6 +475,23 @@ export default function ChatWidget() {
                   <span className="sr-only">Send</span>
                 </button>
               </form>
+              <div
+                className={`text-xs text-center ${
+                  dark ? "text-[#9CA3AF]" : "text-[#6B7280]"
+                }`}
+              >
+                Powered by{" "}
+                <Link
+                  href="https://cipherand-row-dashbaord.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`font-medium hover:underline ${
+                    dark ? "text-[#4F46E5]" : "text-[#4F46E5]"
+                  }`}
+                >
+                  Cipher & Row
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>

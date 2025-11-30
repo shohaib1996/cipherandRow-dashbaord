@@ -1,11 +1,13 @@
 import { cookies } from "next/headers";
 
 import {
+  SidebarFooter,
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { FloatingSidebarTrigger } from "@/components/floating-sidebar-trigger";
 
 export default async function DashboardLayout({
   children,
@@ -18,11 +20,8 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
+      <FloatingSidebarTrigger />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800" />
-        </header>
         <div className="flex flex-1 flex-col gap-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
