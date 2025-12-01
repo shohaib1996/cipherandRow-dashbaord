@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { FloatingSidebarTrigger } from "@/components/floating-sidebar-trigger";
+import ChatWidget from "@/components/ChatWidget/ChatWidget";
 
 export default async function DashboardLayout({
   children,
@@ -22,7 +23,12 @@ export default async function DashboardLayout({
       <AppSidebar />
       <FloatingSidebarTrigger />
       <SidebarInset>
-        <div className="flex flex-1 flex-col gap-4">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 bg-linear-to-br from-[#925FF0]/5 via-[#925FF0]/5 to-[#3B82F6]/5">
+          {children}
+
+          {/* Chat Widget */}
+          <ChatWidget />
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

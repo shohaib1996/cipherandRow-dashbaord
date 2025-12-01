@@ -32,27 +32,27 @@ const items = [
   },
   {
     title: "Conversations",
-    url: "/conversations",
+    url: "/dashboard/conversations",
     icon: MessageSquare,
   },
   {
     title: "Knowledge Base (KB)",
-    url: "/kb",
+    url: "/dashboard/kb",
     icon: BookOpen,
   },
   {
     title: "Installation",
-    url: "/installation",
+    url: "/dashboard/installation",
     icon: Code,
   },
   {
     title: "Test Chat",
-    url: "/test-chat",
+    url: "/dashboard/test-chat",
     icon: Bot,
   },
   {
     title: "Settings",
-    url: "/settings",
+    url: "/dashboard/settings",
     icon: Settings,
   },
 ];

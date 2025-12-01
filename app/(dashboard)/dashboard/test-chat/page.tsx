@@ -194,9 +194,6 @@ export default function TestChatPage() {
         </div>
       </div>
 
-      {/* Chat Widget */}
-      <ChatWidget />
-
       <style jsx>{`
         @keyframes slideUp {
           from {
