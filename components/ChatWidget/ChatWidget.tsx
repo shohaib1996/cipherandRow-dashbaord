@@ -13,11 +13,15 @@ interface Message {
   time: number;
 }
 
-export default function ChatWidget() {
+export default function ChatWidget({
+  embedded = false,
+}: {
+  embedded?: boolean;
+}) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(embedded); // Default to open if embedded
 
   // thinking = server processing / waiting for reply
   // typing = character-by-character rendering of the bot reply
@@ -63,7 +67,7 @@ export default function ChatWidget() {
 
   // Smart Auto-scroll
   useEffect(() => {
-    if (!isOpen) return; // Only scroll if open
+    if (!isOpen && !embedded) return; // Only scroll if open (always open if embedded)
     const scrollArea = scrollAreaRef.current;
     if (scrollArea) {
       const isNearBottom =
@@ -80,7 +84,7 @@ export default function ChatWidget() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
       }
     }
-  }, [messages, isThinking, isTyping, isOpen]);
+  }, [messages, isThinking, isTyping, isOpen, embedded]);
 
   // Cleanup typing interval on unmount
   useEffect(() => {
@@ -273,14 +277,24 @@ export default function ChatWidget() {
 
       {/* Chat Window */}
       <div
-        className={`fixed bottom-[90px] right-5 z-50 transition-all duration-300 ease-in-out transform origin-bottom-right ${
-          isOpen
-            ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-            : "opacity-0 scale-95 translate-y-4 pointer-events-none"
-        }`}
-        aria-hidden={!isOpen}
+        className={
+          embedded
+            ? "relative w-full h-full flex flex-col"
+            : `fixed bottom-[90px] right-5 z-50 transition-all duration-300 ease-in-out transform origin-bottom-right ${
+                isOpen
+                  ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 scale-95 translate-y-4 pointer-events-none"
+              }`
+        }
+        aria-hidden={!isOpen && !embedded}
       >
-        <Card className="w-[360px] py-0 h-[520px] gap-3 max-w-[calc(100vw-40px)] flex flex-col overflow-hidden rounded-[14px] shadow-[0_10px_25px_rgba(2,6,23,0.08)] border-[#E5E7EB] bg-[#ffffff]">
+        <Card
+          className={
+            embedded
+              ? "w-full h-full flex flex-col overflow-hidden rounded-[14px] shadow-none border-0 bg-[#ffffff]"
+              : "w-[360px] py-0 h-[520px] gap-3 max-w-[calc(100vw-40px)] flex flex-col overflow-hidden rounded-[14px] shadow-[0_10px_25px_rgba(2,6,23,0.08)] border-[#E5E7EB] bg-[#ffffff]"
+          }
+        >
           {/* Header */}
           <CardHeader className="flex flex-row h-16 items-center justify-between p-[12px_14px] shadow-[0_2px_6px_rgba(0,0,0,0.06)] space-y-0 bg-[linear-gradient(90deg,#8A06E6,#7A05D0)]">
             <div className="flex items-center gap-2">
@@ -410,7 +424,7 @@ export default function ChatWidget() {
               <div className="text-xs text-center text-[#6B7280]">
                 Powered by{" "}
                 <Link
-                  href="https://cipherand-row-dashbaord.vercel.app/"
+                  href="https://cipherandrow.com/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium hover:underline text-[#8A06E6]"
@@ -423,19 +437,21 @@ export default function ChatWidget() {
         </Card>
       </div>
 
-      {/* Floating Toggle Button */}
-      <div
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-5 right-5 w-[60px] h-[60px] bg-[#8A06E6] rounded-full shadow-[0_10px_25px_rgba(138,6,230,0.3)] grid place-items-center cursor-pointer hover:bg-[#7A05D0] hover:scale-105 transition-all duration-200 z-50"
-        aria-label="Toggle chat"
-        role="button"
-      >
-        {isOpen ? (
-          <X className="text-white w-8 h-8" />
-        ) : (
-          <MessageCircle className="text-white w-8 h-8" />
-        )}
-      </div>
+      {/* Floating Toggle Button - Only show if not embedded */}
+      {!embedded && (
+        <div
+          onClick={() => setIsOpen(!isOpen)}
+          className="fixed bottom-5 right-5 w-[60px] h-[60px] bg-[#8A06E6] rounded-full shadow-[0_10px_25px_rgba(138,6,230,0.3)] grid place-items-center cursor-pointer hover:bg-[#7A05D0] hover:scale-105 transition-all duration-200 z-50"
+          aria-label="Toggle chat"
+          role="button"
+        >
+          {isOpen ? (
+            <X className="text-white w-8 h-8" />
+          ) : (
+            <MessageCircle className="text-white w-8 h-8" />
+          )}
+        </div>
+      )}
     </div>
   );
 }
