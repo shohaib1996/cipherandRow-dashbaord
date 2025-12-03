@@ -5,7 +5,7 @@ import React from "react";
 export default function TestChatPage() {
   return (
     <div className="h-full bg-slate-50 p-4 lg:p-8 flex items-center justify-center overflow-hidden">
-      <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center h-full">
+      <div className="max-w-6xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center h-full">
         {/* Left Column: Product Info */}
         <div className="space-y-6 lg:space-y-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 rounded-full border border-purple-200">
