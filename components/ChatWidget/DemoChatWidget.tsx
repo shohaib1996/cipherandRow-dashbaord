@@ -36,37 +36,20 @@ export default function DemoChatWidget() {
     setMounted(true);
   }, []);
 
-  // Initialize session and load history
+  // Initialize session
   useEffect(() => {
-    // Use a different session key for the demo widget to avoid conflicts with the global one if needed,
-    // or share it. Let's share it for now so they see the same history, or maybe separate is better for testing?
-    // Let's use a separate session for the "Test" page so it feels like a fresh test environment.
-    let sid = sessionStorage.getItem("cr_demo_widget_session_id");
-    if (!sid) {
-      sid = crypto.randomUUID();
-      sessionStorage.setItem("cr_demo_widget_session_id", sid);
-    }
+    // Generate a new session ID for each page load
+    const sid = crypto.randomUUID();
     setSessionId(sid);
 
-    const savedMessages = sessionStorage.getItem(
-      `cr_demo_widget_messages_${sid}`
-    );
-    if (savedMessages) {
-      try {
-        setMessages(JSON.parse(savedMessages));
-      } catch (e) {
-        console.error("Failed to parse messages", e);
-      }
-    } else {
-      // Initial greeting if no history
-      setMessages([
-        {
-          role: "bot",
-          text: "Hi! I'm ready whenever you are. What would you like to talk about?",
-          time: Date.now(),
-        },
-      ]);
-    }
+    // Initial greeting
+    setMessages([
+      {
+        role: "bot",
+        text: "Hi! I'm ready whenever you are. What would you like to talk about?",
+        time: Date.now(),
+      },
+    ]);
   }, []);
 
   // Smart Auto-scroll
@@ -99,21 +82,6 @@ export default function DemoChatWidget() {
     };
   }, []);
 
-  // Helper to persist messages
-  const persistMessages = (arr: Message[]) => {
-    setMessages(arr);
-    if (sessionId) {
-      try {
-        sessionStorage.setItem(
-          `cr_demo_widget_messages_${sessionId}`,
-          JSON.stringify(arr)
-        );
-      } catch (e) {
-        /* ignore */
-      }
-    }
-  };
-
   // Typing effect function
   const startTyping = (fullText: string, typingSpeed = 30) => {
     // stop any previous typing
@@ -141,13 +109,6 @@ export default function DemoChatWidget() {
 
       typingMessageIndexRef.current = arr.length - 1;
 
-      if (sessionId) {
-        sessionStorage.setItem(
-          `cr_demo_widget_messages_${sessionId}`,
-          JSON.stringify(arr)
-        );
-      }
-
       return arr;
     });
 
@@ -164,18 +125,6 @@ export default function DemoChatWidget() {
 
         const nextText = fullText.slice(0, charIndex);
         arr[mi] = { ...arr[mi], text: nextText };
-
-        // persist partial typing
-        if (sessionId) {
-          try {
-            sessionStorage.setItem(
-              `cr_demo_widget_messages_${sessionId}`,
-              JSON.stringify(arr)
-            );
-          } catch (e) {
-            /* ignore */
-          }
-        }
 
         // finished
         if (charIndex >= fullText.length) {
@@ -206,7 +155,7 @@ export default function DemoChatWidget() {
     };
     // optimistic add user message
     const updatedMessages = [...messages, newMessage];
-    persistMessages(updatedMessages);
+    setMessages(updatedMessages);
 
     // show thinking (loader) while waiting for server response
     setIsThinking(true);
@@ -218,14 +167,45 @@ export default function DemoChatWidget() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            api_key: "cr_test_1234567890abcdef",
+            client_id: "1001",
+            bot_id: "2001",
             session_id: sessionId,
             user_message: userText,
-            client_id: "dashboard_demo", // Different client ID for demo
+            page_url: window.location.href,
           }),
         }
       );
 
-      if (!response.ok) throw new Error("Network response was not ok");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        // Parse details if it's a JSON string
+        const details =
+          typeof errorData.details === "string"
+            ? (JSON.parse(errorData.details) as { error?: string })
+            : {};
+
+        console.log(details);
+
+        const errorCode =
+          details.error ||
+          errorData.error ||
+          errorData.status ||
+          "unknown_error";
+
+        let errorMessage = "Sorry, something went wrong. Please try again.";
+
+        if (errorCode === "Invalid API key") {
+          errorMessage = "Invalid API key. Please check your settings.";
+        } else if (errorCode === "invalid_request") {
+          errorMessage = "Your trial has ended. Upgrade to continue.";
+        } else if (errorCode === "rate_limit") {
+          errorMessage = "Too many requests. Please try again shortly.";
+        }
+
+        throw new Error(errorMessage);
+      }
 
       const data = await response.json();
       const botText =
@@ -236,9 +216,10 @@ export default function DemoChatWidget() {
       // choose faster speeds (a little faster)
       const speed = botText.length > 200 ? 8 : 10;
       startTyping(botText, speed);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error sending message:", error);
-      const errorText = "Sorry, something went wrong. Please try again.";
+      const errorText =
+        error.message || "Sorry, something went wrong. Please try again.";
       startTyping(errorText, 10);
     } finally {
       // do not change thinking/typing here — startTyping will clear thinking

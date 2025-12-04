@@ -11,16 +11,22 @@ export function DashboardFooter() {
           </span>
           <div className="flex items-center gap-6">
             <Link
-              href="#"
+              href="/privacy"
               className="hover:text-[#666666] transition-colors duration-200"
             >
               Privacy Policy
             </Link>
             <Link
-              href="#"
+              href="/terms"
               className="hover:text-[#666666] transition-colors duration-200"
             >
               Terms of Service
+            </Link>
+            <Link
+              href="/refund"
+              className="hover:text-[#666666] transition-colors duration-200"
+            >
+              Refund Policy
             </Link>
             <Link
               href="#"
