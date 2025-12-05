@@ -167,10 +167,10 @@ export default function ConversationsPage() {
   };
 
   return (
-    <div className="px-10 pb-10 mx-10 font-sans text-zinc-900 bg-white my-10">
+    <div className="px-4 sm:px-6 lg:px-10 pb-6 sm:pb-10 mx-0 sm:mx-4 lg:mx-10 font-sans text-zinc-900 bg-white my-4 sm:my-6 lg:my-10">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-medium tracking-tight mb-2 mt-10">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-medium tracking-tight mb-2 mt-4 sm:mt-6 lg:mt-10">
           Recent Conversations
         </h1>
         <p className="text-zinc-500 text-sm">
@@ -179,24 +179,27 @@ export default function ConversationsPage() {
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-between items-center">
-        <div className="relative flex-1 w-full">
+      <div className="flex flex-col gap-4 mb-6">
+        {/* Search Bar */}
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
           <Input
-            placeholder="Search conversations by customer name or email..."
+            placeholder="Search conversations..."
             className="pl-10 bg-white border-zinc-200 h-10 w-full"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
-          <div className="flex gap-2">
+
+        {/* Filter Buttons and Export */}
+        <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
+          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
             {(["all", "active", "resolved", "pending"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
                 className={cn(
-                  "px-4 py-2.5 rounded-sm text-sm font-medium transition-all capitalize border",
+                  "px-3 sm:px-4 py-2 sm:py-2.5 rounded-sm text-xs sm:text-sm font-medium transition-all capitalize border whitespace-nowrap",
                   filter === f
                     ? f === "all"
                       ? "bg-[#925FF0]/10 text-[#925FF0] border-[#925FF0]"
@@ -223,16 +226,17 @@ export default function ConversationsPage() {
           </div>
           <Button
             variant="ghost"
-            className="h-10 gap-2 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-sm"
+            className="h-10 gap-2 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-sm text-xs sm:text-sm"
           >
             <Download className="h-4 w-4" />
-            Export CSV
+            <span className="hidden sm:inline">Export CSV</span>
+            <span className="sm:hidden">Export</span>
           </Button>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl border border-zinc-100 shadow-sm overflow-hidden">
+      {/* Table - Desktop View (hidden on mobile) */}
+      <div className="hidden lg:block bg-white rounded-xl border border-zinc-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
@@ -328,6 +332,76 @@ export default function ConversationsPage() {
           <div className="p-12 text-center text-zinc-500">
             No conversations found matching your criteria.
           </div>
+        )}
+      </div>
+
+      {/* Card View - Mobile/Tablet (visible on mobile and tablet) */}
+      <div className="lg:hidden flex flex-col gap-3">
+        {filteredConversations.length === 0 ? (
+          <div className="bg-white rounded-xl border border-zinc-100 shadow-sm p-12 text-center text-zinc-500">
+            No conversations found matching your criteria.
+          </div>
+        ) : (
+          filteredConversations.map((conversation) => (
+            <div
+              key={conversation.id}
+              onClick={() =>
+                router.push(`/dashboard/conversations/${conversation.id}`)
+              }
+              className="bg-white rounded-lg border border-zinc-100 shadow-sm p-4 cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]"
+            >
+              {/* Customer Info */}
+              <div className="flex items-start gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 font-medium text-sm shrink-0">
+                  {conversation.user_avatar}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="font-medium text-zinc-900 truncate">
+                      {conversation.user_name}
+                    </span>
+                    <span
+                      className={cn(
+                        "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize shrink-0",
+                        conversation.status === "resolved" &&
+                          "bg-emerald-100 text-emerald-700",
+                        conversation.status === "active" &&
+                          "bg-blue-100 text-blue-700",
+                        conversation.status === "pending" &&
+                          "bg-yellow-100 text-yellow-700"
+                      )}
+                    >
+                      {conversation.status}
+                    </span>
+                  </div>
+                  <span className="text-xs text-zinc-500 truncate block">
+                    {conversation.user_email}
+                  </span>
+                </div>
+              </div>
+
+              {/* Last Message */}
+              <p className="text-sm text-zinc-600 mb-3 line-clamp-2">
+                {conversation.last_message}
+              </p>
+
+              {/* Stats Row */}
+              <div className="flex items-center justify-between text-xs text-zinc-500 pt-3 border-t border-zinc-100">
+                <div className="flex items-center gap-1">
+                  <Star className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>{conversation.rating}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>{conversation.response_time}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <MessageSquare className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>{conversation.message_count}</span>
+                </div>
+              </div>
+            </div>
+          ))
         )}
       </div>
     </div>
