@@ -1,12 +1,10 @@
 "use client";
 
 import {
-  Activity,
   AlertTriangle,
   CheckCircle2,
   Clock,
   DollarSign,
-  LayoutDashboard,
   LineChart,
   MessageSquare,
   Plus,
@@ -16,6 +14,7 @@ import {
   XCircle,
   Zap,
 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -224,12 +223,14 @@ export default function OverviewPage() {
         <Card className="flex-1 p-4 sm:p-6 shadow-sm border-zinc-100">
           <div className="mb-4 sm:mb-6 flex items-center justify-between">
             <h2 className="text-lg sm:text-xl font-medium">Conversations</h2>
-            <Button
-              variant="ghost"
-              className="h-auto p-0 text-xs text-zinc-700 hover:bg-transparent hover:text-zinc-900"
-            >
-              View All →
-            </Button>
+            <Link href="/dashboard/conversations">
+              <Button
+                variant="ghost"
+                className="h-auto p-0 text-xs text-zinc-700 hover:bg-transparent hover:text-zinc-900 cursor-pointer"
+              >
+                View All →
+              </Button>
+            </Link>
           </div>
           <div className="flex flex-col">
             {CONVERSATIONS.map((item, index) => (
@@ -284,12 +285,14 @@ export default function OverviewPage() {
         <Card className="flex-1 p-4 sm:p-6 shadow-sm border-zinc-100">
           <div className="mb-4 sm:mb-6 flex items-center justify-between">
             <h2 className="text-lg sm:text-xl font-medium">Critical Alerts</h2>
-            <Button
-              variant="ghost"
-              className="h-auto p-0 text-xs text-zinc-700 hover:bg-transparent hover:text-zinc-900"
-            >
-              View All →
-            </Button>
+            <Link href="/dashboard/conversations">
+              <Button
+                variant="ghost"
+                className="h-auto p-0 text-xs text-zinc-700 hover:bg-transparent hover:text-zinc-900 cursor-pointer"
+              >
+                View All →
+              </Button>
+            </Link>
           </div>
           <div className="flex flex-col">
             {ALERTS.map((item, index) => (
