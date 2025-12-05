@@ -160,22 +160,22 @@ const ALERTS = [
 
 export default function OverviewPage() {
   return (
-    <div className="flex flex-col gap-6 p-7 font-sans text-zinc-900">
+    <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 lg:p-7 font-sans text-zinc-900">
       {/* Header */}
-      <div className="mt-4">
-        <h1 className="text-3xl font-medium tracking-tight">
+      <div className="mt-2 sm:mt-4">
+        <h1 className="text-2xl sm:text-3xl font-medium tracking-tight">
           Good morning, John
         </h1>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-500 mt-1">
           Here's what's happening with your support bot today
         </p>
       </div>
 
       {/* Stats & Actions Container */}
-      <Card className="flex flex-col gap-6 p-6 shadow-sm border-zinc-100">
+      <Card className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 shadow-sm border-zinc-100">
         {/* Stats Row */}
         <div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-4 sm:mb-6">
             {STATS.map((stat) => (
               <div key={stat.label} className="flex flex-col gap-2">
                 <div className="group flex items-center gap-2 text-xs font-medium text-zinc-500 cursor-pointer">
@@ -192,9 +192,9 @@ export default function OverviewPage() {
                       )}
                     />
                   </div>
-                  <span>{stat.label}</span>
+                  <span className="text-xs sm:text-sm">{stat.label}</span>
                 </div>
-                <div className="text-3xl font-semibold">{stat.value}</div>
+                <div className="text-2xl sm:text-3xl font-semibold">{stat.value}</div>
               </div>
             ))}
           </div>
@@ -202,7 +202,7 @@ export default function OverviewPage() {
         </div>
 
         {/* Actions Row */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {ACTIONS.map((action) => (
             <Button
               key={action.label}
@@ -210,18 +210,18 @@ export default function OverviewPage() {
               className="h-10 w-full justify-center gap-2 bg-zinc-100 text-xs font-medium text-zinc-700 hover:text-[#925FF0] hover:bg-[#925FF0]/10"
             >
               <action.icon className="h-3.5 w-3.5" />
-              {action.label}
+              <span className="truncate">{action.label}</span>
             </Button>
           ))}
         </div>
       </Card>
 
-      {/* Main Content Grid — FIXED HERE */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
         {/* Conversations Panel */}
-        <Card className="flex-1 p-6 shadow-sm border-zinc-100">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-medium">Conversations</h2>
+        <Card className="flex-1 p-4 sm:p-6 shadow-sm border-zinc-100">
+          <div className="mb-4 sm:mb-6 flex items-center justify-between">
+            <h2 className="text-lg sm:text-xl font-medium">Conversations</h2>
             <Button
               variant="ghost"
               className="h-auto p-0 text-xs text-zinc-700 hover:bg-transparent hover:text-zinc-900"
@@ -234,44 +234,44 @@ export default function OverviewPage() {
               <div
                 key={item.id}
                 className={cn(
-                  "group flex items-start gap-3 py-4 px-3 -mx-3 rounded-lg transition-colors duration-200 hover:bg-zinc-50 cursor-pointer",
+                  "group flex items-start gap-2 sm:gap-3 py-3 sm:py-4 px-2 sm:px-3 -mx-2 sm:-mx-3 rounded-lg transition-colors duration-200 hover:bg-zinc-50 cursor-pointer",
                   index !== CONVERSATIONS.length - 1 &&
                     "border-b border-zinc-100"
                 )}
               >
                 <div
                   className={cn(
-                    "mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-200",
+                    "mt-1 flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full transition-colors duration-200",
                     item.iconBgColor
                   )}
                 >
                   <item.icon
                     className={cn(
-                      "h-4 w-4 transition-colors duration-200",
+                      "h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors duration-200",
                       item.iconColor
                     )}
                   />
                 </div>
-                <div className="flex flex-1 flex-col gap-1">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-1 flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-semibold">{item.name}</span>
                     <Badge
                       variant="secondary"
                       className={cn(
-                        "rounded-md bg-zinc-100 px-1.5 py-0 text-sm font-medium text-zinc-600 transition-colors duration-200",
+                        "rounded-md bg-zinc-100 px-1.5 py-0 text-xs sm:text-sm font-medium text-zinc-600 transition-colors duration-200",
                         item.badgeColor
                       )}
                     >
                       {item.status}
                     </Badge>
                   </div>
-                  <p className="text-xs text-zinc-500 leading-relaxed">
+                  <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2">
                     {item.description}
                   </p>
                 </div>
-                <div className="flex items-center gap-1 text-xs font-medium text-zinc-600">
+                <div className="flex items-center gap-1 text-xs font-medium text-zinc-600 shrink-0">
                   <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                  {item.rating}
+                  <span className="hidden sm:inline">{item.rating}</span>
                 </div>
               </div>
             ))}
@@ -279,9 +279,9 @@ export default function OverviewPage() {
         </Card>
 
         {/* Critical Alerts Panel */}
-        <Card className="flex-1 p-6 shadow-sm border-zinc-100">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-medium">Critical Alerts</h2>
+        <Card className="flex-1 p-4 sm:p-6 shadow-sm border-zinc-100">
+          <div className="mb-4 sm:mb-6 flex items-center justify-between">
+            <h2 className="text-lg sm:text-xl font-medium">Critical Alerts</h2>
             <Button
               variant="ghost"
               className="h-auto p-0 text-xs text-zinc-700 hover:bg-transparent hover:text-zinc-900"
@@ -294,15 +294,15 @@ export default function OverviewPage() {
               <div
                 key={item.id}
                 className={cn(
-                  "flex items-start gap-3 py-4 px-3 -mx-3 rounded-lg transition-colors duration-200 hover:bg-zinc-50 cursor-pointer",
+                  "flex items-start gap-2 sm:gap-3 py-3 sm:py-4 px-2 sm:px-3 -mx-2 sm:-mx-3 rounded-lg transition-colors duration-200 hover:bg-zinc-50 cursor-pointer",
                   index !== ALERTS.length - 1 && "border-b border-zinc-100"
                 )}
               >
-                <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center">
-                  <item.icon className={cn("h-4 w-4", item.color)} />
+                <div className="mt-1 flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center">
+                  <item.icon className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", item.color)} />
                 </div>
-                <div className="flex flex-1 flex-col gap-1">
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-1 flex-col gap-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="text-sm font-semibold">{item.name}</span>
                     <Badge
                       className={cn(
@@ -315,7 +315,7 @@ export default function OverviewPage() {
                       {item.severity}
                     </Badge>
                   </div>
-                  <p className="text-xs text-zinc-500 leading-relaxed">
+                  <p className="text-xs text-zinc-500 leading-relaxed line-clamp-2 sm:line-clamp-none">
                     {item.description}
                   </p>
                 </div>
