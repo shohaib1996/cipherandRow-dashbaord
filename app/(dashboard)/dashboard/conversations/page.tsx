@@ -167,7 +167,7 @@ export default function ConversationsPage() {
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-10 pb-6 sm:pb-10 mx-0 sm:mx-4 lg:mx-10 font-sans text-zinc-900 bg-white my-4 sm:my-6 lg:my-10">
+    <div className="px-4 sm:px-6 lg:px-10 pb-6 sm:pb-10 mx-0 sm:mx-4 lg:mx-10 font-sans text-zinc-900 bg-white my-0 sm:my-6 lg:my-10">
       {/* Header */}
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-medium tracking-tight mb-2 mt-4 sm:mt-6 lg:mt-10">

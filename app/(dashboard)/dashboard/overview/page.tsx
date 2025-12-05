@@ -160,9 +160,9 @@ const ALERTS = [
 
 export default function OverviewPage() {
   return (
-    <div className="flex flex-col gap-4 sm:gap-6 p-4 sm:p-6 lg:p-7 font-sans text-zinc-900">
+    <div className="flex flex-col gap-4 sm:gap-6 p-3 sm:p-6 lg:p-7 font-sans text-zinc-900">
       {/* Header */}
-      <div className="mt-2 sm:mt-4">
+      <div className="mt-0 sm:mt-4">
         <h1 className="text-2xl sm:text-3xl font-medium tracking-tight">
           Good morning, John
         </h1>
@@ -194,7 +194,9 @@ export default function OverviewPage() {
                   </div>
                   <span className="text-xs sm:text-sm">{stat.label}</span>
                 </div>
-                <div className="text-2xl sm:text-3xl font-semibold">{stat.value}</div>
+                <div className="text-2xl sm:text-3xl font-semibold">
+                  {stat.value}
+                </div>
               </div>
             ))}
           </div>
@@ -299,7 +301,9 @@ export default function OverviewPage() {
                 )}
               >
                 <div className="mt-1 flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center">
-                  <item.icon className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", item.color)} />
+                  <item.icon
+                    className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", item.color)}
+                  />
                 </div>
                 <div className="flex flex-1 flex-col gap-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
