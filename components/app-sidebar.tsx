@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import Image from "next/image";
 
 // Menu items.
 const items = [
@@ -63,8 +64,14 @@ export function AppSidebar() {
       <SidebarContent className="bg-[#432876] text-white">
         <SidebarHeader className="px-4 py-7 border-b border-white/40">
           <div className="flex items-center gap-3 px-1">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#432876] shadow-sm">
-              <span className="font-bold text-lg">C</span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-white shadow-sm overflow-hidden">
+              <Image
+                src="/images/logo.png"
+                alt="Cipher & Row Logo"
+                width={40}
+                height={40}
+                className="object-cover"
+              />
             </div>
             <div className="grid flex-1 text-left leading-tight group-data-[collapsible=icon]:hidden">
               <span className="truncate font-bold text-base tracking-tight text-white">

@@ -101,35 +101,35 @@ const KBPage = () => {
   };
 
   return (
-    <div className="px-5 py-8 mx-auto container space-y-8 font-sans">
+    <div className="px-4 sm:px-5 lg:px-8 pt-0 pb-4 sm:py-6 lg:py-8 mx-auto container space-y-4 sm:space-y-6 lg:space-y-8 font-sans">
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold text-slate-900">
+        <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
           Knowledge Base
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-xs sm:text-sm text-slate-500">
           Manage your AI's knowledge and training data — 5 articles across 4
           categories
         </p>
       </div>
 
       {/* Controls */}
-      <div className="flex items-center justify-between gap-4">
-        <div className="relative flex-1 max-w-full">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+        <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Search articles..."
-            className="pl-10 h-11 bg-white border-slate-200"
+            className="pl-10 h-10 sm:h-11 bg-white border-slate-200"
           />
         </div>
-        <Button className="bg-[#1a1a1a] hover:bg-black text-white h-11 px-6 rounded-sm">
+        <Button className="bg-[#1a1a1a] hover:bg-black text-white h-10 sm:h-11 px-4 sm:px-6 rounded-sm whitespace-nowrap">
           <Plus className="mr-2 h-4 w-4" />
           New Article
         </Button>
       </div>
 
-      {/* Table Card */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      {/* Desktop Table View - Hidden on Mobile */}
+      <div className="hidden lg:block bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent border-slate-100">
@@ -226,6 +226,89 @@ const KBPage = () => {
             ))}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile Card View - Visible on Mobile/Tablet */}
+      <div className="lg:hidden space-y-4">
+        {articles.map((article) => (
+          <div
+            key={article.id}
+            className="bg-white rounded-lg border border-slate-200 shadow-sm p-4 space-y-4"
+          >
+            {/* Title and Badges */}
+            <div className="space-y-3">
+              <h3 className="font-medium text-slate-900 text-base">
+                {article.title}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {article.badges.map((badge, index) => (
+                  <span
+                    key={index}
+                    className="px-2.5 py-0.5 rounded-[12px] text-xs font-medium"
+                    style={{
+                      backgroundColor: badge.bg,
+                      color: badge.color,
+                    }}
+                  >
+                    {badge.text}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Info Grid */}
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">
+              <div>
+                <div className="text-xs text-slate-500 mb-1">Category</div>
+                <div className="text-sm text-slate-900">{article.category}</div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 mb-1">Status</div>
+                <span
+                  className="px-2 py-0.5 rounded-full text-xs font-medium inline-flex items-center"
+                  style={{
+                    backgroundColor: "#22c55e1a",
+                    color: "#22C55E",
+                  }}
+                >
+                  {article.status}
+                </span>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 mb-1">Uses</div>
+                <div className="flex items-center gap-1.5 text-slate-600 font-medium text-sm">
+                  <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
+                  {article.uses}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 mb-1">Last Updated</div>
+                <div className="flex items-center gap-1.5 text-slate-700 text-sm">
+                  <Calendar className="h-4 w-4" />
+                  {article.lastUpdated}
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
+              <button
+                onClick={() => handleViewArticle(article)}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-md transition-colors text-sm"
+              >
+                <Eye className="h-4 w-4" />
+                View
+              </button>
+              <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors text-sm">
+                <Pencil className="h-4 w-4" />
+                Edit
+              </button>
+              <button className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-md transition-colors">
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       <ArticleViewDialog

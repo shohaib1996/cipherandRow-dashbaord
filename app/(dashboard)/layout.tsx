@@ -21,13 +21,13 @@ export default async function DashboardLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
-      {/* Show FloatingSidebarTrigger only on desktop/laptop (lg and above) */}
+      {/* Show FloatingSidebarTrigger only on desktop (lg and above) */}
       <div className="hidden lg:block">
         <FloatingSidebarTrigger />
       </div>
       <SidebarInset>
         <div className="flex flex-1 flex-col min-h-screen bg-linear-to-br from-[#925FF0]/5 via-[#925FF0]/5 to-[#3B82F6]/5">
-          {/* Show SidebarTrigger only on mobile/tablet (below lg) */}
+          {/* Show SidebarTrigger on mobile and tablet (below lg) */}
           <div className="lg:hidden p-4">
             <SidebarTrigger />
           </div>
