@@ -26,34 +26,36 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen font-sans">
-      <div className="container mx-auto py-8 px-4 space-y-8">
+      <div className="container mx-auto py-4 sm:py-6 md:py-8 px-3 sm:px-4 space-y-4 sm:space-y-6 md:space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Settings</h1>
-          <p className="text-slate-500 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+            Settings
+          </h1>
+          <p className="text-slate-500 mt-1 text-sm sm:text-base">
             Manage your account and bot configuration
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 md:gap-6">
           {/* Profile Settings */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
-            <CardHeader className="flex flex-row items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center">
+            <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <User className="w-4 h-4 text-purple-600" />
               </div>
-              <CardTitle className="text-base font-semibold text-slate-800">
+              <CardTitle className="text-sm sm:text-base font-semibold text-slate-800">
                 Profile Settings
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pt-6">
+            <CardContent className="space-y-3 sm:space-y-4 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-700">
                   Full Name
                 </label>
                 <Input
                   defaultValue="John Doe"
-                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-10"
+                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="space-y-1.5">
@@ -62,7 +64,7 @@ export default function SettingsPage() {
                 </label>
                 <Input
                   defaultValue="john@company.com"
-                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-10"
+                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="space-y-1.5">
@@ -71,11 +73,11 @@ export default function SettingsPage() {
                 </label>
                 <Input
                   defaultValue="My Company"
-                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-10"
+                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="pt-2">
-                <Button className="bg-slate-900 hover:bg-slate-800 text-white rounded-sm px-6 h-10 font-medium">
+                <Button className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white rounded-sm px-6 h-9 sm:h-10 font-medium text-sm">
                   Save Changes
                 </Button>
               </div>
@@ -84,22 +86,22 @@ export default function SettingsPage() {
 
           {/* Bot Configuration */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
-            <CardHeader className="flex flex-row items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center">
+            <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <Zap className="w-4 h-4 text-purple-600" />
               </div>
-              <CardTitle className="text-base font-semibold text-slate-800">
+              <CardTitle className="text-sm sm:text-base font-semibold text-slate-800">
                 Bot Configuration
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pt-6">
+            <CardContent className="space-y-3 sm:space-y-4 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-700">
                   Bot Name
                 </label>
                 <Input
                   defaultValue="Support Bot"
-                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-10"
+                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="space-y-1.5">
@@ -108,7 +110,7 @@ export default function SettingsPage() {
                 </label>
                 <Input
                   placeholder="e.g. Professional, Friendly"
-                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-10"
+                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-9 sm:h-10 text-sm"
                 />
               </div>
               <div className="space-y-1.5">
@@ -117,12 +119,12 @@ export default function SettingsPage() {
                 </label>
                 <Input
                   placeholder="e.g. 150 words"
-                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-10"
+                  className="bg-white border-slate-200 rounded-sm focus-visible:ring-purple-500 h-9 sm:h-10 text-sm"
                 />
               </div>
-              <div className="flex items-center justify-between pt-2 bg-[#E9DFFC33] px-3 py-2 rounded-sm">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-700 block">
+              <div className="flex items-center justify-between pt-2 bg-[#E9DFFC33] px-3 py-2 rounded-sm gap-3">
+                <div className="space-y-0.5 flex-1 min-w-0">
+                  <label className="text-xs sm:text-sm font-medium text-slate-700 block">
                     Auto-resolve
                   </label>
                   <span className="text-xs text-slate-500">
@@ -132,25 +134,26 @@ export default function SettingsPage() {
                 <Switch
                   checked={autoResolve}
                   onCheckedChange={setAutoResolve}
+                  className="shrink-0"
                 />
               </div>
             </CardContent>
           </Card>
 
           {/* Notifications */}
-          <Card className="border-slate-200 shadow-sm rounded-sm bg-white col-span-2">
-            <CardHeader className="flex flex-row items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center">
+          <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2">
+            <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <Bell className="w-4 h-4 text-purple-600" />
               </div>
-              <CardTitle className="text-base font-semibold text-slate-800">
+              <CardTitle className="text-sm sm:text-base font-semibold text-slate-800">
                 Notifications
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-700 block bg">
+            <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
+              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm gap-3">
+                <div className="space-y-0.5 flex-1 min-w-0">
+                  <label className="text-xs sm:text-sm font-medium text-slate-700 block">
                     Email notifications
                   </label>
                   <span className="text-xs text-slate-500">
@@ -160,11 +163,12 @@ export default function SettingsPage() {
                 <Switch
                   checked={emailNotifs}
                   onCheckedChange={setEmailNotifs}
+                  className="shrink-0"
                 />
               </div>
-              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-700 block">
+              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm gap-3">
+                <div className="space-y-0.5 flex-1 min-w-0">
+                  <label className="text-xs sm:text-sm font-medium text-slate-700 block">
                     Weekly reports
                   </label>
                   <span className="text-xs text-slate-500">
@@ -174,6 +178,7 @@ export default function SettingsPage() {
                 <Switch
                   checked={weeklyReports}
                   onCheckedChange={setWeeklyReports}
+                  className="shrink-0"
                 />
               </div>
             </CardContent>
@@ -181,27 +186,27 @@ export default function SettingsPage() {
 
           {/* Security */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
-            <CardHeader className="flex flex-row items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center">
+            <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <Shield className="w-4 h-4 text-purple-600" />
               </div>
-              <CardTitle className="text-base font-semibold text-slate-800">
+              <CardTitle className="text-sm sm:text-base font-semibold text-slate-800">
                 Security
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 pt-6">
+            <CardContent className="space-y-2 sm:space-y-3 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
               <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
-                <span className="text-sm font-medium text-purple-700">
+                <span className="text-xs sm:text-sm font-medium text-purple-700">
                   Change Password
                 </span>
               </div>
               <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
-                <span className="text-sm font-medium text-purple-700">
+                <span className="text-xs sm:text-sm font-medium text-purple-700">
                   Enable Two-Factor Authentication
                 </span>
               </div>
               <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
-                <span className="text-sm font-medium text-purple-700">
+                <span className="text-xs sm:text-sm font-medium text-purple-700">
                   API Keys
                 </span>
               </div>
@@ -210,18 +215,18 @@ export default function SettingsPage() {
 
           {/* Billing & Plan */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
-            <CardHeader className="flex flex-row items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center">
+            <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center shrink-0">
                 <CreditCard className="w-4 h-4 text-green-600" />
               </div>
-              <CardTitle className="text-base font-semibold text-slate-800">
+              <CardTitle className="text-sm sm:text-base font-semibold text-slate-800">
                 Billing & Plan
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 pt-6">
-              <div className="p-4 border border-slate-100 rounded-sm bg-slate-50 flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-semibold text-slate-900">
+            <CardContent className="space-y-3 sm:space-y-4 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
+              <div className="p-3 sm:p-4 border border-slate-100 rounded-sm bg-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs sm:text-sm font-semibold text-slate-900">
                     Current Plan: Professional
                   </div>
                   <div className="text-xs text-slate-500 mt-1">
@@ -244,20 +249,20 @@ export default function SettingsPage() {
                   //     console.error("Error starting checkout:", error);
                   //   }
                   // }}
-                  className="bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-sm"
+                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-sm shrink-0"
                 >
                   Upgrade
                 </Button>
               </div>
 
-              <div className="space-y-3 pt-2">
+              <div className="space-y-2 sm:space-y-3 pt-2">
                 <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
-                  <span className="text-sm font-medium text-purple-700">
+                  <span className="text-xs sm:text-sm font-medium text-purple-700">
                     View Invoices
                   </span>
                 </div>
                 <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
-                  <span className="text-sm font-medium text-purple-700">
+                  <span className="text-xs sm:text-sm font-medium text-purple-700">
                     Update Payment Method
                   </span>
                 </div>
@@ -267,18 +272,18 @@ export default function SettingsPage() {
 
           {/* Email Integrations */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
-            <CardHeader className="flex flex-row items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center">
+            <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <Mail className="w-4 h-4 text-purple-600" />
               </div>
-              <CardTitle className="text-base font-semibold text-slate-800">
+              <CardTitle className="text-sm sm:text-base font-semibold text-slate-800">
                 Email Integrations
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-700 block">
+            <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
+              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm gap-3">
+                <div className="space-y-0.5 flex-1 min-w-0">
+                  <label className="text-xs sm:text-sm font-medium text-slate-700 block">
                     New message alerts
                   </label>
                   <span className="text-xs text-slate-500">
@@ -288,11 +293,12 @@ export default function SettingsPage() {
                 <Switch
                   checked={newMsgAlerts}
                   onCheckedChange={setNewMsgAlerts}
+                  className="shrink-0"
                 />
               </div>
-              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-700 block">
+              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm gap-3">
+                <div className="space-y-0.5 flex-1 min-w-0">
+                  <label className="text-xs sm:text-sm font-medium text-slate-700 block">
                     Escalation alerts
                   </label>
                   <span className="text-xs text-slate-500">
@@ -302,11 +308,12 @@ export default function SettingsPage() {
                 <Switch
                   checked={escalationAlerts}
                   onCheckedChange={setEscalationAlerts}
+                  className="shrink-0"
                 />
               </div>
-              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm">
-                <div className="space-y-0.5">
-                  <label className="text-sm font-medium text-slate-700 block">
+              <div className="flex items-center justify-between bg-[#E9DFFC33] p-3 rounded-sm gap-3">
+                <div className="space-y-0.5 flex-1 min-w-0">
+                  <label className="text-xs sm:text-sm font-medium text-slate-700 block">
                     Email-to-conversation
                   </label>
                   <span className="text-xs text-slate-500">
@@ -316,6 +323,7 @@ export default function SettingsPage() {
                 <Switch
                   checked={emailToConv}
                   onCheckedChange={setEmailToConv}
+                  className="shrink-0"
                 />
               </div>
             </CardContent>
@@ -323,35 +331,35 @@ export default function SettingsPage() {
 
           {/* Scheduling Integrations */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
-            <CardHeader className="flex flex-row items-center gap-3 pb-4 border-b border-slate-100">
-              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center">
+            <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
+              <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <Calendar className="w-4 h-4 text-purple-600" />
               </div>
-              <CardTitle className="text-base font-semibold text-slate-800">
+              <CardTitle className="text-sm sm:text-base font-semibold text-slate-800">
                 Scheduling Integrations
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              <div className="p-4 border border-slate-100 rounded-sm">
+            <CardContent className="space-y-4 sm:space-y-6 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
+              <div className="p-3 sm:p-4 border border-slate-100 rounded-sm">
                 <div className="mb-3">
-                  <div className="text-sm font-medium text-slate-900">
+                  <div className="text-xs sm:text-sm font-medium text-slate-900">
                     Calendly
                   </div>
                   <div className="text-xs text-slate-500">Not connected</div>
                 </div>
-                <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white h-9 rounded-sm text-sm">
+                <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white h-9 rounded-sm text-xs sm:text-sm">
                   Connect Calendly
                 </Button>
               </div>
 
-              <div className="p-4 border border-slate-100 rounded-sm">
+              <div className="p-3 sm:p-4 border border-slate-100 rounded-sm">
                 <div className="mb-3">
-                  <div className="text-sm font-medium text-slate-900">
+                  <div className="text-xs sm:text-sm font-medium text-slate-900">
                     Google Calendar
                   </div>
                   <div className="text-xs text-slate-500">Not connected</div>
                 </div>
-                <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white h-9 rounded-sm text-sm">
+                <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white h-9 rounded-sm text-xs sm:text-sm">
                   Connect Google Calendar
                 </Button>
               </div>
@@ -368,13 +376,13 @@ export default function SettingsPage() {
 
         {/* Danger Zone */}
         <div className="border border-red-200 rounded-sm bg-white overflow-hidden">
-          <div className="px-6 py-4 border-b border-red-100 bg-red-50/30">
-            <h3 className="text-base font-semibold text-red-600">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-red-100 bg-red-50/30">
+            <h3 className="text-sm sm:text-base font-semibold text-red-600">
               Danger Zone
             </h3>
           </div>
-          <div className="p-6 w-full">
-            <Button className="w-full bg-red-500 hover:bg-red-600 text-white rounded-sm h-10 px-6">
+          <div className="p-4 sm:p-6 w-full">
+            <Button className="w-full bg-red-500 hover:bg-red-600 text-white rounded-sm h-9 sm:h-10 px-6 text-sm">
               Delete Account
             </Button>
           </div>

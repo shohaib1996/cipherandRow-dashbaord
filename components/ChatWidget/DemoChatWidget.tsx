@@ -17,6 +17,7 @@ export default function DemoChatWidget() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [warmupPingSent, setWarmupPingSent] = useState(false);
 
   // thinking = server processing / waiting for reply
   // typing = character-by-character rendering of the bot reply
@@ -50,6 +51,12 @@ export default function DemoChatWidget() {
         time: Date.now(),
       },
     ]);
+
+    // Send warmup ping to reduce first-message latency
+    if (!warmupPingSent) {
+      sendWarmupPing();
+      setWarmupPingSent(true);
+    }
   }, []);
 
   // Smart Auto-scroll
@@ -139,6 +146,22 @@ export default function DemoChatWidget() {
         return arr;
       });
     }, typingSpeed);
+  };
+
+  // Warmup ping function to reduce first-message latency
+  const sendWarmupPing = () => {
+    const pingUrl =
+      "https://widget-worker.khanshohaibhossain.workers.dev/api/support-bot/ping?client_id=1001&bot_id=2001";
+
+    fetch(pingUrl, { method: "GET" })
+      .then(() => {
+        // Ping successful - worker and backend are warmed
+        console.log("Warmup ping successful");
+      })
+      .catch((err) => {
+        // Silently fail - not critical
+        console.warn("Warmup ping failed:", err);
+      });
   };
 
   const handleSend = async (e?: React.FormEvent) => {

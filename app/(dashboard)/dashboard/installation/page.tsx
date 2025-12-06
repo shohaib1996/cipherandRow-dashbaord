@@ -52,19 +52,21 @@ export default function Installation() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-4 py-4 sm:py-6 md:py-8">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-4 sm:mb-6">
         <div>
-          <h1 className="text-3xl font-medium text-slate-900">Installation</h1>
-          <p className="mt-2 text-slate-500">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-medium text-slate-900">
+            Installation
+          </h1>
+          <p className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base text-slate-500">
             Add the support widget to your website in seconds
           </p>
         </div>
       </div>
 
       {/* Steps cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {[
           {
             id: 1,
@@ -82,14 +84,19 @@ export default function Installation() {
             subtitle: "Your chat widget will appear automatically",
           },
         ].map((card) => (
-          <div key={card.id} className="bg-white rounded-sm shadow-md p-6">
-            <div className="flex flex-col gap-4">
-              <div className="w-9 h-9 rounded-md bg-violet-100 flex items-center justify-center text-violet-600 font-semibold">
+          <div
+            key={card.id}
+            className="bg-white rounded-sm shadow-md p-4 sm:p-5 md:p-6"
+          >
+            <div className="flex flex-col gap-3 sm:gap-4">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-violet-100 flex items-center justify-center text-violet-600 font-semibold text-sm sm:text-base">
                 {card.id}
               </div>
               <div>
-                <div className="font-semibold text-slate-900">{card.title}</div>
-                <div className="text-sm text-slate-500 mt-3">
+                <div className="font-semibold text-slate-900 text-sm sm:text-base">
+                  {card.title}
+                </div>
+                <div className="text-xs sm:text-sm text-slate-500 mt-2 sm:mt-3">
                   {card.subtitle}
                 </div>
               </div>
@@ -99,14 +106,14 @@ export default function Installation() {
       </div>
 
       {/* Installation code block */}
-      <div className="bg-white rounded-sm shadow mb-8">
-        <div className="flex items-center justify-between px-8 py-6">
-          <h3 className="text-lg font-medium text-slate-800">
+      <div className="bg-white rounded-sm shadow mb-6 sm:mb-8">
+        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6">
+          <h3 className="text-base sm:text-lg font-medium text-slate-800">
             Installation Code
           </h3>
           <button
             onClick={handleCopy}
-            className="inline-flex items-center gap-2 bg-slate-900 text-white px-3 py-2 rounded-md shadow hover:opacity-95"
+            className="inline-flex items-center gap-2 bg-slate-900 text-white px-3 py-2 rounded-md shadow hover:opacity-95 text-sm shrink-0"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -122,13 +129,13 @@ export default function Installation() {
                 d="M8 16h8M8 12h8m-6-8h6a2 2 0 012 2v6"
               />
             </svg>
-            <span>{copied ? "Copied" : "Copy Code"}</span>
+            <span>{copied ? "Copied!" : "Copy Code"}</span>
           </button>
         </div>
 
         <div className="rounded-sm overflow-hidden">
           <pre
-            className="p-6 text-sm font-mono bg-clip-padding"
+            className="p-4 sm:p-5 md:p-6 text-xs sm:text-sm font-mono bg-clip-padding whitespace-pre-wrap wrap-break-words"
             style={{ backgroundColor: "#4b1d66" }}
           >
             <code className="text-white">{code}</code>
@@ -137,22 +144,22 @@ export default function Installation() {
       </div>
 
       {/* Widget Customization */}
-      <div className="bg-white rounded-sm shadow p-6 mb-8">
-        <h3 className="text-lg font-medium text-slate-800 mb-4">
+      <div className="bg-white rounded-sm shadow p-4 sm:p-5 md:p-6 mb-6 sm:mb-8">
+        <h3 className="text-base sm:text-lg font-medium text-slate-800 mb-4 sm:mb-5">
           Widget Customization
         </h3>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:gap-5">
           {/* Position */}
           <div>
-            <label className=" text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+            <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
               <Globe width={16} height={16} className="text-[#725FF0]" />{" "}
               Position
             </label>
-            <div className="inline-flex rounded-sm bg-slate-100 p-1">
+            <div className="flex rounded-sm bg-slate-100 p-1 w-full">
               <button
                 onClick={() => setPosition("bottom-right")}
-                className={`px-4 py-2 rounded-sm font-medium ${
+                className={`flex-1 px-3 sm:px-4 py-2 rounded-sm font-medium text-xs sm:text-sm ${
                   position === "bottom-right"
                     ? "bg-slate-900 text-white"
                     : "text-[#725FF0] bg-[#725FF0]/10"
@@ -162,7 +169,7 @@ export default function Installation() {
               </button>
               <button
                 onClick={() => setPosition("bottom-left")}
-                className={`px-4 py-2 rounded-sm font-medium ${
+                className={`flex-1 px-3 sm:px-4 py-2 rounded-sm font-medium text-xs sm:text-sm ${
                   position === "bottom-left"
                     ? "bg-slate-900 text-white"
                     : "text-[#725FF0] bg-[#725FF0]/10"
@@ -175,7 +182,7 @@ export default function Installation() {
 
           {/* Primary Color */}
           <div>
-            <label className="text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+            <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
               <svg
                 viewBox="0 0 16 16"
                 xmlns="http://www.w3.org/2000/svg"
@@ -263,25 +270,25 @@ export default function Installation() {
               </svg>
               Primary Color
             </label>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Input
                 type="color"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
-                className="w-12 h-9 rounded-md border"
+                className="w-10 h-9 sm:w-12 sm:h-10 rounded-md border shrink-0"
               />
               <Input
                 type="text"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
-                className="flex-1 rounded-md border px-3 py-2 text-sm"
+                className="flex-1 rounded-md border px-3 py-2 text-xs sm:text-sm"
               />
             </div>
           </div>
 
           {/* Greeting Message */}
           <div>
-            <label className="text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+            <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
               <MessageSquare
                 width={16}
                 height={16}
@@ -293,39 +300,48 @@ export default function Installation() {
               type="text"
               value={greeting}
               onChange={(e) => setGreeting(e.target.value)}
-              className="w-full rounded-md border px-3 py-2 text-sm"
+              className="w-full rounded-md border px-3 py-2 text-xs sm:text-sm"
             />
           </div>
 
           {/* Save */}
-          <div className="pt-2">
+          <div className="pt-1 sm:pt-2">
             <Button
               onClick={handleSave}
-              className="w-full bg-slate-900 rounded-sm text-white py-6 font-semibold shadow hover:opacity-95"
+              className="w-full bg-slate-900 rounded-sm text-white py-5 sm:py-6 font-semibold shadow hover:opacity-95 text-sm sm:text-base"
             >
               Save Changes
             </Button>
             {saved && (
-              <div className="mt-2 text-sm text-emerald-600">Saved ✓</div>
+              <div className="mt-2 text-xs sm:text-sm text-emerald-600 font-medium">
+                Saved ✓
+              </div>
             )}
           </div>
         </div>
       </div>
 
       {/* Platform Specific Guides */}
-      <div className="bg-white rounded-2xl shadow p-6">
-        <h3 className="text-lg font-medium text-slate-800 mb-4">
+      <div className="bg-white rounded-lg sm:rounded-2xl shadow p-4 sm:p-5 md:p-6">
+        <h3 className="text-base sm:text-lg font-medium text-slate-800 mb-3 sm:mb-4">
           Platform-Specific Guides
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {[
             { title: "WordPress", subtitle: "Installation guide →" },
             { title: "Shopify", subtitle: "Installation guide →" },
             { title: "Custom HTML", subtitle: "Installation guide →" },
           ].map((g) => (
-            <div key={g.title} className="p-4 border rounded-lg">
-              <div className="font-semibold text-slate-900">{g.title}</div>
-              <div className="text-sm text-slate-500 mt-1">{g.subtitle}</div>
+            <div
+              key={g.title}
+              className="p-3 sm:p-4 border rounded-lg hover:border-[#725FF0] hover:bg-[#725FF0]/5 transition-all duration-200 cursor-pointer"
+            >
+              <div className="font-semibold text-slate-900 text-sm sm:text-base">
+                {g.title}
+              </div>
+              <div className="text-xs sm:text-sm text-slate-500 mt-1">
+                {g.subtitle}
+              </div>
             </div>
           ))}
         </div>

@@ -29,17 +29,17 @@ export function DashboardFooter() {
               Refund Policy
             </Link>
             <Link
-              href="#"
+              href="/security"
               className="hover:text-[#666666] transition-colors duration-200"
             >
               Security Practices
             </Link>
-            <Link
+            {/* <Link
               href="#"
               className="hover:text-[#666666] transition-colors duration-200"
             >
               Status
-            </Link>
+            </Link> */}
           </div>
         </div>
 
@@ -48,7 +48,7 @@ export function DashboardFooter() {
             href="mailto:support@cipherandrow.com"
             className="hover:text-[#666666] transition-colors duration-200"
           >
-            support@cipherandrow.com
+            support@cipherandrow.co
           </a>
         </div>
       </div>
