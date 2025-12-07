@@ -203,11 +203,11 @@ export default function RefundPolicyPage() {
               <p className="text-xs sm:text-sm text-slate-600 mb-2 flex items-center gap-2 flex-wrap">
                 Email us at
                 <a
-                  href="mailto:support@cipherandrow.co"
+                  href="mailto:support@cipherandrow.com"
                   className="text-purple-600 hover:text-purple-700 hover:underline inline-flex items-center gap-1 font-medium transition-colors duration-300"
                 >
                   <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  support@cipherandrow.co
+                  support@cipherandrow.com
                 </a>
                 with:
               </p>

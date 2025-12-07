@@ -60,8 +60,8 @@ export default function SecurityPage() {
             </div>
             <p className="mt-4 sm:mt-6 text-sm sm:text-base text-slate-600 leading-relaxed">
               We take the security of your data seriously. Cipher & Row is built
-              using modern cloud infrastructure and follows common best practices
-              for SaaS security.
+              using modern cloud infrastructure and follows common best
+              practices for SaaS security.
             </p>
           </CardHeader>
           <CardContent className="pt-6 sm:pt-8 px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
@@ -131,9 +131,7 @@ export default function SecurityPage() {
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
                 <li>Account details (name, email, company, website)</li>
                 <li>Knowledge base content you add</li>
-                <li>
-                  Support conversations between your visitors and the bot
-                </li>
+                <li>Support conversations between your visitors and the bot</li>
                 <li>Basic usage and performance metrics</li>
               </ul>
               <p className="text-xs sm:text-sm text-slate-600 font-medium mt-2 bg-blue-50 p-2.5 sm:p-3 rounded-lg border border-blue-100">
@@ -155,8 +153,8 @@ export default function SecurityPage() {
               </div>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
                 <li>
-                  We monitor the system for errors and unusual behavior to detect
-                  issues early.
+                  We monitor the system for errors and unusual behavior to
+                  detect issues early.
                 </li>
                 <li>
                   If we become aware of a security incident that affects your
@@ -205,11 +203,11 @@ export default function SecurityPage() {
                 email:
               </p>
               <a
-                href="mailto:security@cipherandrow.co"
+                href="mailto:security@cipherandrow.com"
                 className="text-indigo-600 hover:text-indigo-700 hover:underline inline-flex items-center gap-1.5 sm:gap-2 font-medium transition-colors duration-300 text-sm sm:text-base"
               >
                 <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                security@cipherandrow.co
+                security@cipherandrow.com
               </a>
             </section>
           </CardContent>

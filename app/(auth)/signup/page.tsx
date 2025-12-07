@@ -52,11 +52,36 @@ export default function SignUpPage() {
       const data = await response.json();
       console.log("Signup successful:", data);
 
-      // Show success toast
-      toast.success("You have successfully signed up! Check email to confirm.");
+      // Store token if provided (supports both 'token' and 'access_token')
+      const authToken = data.token || data.access_token;
 
-      // Set success state to show success message
-      setSuccess(true);
+      if (authToken) {
+        // Store token in localStorage
+        localStorage.setItem("auth_token", authToken);
+
+        // Store user info if available
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+
+        // Also set as cookie for proxy
+        document.cookie = `auth_token=${authToken}; path=/; max-age=2592000; SameSite=Lax`;
+
+        // Show success toast
+        toast.success("You have successfully signed up! Check email to confirm.");
+
+        // Set success state to show success message
+        setSuccess(true);
+
+        // Use router.push with a small delay to ensure cookie is set
+        setTimeout(() => {
+          router.push("/dashboard/overview");
+        }, 2000);
+      } else {
+        // If no token, just show success message
+        toast.success("You have successfully signed up! Check email to confirm.");
+        setSuccess(true);
+      }
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
