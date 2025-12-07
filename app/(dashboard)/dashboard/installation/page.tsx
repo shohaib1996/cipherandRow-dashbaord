@@ -16,6 +16,17 @@ export default function Installation() {
   const [greeting, setGreeting] = useState("Hi! How can we help you today?");
   const [saved, setSaved] = useState(false);
 
+  // Load widget settings from localStorage on mount
+  useEffect(() => {
+    const savedColor = localStorage.getItem("widget_primary_color");
+    const savedPosition = localStorage.getItem("widget_position");
+    const savedGreeting = localStorage.getItem("widget_greeting");
+
+    if (savedColor) setPrimaryColor(savedColor);
+    if (savedPosition) setPosition(savedPosition as "bottom-right" | "bottom-left");
+    if (savedGreeting) setGreeting(savedGreeting);
+  }, []);
+
   useEffect(() => {
     if (copied) {
       const t = setTimeout(() => setCopied(false), 1600);
@@ -47,7 +58,16 @@ export default function Installation() {
   };
 
   const handleSave = () => {
-    // mock save — in a real app, call API here
+    // Save widget settings to localStorage
+    localStorage.setItem("widget_primary_color", primaryColor);
+    localStorage.setItem("widget_position", position);
+    localStorage.setItem("widget_greeting", greeting);
+
+    // Dispatch custom event to notify DemoChatWidget about color change
+    window.dispatchEvent(new CustomEvent("widgetColorChange", {
+      detail: { primaryColor }
+    }));
+
     setSaved(true);
   };
 

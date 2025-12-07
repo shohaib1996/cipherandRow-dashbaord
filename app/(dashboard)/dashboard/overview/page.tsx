@@ -15,10 +15,12 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { link } from "fs";
 
 // Mock Data
 const STATS = [
@@ -52,22 +54,30 @@ const STATS = [
   },
 ];
 
-const ACTIONS = [
+const ACTIONS: Array<{
+  label: string;
+  icon: any;
+  link?: string;
+}> = [
   {
     label: "View All Conversations",
     icon: MessageSquare,
+    link: "/dashboard/conversations",
   },
   {
     label: "Add Knowledge Article",
     icon: Plus,
+    link: "/dashboard/kb",
   },
   {
     label: "View Analytics",
     icon: LineChart,
+    // No link = Coming Soon
   },
   {
     label: "Widget Settings",
     icon: Settings,
+    link: "/dashboard/installation",
   },
 ];
 
@@ -158,6 +168,8 @@ const ALERTS = [
 ];
 
 export default function OverviewPage() {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col gap-4 sm:gap-6 p-3 sm:p-6 lg:p-7 font-sans text-zinc-900">
       {/* Header */}
@@ -204,16 +216,45 @@ export default function OverviewPage() {
 
         {/* Actions Row */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {ACTIONS.map((action) => (
-            <Button
-              key={action.label}
-              variant="secondary"
-              className="h-10 w-full justify-center gap-2 bg-zinc-100 text-xs font-medium text-zinc-700 hover:text-[#925FF0] hover:bg-[#925FF0]/10"
-            >
-              <action.icon className="h-3.5 w-3.5" />
-              <span className="truncate">{action.label}</span>
-            </Button>
-          ))}
+          {ACTIONS.map((action) => {
+            const hasLink = Boolean(action.link);
+
+            if (hasLink && action.link) {
+              return (
+                <Link key={action.label} href={action.link}>
+                  <Button
+                    variant="secondary"
+                    className="h-10 w-full justify-center gap-2 bg-zinc-100 text-xs font-medium text-zinc-700 hover:text-[#925FF0] hover:bg-[#925FF0]/10"
+                  >
+                    <action.icon className="h-3.5 w-3.5" />
+                    <span className="truncate">{action.label}</span>
+                  </Button>
+                </Link>
+              );
+            }
+
+            return (
+              <div
+                key={action.label}
+                className="relative group"
+                title="Coming Soon"
+              >
+                <Button
+                  variant="secondary"
+                  disabled
+                  className="h-10 w-full justify-center gap-2 bg-zinc-100 text-xs font-medium text-zinc-400 cursor-not-allowed opacity-60"
+                >
+                  <action.icon className="h-3.5 w-3.5" />
+                  <span className="truncate">{action.label}</span>
+                </Button>
+                {/* Tooltip */}
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                  Coming Soon
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-slate-900" />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Card>
 
@@ -236,6 +277,7 @@ export default function OverviewPage() {
             {CONVERSATIONS.map((item, index) => (
               <div
                 key={item.id}
+                onClick={() => router.push("/dashboard/conversations")}
                 className={cn(
                   "group flex items-start gap-2 sm:gap-3 py-3 sm:py-4 px-2 sm:px-3 -mx-2 sm:-mx-3 rounded-lg transition-colors duration-200 hover:bg-zinc-50 cursor-pointer",
                   index !== CONVERSATIONS.length - 1 &&
@@ -298,6 +340,7 @@ export default function OverviewPage() {
             {ALERTS.map((item, index) => (
               <div
                 key={item.id}
+                onClick={() => router.push("/dashboard/conversations")}
                 className={cn(
                   "flex items-start gap-2 sm:gap-3 py-3 sm:py-4 px-2 sm:px-3 -mx-2 sm:-mx-3 rounded-lg transition-colors duration-200 hover:bg-zinc-50 cursor-pointer",
                   index !== ALERTS.length - 1 && "border-b border-zinc-100"

@@ -30,7 +30,6 @@ export default function TestChatPage() {
             {[
               "Instant AI Responses",
               "Knowledge Base Integration",
-              "Seamless Handoff",
               "24/7 Availability",
             ].map((feature, i) => (
               <div key={i} className="flex items-center gap-2.5 sm:gap-3">

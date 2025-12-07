@@ -13,6 +13,30 @@ interface Message {
   time: number;
 }
 
+// Helper function to adjust color brightness
+function adjustColorBrightness(hex: string, percent: number): string {
+  // Remove # if present
+  hex = hex.replace("#", "");
+
+  // Convert to RGB
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  // Adjust brightness
+  const newR = Math.max(0, Math.min(255, r + (r * percent) / 100));
+  const newG = Math.max(0, Math.min(255, g + (g * percent) / 100));
+  const newB = Math.max(0, Math.min(255, b + (b * percent) / 100));
+
+  // Convert back to hex
+  const toHex = (n: number) => {
+    const hex = Math.round(n).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  };
+
+  return `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
+}
+
 export default function DemoChatWidget() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -32,9 +56,31 @@ export default function DemoChatWidget() {
   const typingIntervalRef = useRef<number | null>(null);
   const typingMessageIndexRef = useRef<number | null>(null);
 
+  // Widget color customization
+  const [primaryColor, setPrimaryColor] = useState("#8A06E6");
+
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
+
+    // Load saved color from localStorage
+    const savedColor = localStorage.getItem("widget_primary_color");
+    if (savedColor) {
+      setPrimaryColor(savedColor);
+    }
+
+    // Listen for color changes
+    const handleColorChange = (event: CustomEvent) => {
+      if (event.detail?.primaryColor) {
+        setPrimaryColor(event.detail.primaryColor);
+      }
+    };
+
+    window.addEventListener("widgetColorChange" as any, handleColorChange);
+
+    return () => {
+      window.removeEventListener("widgetColorChange" as any, handleColorChange);
+    };
   }, []);
 
   // Initialize session
@@ -284,7 +330,12 @@ export default function DemoChatWidget() {
 
       <Card className="w-full h-full flex flex-col overflow-hidden rounded-[14px] py-0 shadow-xl border-[#E5E7EB] bg-[#ffffff]">
         {/* Header */}
-        <CardHeader className="flex flex-row h-16 items-center justify-between p-[12px_14px] shadow-[0_2px_6px_rgba(0,0,0,0.06)] space-y-0 bg-[linear-gradient(90deg,#8A06E6,#7A05D0)]">
+        <CardHeader
+          className="flex flex-row h-16 items-center justify-between p-[12px_14px] shadow-[0_2px_6px_rgba(0,0,0,0.06)] space-y-0"
+          style={{
+            background: `linear-gradient(90deg, ${primaryColor}, ${adjustColorBrightness(primaryColor, -10)})`
+          }}
+        >
           <div className="flex items-center gap-2">
             {/* Custom Icon Container */}
             <div
@@ -321,7 +372,10 @@ export default function DemoChatWidget() {
                 }`}
               >
                 {msg.role === "bot" && (
-                  <div className="w-[34px] h-[34px] rounded-full shrink-0 grid place-items-center font-bold text-white select-none text-xs bg-[#8A06E6]">
+                  <div
+                    className="w-[34px] h-[34px] rounded-full shrink-0 grid place-items-center font-bold text-white select-none text-xs"
+                    style={{ backgroundColor: primaryColor }}
+                  >
                     AI
                   </div>
                 )}
@@ -329,19 +383,24 @@ export default function DemoChatWidget() {
                 <div
                   className={`max-w-[78%] p-[10px_12px] rounded-[12px] text-[14px] leading-[1.45] wrap-break-words shadow-[0_2px_6px_rgba(2,6,23,0.04)] ${
                     msg.role === "user"
-                      ? "bg-[#8A06E6] text-white rounded-tr-[2px] shadow-[0_2px_6px_rgba(138,6,230,0.25)]"
+                      ? "text-white rounded-tr-[2px]"
                       : "bg-white text-[#111827] border-[#E5E7EB] rounded-tl-[2px]"
                   }`}
                   style={{
+                    backgroundColor: msg.role === "user" ? primaryColor : undefined,
                     borderStyle: msg.role === "user" ? "none" : "solid",
                     borderWidth: msg.role === "user" ? 0 : 1,
+                    boxShadow: msg.role === "user" ? `0 2px 6px ${primaryColor}40` : undefined,
                   }}
                 >
                   {msg.text}
                 </div>
 
                 {msg.role === "user" && (
-                  <div className="w-[34px] h-[34px] rounded-full shrink-0 grid place-items-center font-bold text-white bg-[#8A06E6] select-none text-xs">
+                  <div
+                    className="w-[34px] h-[34px] rounded-full shrink-0 grid place-items-center font-bold text-white select-none text-xs"
+                    style={{ backgroundColor: primaryColor }}
+                  >
                     You
                   </div>
                 )}
@@ -352,7 +411,10 @@ export default function DemoChatWidget() {
                 and hide it immediately once typing starts */}
             {isThinking && !isTyping && (
               <div className="flex gap-[10px] items-end justify-start">
-                <div className="w-[34px] h-[34px] rounded-full shrink-0 grid place-items-center font-bold select-none text-xs bg-[#8A06E6] text-white">
+                <div
+                  className="w-[34px] h-[34px] rounded-full shrink-0 grid place-items-center font-bold select-none text-xs text-white"
+                  style={{ backgroundColor: primaryColor }}
+                >
                   AI
                 </div>
                 <div className="p-[10px_12px] rounded-[12px] rounded-tl-[2px] shadow-[0_2px_6px_rgba(2,6,23,0.04)] bg-white border border-[#E5E7EB]">
@@ -393,11 +455,12 @@ export default function DemoChatWidget() {
                 disabled={isThinking || isTyping}
               />
 
-              {/* Black rounded-square send button */}
+              {/* Send button with dynamic color */}
               <button
                 type="submit"
                 disabled={!input.trim() || isThinking || isTyping}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-[#8A06E6] text-white rounded-[12px] grid place-items-center shadow hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-transform"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 text-white rounded-[12px] grid place-items-center shadow hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-transform"
+                style={{ backgroundColor: primaryColor }}
                 aria-label="Send message"
               >
                 <ArrowRight size={18} />
@@ -410,7 +473,8 @@ export default function DemoChatWidget() {
                 href="https://cipherandrow.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium hover:underline text-[#8A06E6]"
+                className="font-medium hover:underline"
+                style={{ color: primaryColor }}
               >
                 Cipher & Row
               </Link>
