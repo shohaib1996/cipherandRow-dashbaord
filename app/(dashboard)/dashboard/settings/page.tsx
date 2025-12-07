@@ -361,7 +361,7 @@ export default function SettingsPage() {
           <ApiKeyManager />
 
           {/* Billing & Plan */}
-          <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
+          <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2">
             <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
               <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center shrink-0">
                 <CreditCard className="w-4 h-4 text-green-600" />
