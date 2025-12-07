@@ -254,7 +254,8 @@ export default function DemoChatWidget() {
         const errorText =
           "API key not found. Please generate an API key in Settings to use the chatbot.";
         toast.error("API Key Required", {
-          description: "Go to Settings → API Key Management to generate your key.",
+          description:
+            "Go to Settings → API Key Management to generate your key.",
         });
         throw new Error(errorText);
       }
@@ -331,19 +332,23 @@ export default function DemoChatWidget() {
         let errorMessage = "Sorry, something went wrong. Please try again.";
 
         if (errorCode === "Invalid API key") {
-          errorMessage = "Invalid API key. Please regenerate your API key in Settings.";
+          errorMessage =
+            "Invalid API key. Please regenerate your API key in Settings.";
           toast.error("Invalid API Key", {
-            description: "Your API key is invalid. Please regenerate it in Settings.",
+            description:
+              "Your API key is invalid. Please regenerate it in Settings.",
           });
         } else if (errorCode === "invalid_request") {
           errorMessage = "Your trial has ended. Upgrade to continue.";
           toast.error("Trial Ended", {
-            description: "Please upgrade your plan to continue using the chatbot.",
+            description:
+              "Please upgrade your plan to continue using the chatbot.",
           });
         } else if (errorCode === "rate_limit") {
           errorMessage = "Too many requests. Please try again shortly.";
           toast.error("Rate Limit Exceeded", {
-            description: "You're sending too many messages. Please wait a moment.",
+            description:
+              "You're sending too many messages. Please wait a moment.",
           });
         } else if (response.status === 403) {
           errorMessage = "Payment required to use the chatbot.";

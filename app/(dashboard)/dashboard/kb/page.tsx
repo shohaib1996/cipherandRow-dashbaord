@@ -90,6 +90,7 @@ const articles = [
 
 import { useState } from "react";
 import { ArticleViewDialog } from "./ArticleViewDialog";
+import { toast } from "sonner";
 
 const KBPage = () => {
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
@@ -98,6 +99,24 @@ const KBPage = () => {
   const handleViewArticle = (article: any) => {
     setSelectedArticle(article);
     setIsViewDialogOpen(true);
+  };
+
+  const handleNewArticle = () => {
+    toast.info("Coming Soon", {
+      description: "Article creation feature will be available in v1.1",
+    });
+  };
+
+  const handleEdit = () => {
+    toast.info("Coming Soon", {
+      description: "Article editing feature will be available in v1.1",
+    });
+  };
+
+  const handleDelete = () => {
+    toast.info("Coming Soon", {
+      description: "Article deletion feature will be available in v1.1",
+    });
   };
 
   return (
@@ -122,7 +141,9 @@ const KBPage = () => {
             className="pl-10 h-10 sm:h-11 bg-white border-slate-200"
           />
         </div>
-        <Button className="bg-[#1a1a1a] hover:bg-black text-white h-10 sm:h-11 px-4 sm:px-6 rounded-sm whitespace-nowrap">
+        <Button
+          onClick={handleNewArticle}
+          className="bg-[#1a1a1a] hover:bg-black text-white h-10 sm:h-11 px-4 sm:px-6 rounded-sm whitespace-nowrap">
           <Plus className="mr-2 h-4 w-4" />
           New Article
         </Button>
@@ -214,10 +235,16 @@ const KBPage = () => {
                     >
                       <Eye className="h-5 w-5" />
                     </button>
-                    <button className="text-slate-800 hover:text-blue-600 transition-colors">
+                    <button
+                      onClick={handleEdit}
+                      className="text-slate-800 hover:text-blue-600 transition-colors"
+                    >
                       <Pencil className="h-5 w-5" />
                     </button>
-                    <button className="text-red-400 hover:text-red-500 transition-colors">
+                    <button
+                      onClick={handleDelete}
+                      className="text-red-400 hover:text-red-500 transition-colors"
+                    >
                       <Trash2 className="h-5 w-5" />
                     </button>
                   </div>
@@ -299,11 +326,17 @@ const KBPage = () => {
                 <Eye className="h-4 w-4" />
                 View
               </button>
-              <button className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors text-sm">
+              <button
+                onClick={handleEdit}
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors text-sm"
+              >
                 <Pencil className="h-4 w-4" />
                 Edit
               </button>
-              <button className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-md transition-colors">
+              <button
+                onClick={handleDelete}
+                className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-md transition-colors"
+              >
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>

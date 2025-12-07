@@ -20,7 +20,6 @@ export default function ApiKeyManager() {
   const [apiKey, setApiKey] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showKey, setShowKey] = useState(false);
-  const [hasPaid, setHasPaid] = useState(false);
 
   useEffect(() => {
     // Load stored API key
@@ -28,34 +27,9 @@ export default function ApiKeyManager() {
     if (storedKey) {
       setApiKey(storedKey);
     }
-
-    // Check payment status from user data
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      try {
-        const userData: UserData = JSON.parse(userStr);
-        const betterUserStr = userData?.user_metadata?.better_user;
-
-        if (betterUserStr) {
-          const betterUser = JSON.parse(betterUserStr);
-          // Check if user has made payment (persistroot means paid)
-          const isPaid = betterUser?.auth === "persistroot";
-          setHasPaid(isPaid);
-        }
-      } catch (e) {
-        console.error("Failed to parse user data:", e);
-      }
-    }
   }, []);
 
   const generateApiKey = async () => {
-    if (!hasPaid) {
-      toast.error("Payment Required", {
-        description: "You need to complete payment before generating an API key. Please upgrade your plan first.",
-      });
-      return;
-    }
-
     setIsGenerating(true);
 
     try {
@@ -106,26 +80,40 @@ export default function ApiKeyManager() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
 
+        // Get error message from backend
+        const backendError = errorData.error || errorData.message;
+
         // Handle specific error cases
         if (response.status === 401) {
           toast.error("Authentication Failed", {
-            description: "Your session has expired. Please sign in again.",
+            description: backendError || "Your session has expired. Please sign in again.",
           });
+          setIsGenerating(false);
           return;
         }
 
         if (response.status === 403) {
-          toast.error("Payment Required", {
-            description: "You need to complete payment before generating an API key.",
+          toast.error("Access Denied", {
+            description: backendError || "You need to complete payment before generating an API key.",
           });
+          setIsGenerating(false);
           return;
         }
 
-        throw new Error(
-          errorData.error ||
-            errorData.message ||
-            "Failed to generate API key"
-        );
+        if (backendError === "No plan selected.") {
+          toast.error("No Plan Selected", {
+            description: "Please upgrade your plan first before generating an API key.",
+          });
+          setIsGenerating(false);
+          return;
+        }
+
+        // Generic error with backend message
+        toast.error("Failed to Generate API Key", {
+          description: backendError || "An error occurred. Please try again.",
+        });
+        setIsGenerating(false);
+        return;
       }
 
       const data = await response.json();
@@ -162,13 +150,6 @@ export default function ApiKeyManager() {
   };
 
   const regenerateKey = async () => {
-    if (!hasPaid) {
-      toast.error("Payment Required", {
-        description: "You need to complete payment before regenerating an API key.",
-      });
-      return;
-    }
-
     // Confirm before regenerating
     const confirmed = window.confirm(
       "Are you sure you want to regenerate your API key? The old key will stop working immediately."
@@ -198,17 +179,6 @@ export default function ApiKeyManager() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 sm:space-y-4 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
-        {!hasPaid && (
-          <div className="p-3 sm:p-4 border border-amber-200 rounded-sm bg-amber-50">
-            <div className="flex items-start gap-2">
-              <div className="text-amber-600 text-sm">
-                <strong>Payment Required:</strong> You need to complete payment
-                before you can generate an API key.
-              </div>
-            </div>
-          </div>
-        )}
-
         {apiKey ? (
           <>
             <div className="space-y-1.5">
@@ -271,15 +241,14 @@ export default function ApiKeyManager() {
           <>
             <div className="p-3 sm:p-4 border border-slate-100 rounded-sm bg-slate-50">
               <p className="text-sm text-slate-600">
-                Generate an API key to use the chatbot API. You'll need to
-                complete payment before generating a key.
+                Generate an API key to use the chatbot API. This key will be used to authenticate your requests.
               </p>
             </div>
 
             <div className="pt-2">
               <Button
                 onClick={generateApiKey}
-                disabled={isGenerating || !hasPaid}
+                disabled={isGenerating}
                 className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white rounded-sm px-6 h-9 sm:h-10 font-medium text-sm disabled:opacity-50"
               >
                 {isGenerating ? (
