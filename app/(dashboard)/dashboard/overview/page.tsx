@@ -21,6 +21,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
+import { getUserSettings } from "@/lib/userSettings";
 
 // Mock Data
 const STATS = [
@@ -178,8 +179,18 @@ export default function OverviewPage() {
     if (userStr) {
       try {
         const userData = JSON.parse(userStr);
-        const fullName = userData?.user_metadata?.full_name || userData?.email?.split("@")[0] || "there";
-        setUserName(fullName);
+        const userId = userData?.id;
+
+        if (userId) {
+          // Get saved settings (custom or default from user metadata)
+          const settings = getUserSettings(userId);
+          const displayName = settings.fullName || userData?.email?.split("@")[0] || "there";
+          setUserName(displayName);
+        } else {
+          // Fallback if no userId
+          const fullName = userData?.user_metadata?.full_name || userData?.email?.split("@")[0] || "there";
+          setUserName(fullName);
+        }
       } catch (e) {
         console.error("Failed to parse user data:", e);
       }

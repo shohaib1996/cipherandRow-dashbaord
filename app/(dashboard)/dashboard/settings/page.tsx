@@ -27,15 +27,23 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ApiKeyManager from "@/components/ApiKeyManager";
+import {
+  getUserSettings,
+  saveUserSettings,
+  getCurrentUserId,
+} from "@/lib/userSettings";
+import { toast } from "sonner";
 
 export default function SettingsPage() {
   const router = useRouter();
 
   // State for user data
   const [user, setUser] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Load user data from localStorage on mount
   React.useEffect(() => {
@@ -44,14 +52,64 @@ export default function SettingsPage() {
       try {
         const userData = JSON.parse(userStr);
         setUser(userData);
-        setFullName(userData?.user_metadata?.full_name || "");
-        setEmail(userData?.email || "");
-        setCompanyName(userData?.user_metadata?.company_name || "");
+        const currentUserId = userData?.id;
+        setUserId(currentUserId);
+
+        // Load settings (custom or default from user metadata)
+        const settings = getUserSettings(currentUserId);
+        setFullName(settings.fullName || "");
+        setEmail(settings.email || "");
+        setCompanyName(settings.companyName || "");
       } catch (e) {
         console.error("Failed to parse user data:", e);
       }
     }
   }, []);
+
+  // Handle save profile settings
+  const handleSaveProfileSettings = () => {
+    if (!userId) {
+      toast.error("Error", {
+        description: "User ID not found. Please sign in again.",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      // Save settings to localStorage
+      saveUserSettings(userId, {
+        fullName: fullName.trim(),
+        email: email.trim(),
+        companyName: companyName.trim(),
+      });
+
+      toast.success("Settings Saved", {
+        description: "Your profile settings have been saved successfully!",
+      });
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      toast.error("Save Failed", {
+        description: "Failed to save settings. Please try again.",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle security features
+  const handleChangePassword = () => {
+    toast.info("Coming Soon", {
+      description: "Password change feature will be available in v1.1",
+    });
+  };
+
+  const handleEnable2FA = () => {
+    toast.info("Coming Soon", {
+      description: "Two-Factor Authentication will be available in v1.1",
+    });
+  };
 
   // State for toggles
   const [autoResolve, setAutoResolve] = useState(true);
@@ -220,8 +278,12 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="pt-2">
-                <Button className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white rounded-sm px-6 h-9 sm:h-10 font-medium text-sm">
-                  Save Changes
+                <Button
+                  onClick={handleSaveProfileSettings}
+                  disabled={isSaving}
+                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white rounded-sm px-6 h-9 sm:h-10 font-medium text-sm disabled:opacity-50"
+                >
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </CardContent>
@@ -344,12 +406,18 @@ export default function SettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 sm:space-y-3 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
-              <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
+              <div
+                onClick={handleChangePassword}
+                className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors"
+              >
                 <span className="text-xs sm:text-sm font-medium text-purple-700">
                   Change Password
                 </span>
               </div>
-              <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
+              <div
+                onClick={handleEnable2FA}
+                className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors"
+              >
                 <span className="text-xs sm:text-sm font-medium text-purple-700">
                   Enable Two-Factor Authentication
                 </span>
