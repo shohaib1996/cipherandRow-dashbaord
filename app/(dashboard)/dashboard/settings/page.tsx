@@ -123,7 +123,7 @@ export default function SettingsPage() {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",
-            "x-api-key": authToken,
+            Authorization: `Bearer ${authToken}`,
           },
           body: JSON.stringify({
             client_id: clientId,
