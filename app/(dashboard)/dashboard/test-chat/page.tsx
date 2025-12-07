@@ -1,6 +1,5 @@
 import DemoChatWidget from "@/components/ChatWidget/DemoChatWidget";
-import { Sparkles, Zap, Shield, Clock, CheckCircle2 } from "lucide-react";
-import React from "react";
+import { Sparkles, CheckCircle2 } from "lucide-react";
 
 export default function TestChatPage() {
   return (
@@ -34,7 +33,9 @@ export default function TestChatPage() {
             ].map((feature, i) => (
               <div key={i} className="flex items-center gap-2.5 sm:gap-3">
                 <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 shrink-0" />
-                <span className="text-slate-700 font-medium text-sm sm:text-base">{feature}</span>
+                <span className="text-slate-700 font-medium text-sm sm:text-base">
+                  {feature}
+                </span>
               </div>
             ))}
           </div>

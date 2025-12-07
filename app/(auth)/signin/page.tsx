@@ -83,29 +83,26 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Lottie Animation Placeholder */}
-      <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-[#8A06E6] via-[#7A05D0] to-[#6A04B8] relative overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Lottie Animation Section - Visible on all screens */}
+      <div className="w-full lg:w-1/2 bg-linear-to-br from-[#8A06E6] via-[#7A05D0] to-[#6A04B8] relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
-          {/* Placeholder for Lottie Animation */}
-          <div className="w-full max-w-md aspect-square bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center mb-8">
-            {/* <div className="text-center">
-              <div className="w-32 h-32 mx-auto mb-4 bg-white/20 rounded-full animate-pulse" />
-              <p className="text-lg font-medium opacity-80">Lottie Animation</p>
-              <p className="text-sm opacity-60">Placeholder</p>
-            </div> */}
-            <Lottie animationData={login} loop={true} />;
+        <div className="relative z-10 flex flex-col items-center justify-center w-full p-6 sm:p-8 lg:p-12 text-white min-h-[40vh] lg:min-h-screen">
+          {/* Lottie Animation */}
+          <div className="w-full max-w-xs sm:max-w-sm md:max-w-md aspect-square bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center mb-4 sm:mb-6 lg:mb-8">
+            <Lottie animationData={login} loop={true} />
           </div>
-          <h1 className="text-4xl font-bold mb-4 text-center">Welcome Back!</h1>
-          <p className="text-lg opacity-90 text-center max-w-md">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 lg:mb-4 text-center">
+            Welcome Back!
+          </h1>
+          <p className="text-sm sm:text-base lg:text-lg opacity-90 text-center max-w-md px-4">
             Sign in to access your dashboard and manage your AI-powered chat
             experiences.
           </p>
         </div>
       </div>
 
-      {/* Right Side - Signin Form */}
+      {/* Signin Form */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-8 bg-slate-50">
         <Card className="w-full max-w-md border-slate-200 shadow-xl">
           <CardContent className="pt-8 pb-8 px-6 sm:px-8">
@@ -161,12 +158,17 @@ export default function SignInPage() {
                   >
                     Password
                   </label>
-                  <Link
-                    href="/forgot-password"
+                  <button
+                    type="button"
+                    onClick={() =>
+                      toast.info(
+                        "Please email support@cipherandrow.com if you've forgotten your password"
+                      )
+                    }
                     className="text-xs text-[#8A06E6] hover:text-[#7505C7] hover:underline"
                   >
                     Forgot password?
-                  </Link>
+                  </button>
                 </div>
                 <div className="relative">
                   <Lock

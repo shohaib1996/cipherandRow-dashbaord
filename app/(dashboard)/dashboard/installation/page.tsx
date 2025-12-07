@@ -63,9 +63,13 @@ export default function Installation() {
     localStorage.setItem("widget_position", position);
     localStorage.setItem("widget_greeting", greeting);
 
-    // Dispatch custom event to notify DemoChatWidget about color change
+    // Dispatch custom events to notify DemoChatWidget about changes
     window.dispatchEvent(new CustomEvent("widgetColorChange", {
       detail: { primaryColor }
+    }));
+
+    window.dispatchEvent(new CustomEvent("widgetGreetingChange", {
+      detail: { greeting }
     }));
 
     setSaved(true);

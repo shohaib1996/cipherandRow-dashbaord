@@ -11,6 +11,7 @@ import {
   Mail,
   Calendar,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,7 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
 
   // Load user data from localStorage on mount
   React.useEffect(() => {
@@ -156,6 +158,7 @@ export default function SettingsPage() {
   };
 
   const handleUpgrade = async () => {
+    setIsUpgrading(true);
     try {
       // Get auth token from localStorage
       const authToken = localStorage.getItem("auth_token");
@@ -215,7 +218,10 @@ export default function SettingsPage() {
       }
     } catch (error: any) {
       console.error("Error creating checkout session:", error);
-      alert(error.message || "Failed to start checkout. Please try again.");
+      toast.error("Checkout Failed", {
+        description: error.message || "Failed to start checkout. Please try again.",
+      });
+      setIsUpgrading(false);
     }
   };
 
@@ -450,9 +456,17 @@ export default function SettingsPage() {
                 </div>
                 <Button
                   onClick={handleUpgrade}
-                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-sm shrink-0"
+                  disabled={isUpgrading}
+                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-sm shrink-0 disabled:opacity-50"
                 >
-                  Upgrade
+                  {isUpgrading ? (
+                    <>
+                      <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    "Upgrade"
+                  )}
                 </Button>
               </div>
 

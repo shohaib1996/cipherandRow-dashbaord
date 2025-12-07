@@ -60,15 +60,21 @@ export default function DemoChatWidget() {
 
   // Widget color customization
   const [primaryColor, setPrimaryColor] = useState("#8A06E6");
+  const [greetingMessage, setGreetingMessage] = useState("Hi! I'm ready whenever you are. What would you like to talk about?");
 
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
 
-    // Load saved color from localStorage
+    // Load saved color and greeting from localStorage
     const savedColor = localStorage.getItem("widget_primary_color");
     if (savedColor) {
       setPrimaryColor(savedColor);
+    }
+
+    const savedGreeting = localStorage.getItem("widget_greeting");
+    if (savedGreeting) {
+      setGreetingMessage(savedGreeting);
     }
 
     // Load client_id from user data in localStorage
@@ -93,10 +99,19 @@ export default function DemoChatWidget() {
       }
     };
 
+    // Listen for greeting changes
+    const handleGreetingChange = (event: CustomEvent) => {
+      if (event.detail?.greeting) {
+        setGreetingMessage(event.detail.greeting);
+      }
+    };
+
     window.addEventListener("widgetColorChange" as any, handleColorChange);
+    window.addEventListener("widgetGreetingChange" as any, handleGreetingChange);
 
     return () => {
       window.removeEventListener("widgetColorChange" as any, handleColorChange);
+      window.removeEventListener("widgetGreetingChange" as any, handleGreetingChange);
     };
   }, []);
 
@@ -106,11 +121,11 @@ export default function DemoChatWidget() {
     const sid = crypto.randomUUID();
     setSessionId(sid);
 
-    // Initial greeting
+    // Initial greeting - use saved greeting message
     setMessages([
       {
         role: "bot",
-        text: "Hi! I'm ready whenever you are. What would you like to talk about?",
+        text: greetingMessage,
         time: Date.now(),
       },
     ]);
@@ -120,7 +135,7 @@ export default function DemoChatWidget() {
       sendWarmupPing();
       setWarmupPingSent(true);
     }
-  }, []);
+  }, [greetingMessage]);
 
   // Smart Auto-scroll
   useEffect(() => {
@@ -260,39 +275,6 @@ export default function DemoChatWidget() {
         throw new Error(errorText);
       }
 
-      // Check payment status from user data
-      const userStr = localStorage.getItem("user");
-      let hasPaid = false;
-
-      if (userStr) {
-        try {
-          const userData = JSON.parse(userStr);
-          const betterUserData = userData?.user_metadata?.better_user;
-
-          if (betterUserData) {
-            // Handle both string and object formats
-            let betterUser = betterUserData;
-            if (typeof betterUserData === "string") {
-              betterUser = JSON.parse(betterUserData);
-            }
-            hasPaid = betterUser?.auth === "persistroot";
-          }
-        } catch (e) {
-          console.error("Failed to parse user data:", e);
-          // If parsing fails, assume not paid
-          hasPaid = false;
-        }
-      }
-
-      if (!hasPaid) {
-        const errorText =
-          "Payment required. Please upgrade your plan to use the chatbot.";
-        toast.error("Payment Required", {
-          description: "Complete payment in Settings to access the chatbot.",
-        });
-        throw new Error(errorText);
-      }
-
       const response = await fetch(
         "https://cr-engine.jnowlan21.workers.dev/api/support-bot/query",
         {
@@ -315,53 +297,15 @@ export default function DemoChatWidget() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
 
-        // Parse details if it's a JSON string
-        const details =
-          typeof errorData.details === "string"
-            ? (JSON.parse(errorData.details) as { error?: string })
-            : {};
+        // Get error message from backend
+        const backendError = errorData.error || errorData.message || "Something went wrong. Please try again.";
 
-        console.log(details);
+        // Show backend error directly
+        toast.error("Error", {
+          description: backendError,
+        });
 
-        const errorCode =
-          details.error ||
-          errorData.error ||
-          errorData.status ||
-          "unknown_error";
-
-        let errorMessage = "Sorry, something went wrong. Please try again.";
-
-        if (errorCode === "Invalid API key") {
-          errorMessage =
-            "Invalid API key. Please regenerate your API key in Settings.";
-          toast.error("Invalid API Key", {
-            description:
-              "Your API key is invalid. Please regenerate it in Settings.",
-          });
-        } else if (errorCode === "invalid_request") {
-          errorMessage = "Your trial has ended. Upgrade to continue.";
-          toast.error("Trial Ended", {
-            description:
-              "Please upgrade your plan to continue using the chatbot.",
-          });
-        } else if (errorCode === "rate_limit") {
-          errorMessage = "Too many requests. Please try again shortly.";
-          toast.error("Rate Limit Exceeded", {
-            description:
-              "You're sending too many messages. Please wait a moment.",
-          });
-        } else if (response.status === 403) {
-          errorMessage = "Payment required to use the chatbot.";
-          toast.error("Payment Required", {
-            description: "Complete payment in Settings to access the chatbot.",
-          });
-        } else {
-          toast.error("Error", {
-            description: errorMessage,
-          });
-        }
-
-        throw new Error(errorMessage);
+        throw new Error(backendError);
       }
 
       const data = await response.json();

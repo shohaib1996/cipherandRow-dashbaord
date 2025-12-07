@@ -6,6 +6,7 @@ import { Search, Download, MessageSquare, Clock, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 // --- Types ---
 
@@ -132,6 +133,12 @@ export default function ConversationsPage() {
   const [filter, setFilter] = useState<"all" | ConversationStatus>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const handleExportCSV = () => {
+    toast.info("Coming Soon", {
+      description: "CSV export feature will be available in v1.1",
+    });
+  };
+
   const filteredConversations = MOCK_CONVERSATIONS.filter((c) => {
     const matchesFilter = filter === "all" || c.status === filter;
     const matchesSearch =
@@ -225,6 +232,7 @@ export default function ConversationsPage() {
             ))}
           </div>
           <Button
+            onClick={handleExportCSV}
             variant="ghost"
             className="h-10 gap-2 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-sm text-xs sm:text-sm"
           >

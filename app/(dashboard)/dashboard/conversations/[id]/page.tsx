@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function ConversationDetailsPage({
   params,
@@ -23,6 +24,12 @@ export default function ConversationDetailsPage({
   params: { id: string };
 }) {
   const [message, setMessage] = useState("");
+
+  const handleAddToTraining = () => {
+    toast.info("Coming Soon", {
+      description: "Training feature will be available in v1.1",
+    });
+  };
 
   return (
     <div className="bg-white mx-0 sm:mx-4 lg:mx-10 my-0 sm:my-6 lg:my-10 h-full font-sans text-zinc-900">
@@ -106,6 +113,7 @@ export default function ConversationDetailsPage({
                 conversation.
               </p>
               <Button
+                onClick={handleAddToTraining}
                 variant="outline"
                 size="lg"
                 className="w-full bg-zinc-100 border-transparent text-zinc-600 hover:bg-green-400 hover:text-white rounded-sm"

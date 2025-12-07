@@ -1,25 +1,36 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Get auth token from cookie
-  const authToken = request.cookies.get('auth_token')?.value;
+  const authToken = request.cookies.get("auth_token")?.value;
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/signin', '/signup', '/privacy', '/refund', '/security', '/terms', '/sentry-example-page'];
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
+  const publicRoutes = [
+    "/signin",
+    "/signup",
+    "/verify-email",
+    "/privacy",
+    "/refund",
+    "/security",
+    "/terms",
+    "/sentry-example-page",
+  ];
+  const isPublicRoute = publicRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
   // If user is not authenticated and trying to access protected route
   if (!authToken && !isPublicRoute) {
-    const signinUrl = new URL('/signin', request.url);
+    const signinUrl = new URL("/signin", request.url);
     return NextResponse.redirect(signinUrl);
   }
 
   // If user is authenticated and trying to access signin/signup, redirect to dashboard
-  if (authToken && (pathname === '/signin' || pathname === '/signup')) {
-    const dashboardUrl = new URL('/dashboard/overview', request.url);
+  if (authToken && (pathname === "/signin" || pathname === "/signup")) {
+    const dashboardUrl = new URL("/dashboard/overview", request.url);
     return NextResponse.redirect(dashboardUrl);
   }
 
@@ -36,6 +47,6 @@ export const config = {
      * - favicon.ico, sentry
      * - public files (png, jpg, svg, etc.)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|sentry-example-page|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|json)$).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico|sentry-example-page|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|json)$).*)",
   ],
-}
+};

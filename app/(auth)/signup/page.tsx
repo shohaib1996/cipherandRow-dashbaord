@@ -21,12 +21,18 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    // Validate full name - check if it's empty or contains only whitespace
+    if (!formData.full_name.trim()) {
+      setError("Please enter a valid full name");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -52,36 +58,20 @@ export default function SignUpPage() {
       const data = await response.json();
       console.log("Signup successful:", data);
 
-      // Store token if provided (supports both 'token' and 'access_token')
-      const authToken = data.token || data.access_token;
-
-      if (authToken) {
-        // Store token in localStorage
-        localStorage.setItem("auth_token", authToken);
-
-        // Store user info if available
-        if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-        }
-
-        // Also set as cookie for proxy
-        document.cookie = `auth_token=${authToken}; path=/; max-age=2592000; SameSite=Lax`;
-
-        // Show success toast
-        toast.success("You have successfully signed up! Check email to confirm.");
-
-        // Set success state to show success message
-        setSuccess(true);
-
-        // Use router.push with a small delay to ensure cookie is set
-        setTimeout(() => {
-          router.push("/dashboard/overview");
-        }, 2000);
-      } else {
-        // If no token, just show success message
-        toast.success("You have successfully signed up! Check email to confirm.");
-        setSuccess(true);
+      // Check if email is already registered but not verified
+      if (data.user_metadata && data.user_metadata.email_verified === false) {
+        setError(
+          "This email is already registered but not verified. Please check your email for the verification link or try to sign in."
+        );
+        setLoading(false);
+        return;
       }
+
+      // Show success toast
+      toast.success("Account created! Redirecting...");
+
+      // Redirect to email verification page
+      router.push("/verify-email");
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
@@ -90,31 +80,26 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      {/* Left Side - Lottie Animation Placeholder */}
-      <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-[#8A06E6] via-[#7A05D0] to-[#6A04B8] relative overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Lottie Animation Section - Visible on all screens */}
+      <div className="w-full lg:w-1/2 bg-linear-to-br from-[#8A06E6] via-[#7A05D0] to-[#6A04B8] relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12 text-white">
-          {/* Placeholder for Lottie Animation */}
-          <div className="w-full max-w-md aspect-square bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center mb-8">
-            {/* <div className="text-center">
-              <div className="w-32 h-32 mx-auto mb-4 bg-white/20 rounded-full animate-pulse" />
-              <p className="text-lg font-medium opacity-80">Lottie Animation</p>
-              <p className="text-sm opacity-60">Placeholder</p>
-            </div> */}
+        <div className="relative z-10 flex flex-col items-center justify-center w-full p-6 sm:p-8 lg:p-12 text-white min-h-[40vh] lg:min-h-screen">
+          {/* Lottie Animation */}
+          <div className="w-full max-w-xs sm:max-w-sm md:max-w-md aspect-square bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center mb-4 sm:mb-6 lg:mb-8">
             <Lottie animationData={login} loop={true} />
           </div>
-          <h1 className="text-4xl font-bold mb-4 text-center">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 lg:mb-4 text-center">
             Welcome to Cipher & Row
           </h1>
-          <p className="text-lg opacity-90 text-center max-w-md">
+          <p className="text-sm sm:text-base lg:text-lg opacity-90 text-center max-w-md px-4">
             Create your account and start building amazing AI-powered chat
             experiences for your customers.
           </p>
         </div>
       </div>
 
-      {/* Right Side - Signup Form */}
+      {/* Signup Form */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-8 bg-slate-50">
         <Card className="w-full max-w-md border-slate-200 shadow-xl">
           <CardContent className="pt-8 pb-8 px-6 sm:px-8">
@@ -130,35 +115,6 @@ export default function SignUpPage() {
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                 {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-green-600 mt-0.5 shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <div>
-                    <h3 className="text-sm font-semibold text-green-800 mb-1">
-                      Account Created Successfully!
-                    </h3>
-                    <p className="text-sm text-green-700">
-                      Please check your email to confirm your account before
-                      signing in.
-                    </p>
-                  </div>
-                </div>
               </div>
             )}
 
