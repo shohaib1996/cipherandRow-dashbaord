@@ -203,11 +203,11 @@ export default function SecurityPage() {
                 email:
               </p>
               <a
-                href="mailto:security@cipherandrow.com"
+                href="mailto:security@cipherandrow.co"
                 className="text-indigo-600 hover:text-indigo-700 hover:underline inline-flex items-center gap-1.5 sm:gap-2 font-medium transition-colors duration-300 text-sm sm:text-base"
               >
                 <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                security@cipherandrow.com
+                security@cipherandrow.co
               </a>
             </section>
           </CardContent>
