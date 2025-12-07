@@ -100,6 +100,7 @@ export default function SettingsPage() {
     try {
       // Get auth token from localStorage
       const authToken = localStorage.getItem("auth_token");
+      console.log("Auth token:", authToken);
 
       if (!authToken) {
         throw new Error("Authentication required. Please sign in again.");
@@ -122,19 +123,23 @@ export default function SettingsPage() {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${authToken}`,
+            "x-api-key": authToken,
           },
           body: JSON.stringify({
             client_id: clientId,
             return_url: window.location.origin + "/dashboard/settings",
-            plan_slug: "pro-monthly",
+            plan_slug: "pro",
           }),
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || errorData.message || "Failed to create checkout session");
+        throw new Error(
+          errorData.error ||
+            errorData.message ||
+            "Failed to create checkout session"
+        );
       }
 
       const data = await response.json();

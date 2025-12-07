@@ -42,6 +42,7 @@ export default function DemoChatWidget() {
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [warmupPingSent, setWarmupPingSent] = useState(false);
+  const [clientId, setClientId] = useState<string>("1001"); // Default fallback
 
   // thinking = server processing / waiting for reply
   // typing = character-by-character rendering of the bot reply
@@ -67,6 +68,21 @@ export default function DemoChatWidget() {
     const savedColor = localStorage.getItem("widget_primary_color");
     if (savedColor) {
       setPrimaryColor(savedColor);
+    }
+
+    // Load client_id from user data in localStorage
+    // The user object stores the identifier as 'id', not 'client_id'
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        // Use 'id' field from user data as the client_id
+        if (userData?.id) {
+          setClientId(userData.id);
+        }
+      } catch (e) {
+        console.error("Failed to parse user data:", e);
+      }
     }
 
     // Listen for color changes
@@ -196,8 +212,7 @@ export default function DemoChatWidget() {
 
   // Warmup ping function to reduce first-message latency
   const sendWarmupPing = () => {
-    const pingUrl =
-      "https://widget-worker.khanshohaibhossain.workers.dev/api/support-bot/ping?client_id=1001&bot_id=2001";
+    const pingUrl = `https://widget-worker.khanshohaibhossain.workers.dev/api/support-bot/ping?client_id=${clientId}&bot_id=2001`;
 
     fetch(pingUrl, { method: "GET" })
       .then(() => {
@@ -230,18 +245,25 @@ export default function DemoChatWidget() {
     setIsThinking(true);
 
     try {
+      // Get auth token from localStorage to use as API key
+      const authToken =
+        localStorage.getItem("auth_token") || "cr_test_1234567890abcdef";
+
       const response = await fetch(
-        "https://widget-worker.khanshohaibhossain.workers.dev/api/widget",
+        "https://cr-engine.jnowlan21.workers.dev/api/support-bot/query",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            accept: "application/json",
+            "Content-Type": "application/json",
+            "x-api-key": authToken,
+          },
           body: JSON.stringify({
-            api_key: "cr_test_1234567890abcdef",
-            client_id: "1001",
-            bot_id: "2001",
-            session_id: sessionId,
+            client_id: clientId,
             user_message: userText,
+            session_id: sessionId || crypto.randomUUID(),
             page_url: window.location.href,
+            bot_id: "2001",
           }),
         }
       );
@@ -333,7 +355,10 @@ export default function DemoChatWidget() {
         <CardHeader
           className="flex flex-row h-16 items-center justify-between p-[12px_14px] shadow-[0_2px_6px_rgba(0,0,0,0.06)] space-y-0"
           style={{
-            background: `linear-gradient(90deg, ${primaryColor}, ${adjustColorBrightness(primaryColor, -10)})`
+            background: `linear-gradient(90deg, ${primaryColor}, ${adjustColorBrightness(
+              primaryColor,
+              -10
+            )})`,
           }}
         >
           <div className="flex items-center gap-2">
@@ -387,10 +412,14 @@ export default function DemoChatWidget() {
                       : "bg-white text-[#111827] border-[#E5E7EB] rounded-tl-[2px]"
                   }`}
                   style={{
-                    backgroundColor: msg.role === "user" ? primaryColor : undefined,
+                    backgroundColor:
+                      msg.role === "user" ? primaryColor : undefined,
                     borderStyle: msg.role === "user" ? "none" : "solid",
                     borderWidth: msg.role === "user" ? 0 : 1,
-                    boxShadow: msg.role === "user" ? `0 2px 6px ${primaryColor}40` : undefined,
+                    boxShadow:
+                      msg.role === "user"
+                        ? `0 2px 6px ${primaryColor}40`
+                        : undefined,
                   }}
                 >
                   {msg.text}
