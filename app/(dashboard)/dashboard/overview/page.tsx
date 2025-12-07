@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { link } from "fs";
+import { useState, useEffect } from "react";
 
 // Mock Data
 const STATS = [
@@ -169,13 +169,39 @@ const ALERTS = [
 
 export default function OverviewPage() {
   const router = useRouter();
+  const [userName, setUserName] = useState("there");
+  const [greeting, setGreeting] = useState("Good morning");
+
+  useEffect(() => {
+    // Get user data from localStorage
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        const fullName = userData?.user_metadata?.full_name || userData?.email?.split("@")[0] || "there";
+        setUserName(fullName);
+      } catch (e) {
+        console.error("Failed to parse user data:", e);
+      }
+    }
+
+    // Set greeting based on time of day
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      setGreeting("Good morning");
+    } else if (hour < 18) {
+      setGreeting("Good afternoon");
+    } else {
+      setGreeting("Good evening");
+    }
+  }, []);
 
   return (
     <div className="flex flex-col gap-4 sm:gap-6 p-3 sm:p-6 lg:p-7 font-sans text-zinc-900">
       {/* Header */}
       <div className="mt-0 sm:mt-4">
         <h1 className="text-2xl sm:text-3xl font-medium tracking-tight">
-          Good morning, John
+          {greeting}, {userName}
         </h1>
         <p className="text-sm text-zinc-500 mt-1">
           Here's what's happening with your support bot today

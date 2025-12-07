@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import { Input } from "../ui/input";
+import { toast } from "sonner";
 
 interface Message {
   role: "user" | "bot";
@@ -245,9 +246,51 @@ export default function DemoChatWidget() {
     setIsThinking(true);
 
     try {
-      // Get auth token from localStorage to use as API key
-      const authToken =
-        localStorage.getItem("auth_token") || "cr_test_1234567890abcdef";
+      // Get generated API key from localStorage
+      const generatedApiKey = localStorage.getItem("generated_api_key");
+
+      // Check if user has generated an API key
+      if (!generatedApiKey) {
+        const errorText =
+          "API key not found. Please generate an API key in Settings to use the chatbot.";
+        toast.error("API Key Required", {
+          description: "Go to Settings → API Key Management to generate your key.",
+        });
+        throw new Error(errorText);
+      }
+
+      // Check payment status from user data
+      const userStr = localStorage.getItem("user");
+      let hasPaid = false;
+
+      if (userStr) {
+        try {
+          const userData = JSON.parse(userStr);
+          const betterUserData = userData?.user_metadata?.better_user;
+
+          if (betterUserData) {
+            // Handle both string and object formats
+            let betterUser = betterUserData;
+            if (typeof betterUserData === "string") {
+              betterUser = JSON.parse(betterUserData);
+            }
+            hasPaid = betterUser?.auth === "persistroot";
+          }
+        } catch (e) {
+          console.error("Failed to parse user data:", e);
+          // If parsing fails, assume not paid
+          hasPaid = false;
+        }
+      }
+
+      if (!hasPaid) {
+        const errorText =
+          "Payment required. Please upgrade your plan to use the chatbot.";
+        toast.error("Payment Required", {
+          description: "Complete payment in Settings to access the chatbot.",
+        });
+        throw new Error(errorText);
+      }
 
       const response = await fetch(
         "https://cr-engine.jnowlan21.workers.dev/api/support-bot/query",
@@ -256,7 +299,7 @@ export default function DemoChatWidget() {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",
-            "x-api-key": authToken,
+            "x-api-key": generatedApiKey,
           },
           body: JSON.stringify({
             client_id: clientId,
@@ -288,11 +331,29 @@ export default function DemoChatWidget() {
         let errorMessage = "Sorry, something went wrong. Please try again.";
 
         if (errorCode === "Invalid API key") {
-          errorMessage = "Invalid API key. Please check your settings.";
+          errorMessage = "Invalid API key. Please regenerate your API key in Settings.";
+          toast.error("Invalid API Key", {
+            description: "Your API key is invalid. Please regenerate it in Settings.",
+          });
         } else if (errorCode === "invalid_request") {
           errorMessage = "Your trial has ended. Upgrade to continue.";
+          toast.error("Trial Ended", {
+            description: "Please upgrade your plan to continue using the chatbot.",
+          });
         } else if (errorCode === "rate_limit") {
           errorMessage = "Too many requests. Please try again shortly.";
+          toast.error("Rate Limit Exceeded", {
+            description: "You're sending too many messages. Please wait a moment.",
+          });
+        } else if (response.status === 403) {
+          errorMessage = "Payment required to use the chatbot.";
+          toast.error("Payment Required", {
+            description: "Complete payment in Settings to access the chatbot.",
+          });
+        } else {
+          toast.error("Error", {
+            description: errorMessage,
+          });
         }
 
         throw new Error(errorMessage);
@@ -300,6 +361,7 @@ export default function DemoChatWidget() {
 
       const data = await response.json();
       const botText =
+        data.bot_answer ||
         data.reply ||
         (data.messages && data.messages[0]?.text) ||
         "Sorry, I didn't get that.";

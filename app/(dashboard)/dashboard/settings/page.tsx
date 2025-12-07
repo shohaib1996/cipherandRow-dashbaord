@@ -26,6 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import ApiKeyManager from "@/components/ApiKeyManager";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -106,13 +107,17 @@ export default function SettingsPage() {
         throw new Error("Authentication required. Please sign in again.");
       }
 
-      // Get client_id from user data
+      // Get user id from user data
       const userStr = localStorage.getItem("user");
-      let clientId = "3fa85f64-5717-4562-b3fc-2c963f66afa6"; // Default fallback
+      if (!userStr) {
+        throw new Error("User data not found. Please sign in again.");
+      }
 
-      if (userStr) {
-        const userData = JSON.parse(userStr);
-        clientId = userData?.client_id || clientId;
+      const userData = JSON.parse(userStr);
+      const clientId = userData?.id;
+
+      if (!clientId) {
+        throw new Error("User ID not found. Please sign in again.");
       }
 
       // Make request to create checkout session
@@ -349,13 +354,11 @@ export default function SettingsPage() {
                   Enable Two-Factor Authentication
                 </span>
               </div>
-              <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
-                <span className="text-xs sm:text-sm font-medium text-purple-700">
-                  API Keys
-                </span>
-              </div>
             </CardContent>
           </Card>
+
+          {/* API Key Management */}
+          <ApiKeyManager />
 
           {/* Billing & Plan */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
