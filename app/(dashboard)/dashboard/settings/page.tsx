@@ -403,7 +403,7 @@ export default function SettingsPage() {
           </Card>
 
           {/* Security */}
-          <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
+          <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2">
             <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
               <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <Shield className="w-4 h-4 text-purple-600" />
@@ -433,7 +433,9 @@ export default function SettingsPage() {
           </Card>
 
           {/* API Key Management */}
-          <ApiKeyManager />
+          <div className="lg:col-span-2">
+            <ApiKeyManager />
+          </div>
 
           {/* Billing & Plan */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2">
