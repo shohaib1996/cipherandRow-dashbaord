@@ -236,6 +236,20 @@ export default function DemoChatWidget() {
       return;
     }
 
+    // Get the actual logged-in user's ID from localStorage
+    let actualClientId = "1001"; // Default fallback
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        if (userData?.id) {
+          actualClientId = userData.id;
+        }
+      } catch (e) {
+        console.error("Failed to parse user data for warmup ping:", e);
+      }
+    }
+
     console.log("Sending warmup request to warm up the backend...");
 
     // Send a lightweight warmup request to the main endpoint
@@ -247,7 +261,7 @@ export default function DemoChatWidget() {
         "x-api-key": generatedApiKey,
       },
       body: JSON.stringify({
-        client_id: clientId,
+        client_id: actualClientId,
         bot_id: "2001",
         session_id: sessionId || crypto.randomUUID(),
         user_message: "", // Empty message for warmup

@@ -1,7 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Globe, MessageSquare } from "lucide-react";
+import { Globe, MessageSquare, ExternalLink } from "lucide-react";
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -20,7 +21,8 @@ export default function Installation() {
   // Generate installation code based on current settings
   const generateInstallationCode = () => {
     // Get API key from localStorage
-    const apiKey = localStorage.getItem("generated_api_key") || "YOUR_API_KEY_HERE";
+    const apiKey =
+      localStorage.getItem("generated_api_key") || "YOUR_API_KEY_HERE";
 
     return `<!-- Cipher & Row Widget Configuration -->
 <script>
@@ -54,7 +56,8 @@ export default function Installation() {
     const savedGreeting = localStorage.getItem("widget_greeting");
 
     if (savedColor) setPrimaryColor(savedColor);
-    if (savedPosition) setPosition(savedPosition as "bottom-right" | "bottom-left");
+    if (savedPosition)
+      setPosition(savedPosition as "bottom-right" | "bottom-left");
     if (savedGreeting) setGreeting(savedGreeting);
 
     // Load user data for clientId
@@ -114,13 +117,17 @@ export default function Installation() {
     localStorage.setItem("widget_greeting", greeting);
 
     // Dispatch custom events to notify DemoChatWidget about changes
-    window.dispatchEvent(new CustomEvent("widgetColorChange", {
-      detail: { primaryColor }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("widgetColorChange", {
+        detail: { primaryColor },
+      })
+    );
 
-    window.dispatchEvent(new CustomEvent("widgetGreetingChange", {
-      detail: { greeting }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("widgetGreetingChange", {
+        detail: { greeting },
+      })
+    );
 
     setSaved(true);
   };
@@ -134,7 +141,7 @@ export default function Installation() {
   return (
     <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-4 py-4 sm:py-6 md:py-8">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4 sm:mb-6">
+      <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4 sm:mb-6">
         <div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-medium text-slate-900">
             Installation
@@ -143,6 +150,17 @@ export default function Installation() {
             Add the support widget to your website in seconds
           </p>
         </div>
+        <Link href="https://lovablesnip-install.lovable.app/">
+          <Button
+            onClick={() =>
+              window.open("https://lovablesnip-install.lovable.app/", "_blank")
+            }
+            className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-md shadow-sm flex items-center gap-2 text-sm font-medium shrink-0"
+          >
+            <ExternalLink className="w-4 h-4" />
+            Support Bot Installer
+          </Button>
+        </Link>
       </div>
 
       {/* Steps cards */}
