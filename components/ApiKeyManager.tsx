@@ -21,15 +21,51 @@ export default function ApiKeyManager() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showKey, setShowKey] = useState(false);
   const [domains, setDomains] = useState<string[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load stored API key
-    const storedKey = localStorage.getItem("generated_api_key");
+    // Get user ID from localStorage
+    const userStr = localStorage.getItem("user");
+    let currentUserId: string | null = null;
+
+    if (userStr) {
+      try {
+        const userData: UserData = JSON.parse(userStr);
+        currentUserId = userData.id;
+        setUserId(currentUserId);
+      } catch (e) {
+        console.error("Failed to parse user data:", e);
+      }
+    }
+
+    if (!currentUserId) {
+      // No user ID available, use fallback
+      const currentDomain = window.location.hostname;
+      setDomains([currentDomain]);
+      return;
+    }
+
+    // Load stored API key for this user
+    const storedKey = localStorage.getItem(`api_key_${currentUserId}`);
     if (storedKey) {
       setApiKey(storedKey);
     }
 
-    // Get current domain without protocol
+    // Load stored domains for this user
+    const storedDomains = localStorage.getItem(`api_key_domains_${currentUserId}`);
+    if (storedDomains) {
+      try {
+        const parsedDomains = JSON.parse(storedDomains);
+        if (Array.isArray(parsedDomains) && parsedDomains.length > 0) {
+          setDomains(parsedDomains);
+          return;
+        }
+      } catch (e) {
+        console.error("Failed to parse stored domains:", e);
+      }
+    }
+
+    // Get current domain without protocol as fallback
     const currentDomain = window.location.hostname;
     setDomains([currentDomain]);
   }, []);
@@ -163,9 +199,12 @@ export default function ApiKeyManager() {
         throw new Error("No API key returned from server");
       }
 
-      // Store the API key
+      // Store the API key and domains with user-specific keys
       setApiKey(newApiKey);
-      localStorage.setItem("generated_api_key", newApiKey);
+      if (clientId) {
+        localStorage.setItem(`api_key_${clientId}`, newApiKey);
+        localStorage.setItem(`api_key_domains_${clientId}`, JSON.stringify(validDomains));
+      }
 
       toast.success("API Key Generated", {
         description: "Your API key has been generated successfully!",
@@ -208,7 +247,10 @@ export default function ApiKeyManager() {
     if (confirmed) {
       // Clear existing key first
       setApiKey("");
-      localStorage.removeItem("generated_api_key");
+      if (userId) {
+        localStorage.removeItem(`api_key_${userId}`);
+        localStorage.removeItem(`api_key_domains_${userId}`);
+      }
       // Generate new key
       await generateApiKey();
     }
@@ -265,6 +307,43 @@ export default function ApiKeyManager() {
               </div>
             </div>
 
+            <div className="space-y-3">
+              <label className="text-xs font-medium text-slate-700">
+                Allowed Domains (without https://)
+              </label>
+
+              {domains.map((domain, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    value={domain}
+                    onChange={(e) => updateDomain(index, e.target.value)}
+                    placeholder="example.com"
+                    className="bg-white border-slate-200 rounded-sm font-mono text-sm"
+                  />
+                  {domains.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removeDomain(index)}
+                      className="shrink-0 rounded-sm border-slate-200 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+
+              <Button
+                variant="outline"
+                onClick={addDomain}
+                className="w-full border-dashed border-slate-300 hover:border-slate-400 rounded-sm text-sm"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Another Domain
+              </Button>
+            </div>
+
             <div className="flex gap-2 pt-2">
               <Button
                 onClick={regenerateKey}
@@ -272,7 +351,7 @@ export default function ApiKeyManager() {
                 className="bg-slate-900 hover:bg-slate-800 text-white rounded-sm px-6 h-9 sm:h-10 font-medium text-sm"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Regenerate Key
+                {isGenerating ? "Regenerating..." : "Regenerate Key"}
               </Button>
             </div>
 
