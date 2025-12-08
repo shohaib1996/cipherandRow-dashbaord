@@ -34,9 +34,6 @@ export default function Installation() {
   };
 </script>
 
-<!-- Widget Container -->
-<div id="cr-widget"></div>
-
 <!-- Widget Script -->
 <script src="https://widget-test-bfq.pages.dev/widget.js"></script>
 

@@ -73,6 +73,7 @@ export default function ApiKeyManager() {
           },
           body: JSON.stringify({
             client_id: clientId,
+            allowed_domains: ["https://dashboard.cipherandrow.com/"],
           }),
         }
       );
@@ -86,7 +87,8 @@ export default function ApiKeyManager() {
         // Handle specific error cases
         if (response.status === 401) {
           toast.error("Authentication Failed", {
-            description: backendError || "Your session has expired. Please sign in again.",
+            description:
+              backendError || "Your session has expired. Please sign in again.",
           });
           setIsGenerating(false);
           return;
@@ -94,7 +96,9 @@ export default function ApiKeyManager() {
 
         if (response.status === 403) {
           toast.error("Access Denied", {
-            description: backendError || "You need to complete payment before generating an API key.",
+            description:
+              backendError ||
+              "You need to complete payment before generating an API key.",
           });
           setIsGenerating(false);
           return;
@@ -102,7 +106,8 @@ export default function ApiKeyManager() {
 
         if (backendError === "No plan selected.") {
           toast.error("No Plan Selected", {
-            description: "Please upgrade your plan first before generating an API key.",
+            description:
+              "Please upgrade your plan first before generating an API key.",
           });
           setIsGenerating(false);
           return;
@@ -117,7 +122,7 @@ export default function ApiKeyManager() {
       }
 
       const data = await response.json();
-      const newApiKey = data.api_key || data.key;
+      const newApiKey = data.apiKey || data.api_key || data.key;
 
       if (!newApiKey) {
         throw new Error("No API key returned from server");
@@ -133,7 +138,8 @@ export default function ApiKeyManager() {
     } catch (error: any) {
       console.error("Error generating API key:", error);
       toast.error("Generation Failed", {
-        description: error.message || "Failed to generate API key. Please try again.",
+        description:
+          error.message || "Failed to generate API key. Please try again.",
       });
     } finally {
       setIsGenerating(false);
@@ -241,7 +247,8 @@ export default function ApiKeyManager() {
           <>
             <div className="p-3 sm:p-4 border border-slate-100 rounded-sm bg-slate-50">
               <p className="text-sm text-slate-600">
-                Generate an API key to use the chatbot API. This key will be used to authenticate your requests.
+                Generate an API key to use the chatbot API. This key will be
+                used to authenticate your requests.
               </p>
             </div>
 
