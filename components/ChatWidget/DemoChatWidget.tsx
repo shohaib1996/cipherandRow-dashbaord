@@ -228,16 +228,45 @@ export default function DemoChatWidget() {
 
   // Warmup ping function to reduce first-message latency
   const sendWarmupPing = () => {
-    const pingUrl = `https://widget-worker.khanshohaibhossain.workers.dev/api/support-bot/ping?client_id=${clientId}&bot_id=2001`;
+    // Get generated API key from localStorage
+    const generatedApiKey = localStorage.getItem("generated_api_key");
 
-    fetch(pingUrl, { method: "GET" })
-      .then(() => {
-        // Ping successful - worker and backend are warmed
-        console.log("Warmup ping successful");
+    if (!generatedApiKey || generatedApiKey === "YOUR_API_KEY_HERE") {
+      console.warn("Cannot send warmup ping: missing API key");
+      return;
+    }
+
+    console.log("Sending warmup request to warm up the backend...");
+
+    // Send a lightweight warmup request to the main endpoint
+    fetch("https://cr-engine.jnowlan21.workers.dev/api/support-bot/query", {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        "x-api-key": generatedApiKey,
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        bot_id: "2001",
+        session_id: sessionId || crypto.randomUUID(),
+        user_message: "", // Empty message for warmup
+        page_url: window.location.href,
+      }),
+    })
+      .then(async (response) => {
+        if (response.ok) {
+          // Consume the response body but don't display it
+          await response.json();
+          console.log("Warmup complete - backend is ready:", response.status);
+          // Response is discarded - not shown to user
+        } else {
+          console.warn("Warmup request returned error:", response.status);
+        }
       })
       .catch((err) => {
         // Silently fail - not critical
-        console.warn("Warmup ping failed:", err);
+        console.warn("Warmup request failed:", err);
       });
   };
 
