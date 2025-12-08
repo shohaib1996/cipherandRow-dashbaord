@@ -17,13 +17,10 @@ export default function Installation() {
   const [clientId, setClientId] = useState("1001");
   const [botId, setBotId] = useState("2001");
   const [code, setCode] = useState("");
+  const [apiKey, setApiKey] = useState("YOUR_API_KEY_HERE");
 
   // Generate installation code based on current settings
   const generateInstallationCode = () => {
-    // Get API key from localStorage
-    const apiKey =
-      localStorage.getItem("generated_api_key") || "YOUR_API_KEY_HERE";
-
     return `<!-- Cipher & Row Widget Configuration -->
 <script>
   window.CipherRowConfig = {
@@ -60,13 +57,33 @@ export default function Installation() {
       setPosition(savedPosition as "bottom-right" | "bottom-left");
     if (savedGreeting) setGreeting(savedGreeting);
 
-    // Load user data for clientId
+    // Load user data for clientId and API key
     const userStr = localStorage.getItem("user");
     if (userStr) {
       try {
         const userData = JSON.parse(userStr);
-        if (userData?.id) {
-          setClientId(userData.id);
+        const userId = userData?.id;
+        if (userId) {
+          setClientId(userId);
+
+          // Load user-specific API key
+          const storedApiKey = localStorage.getItem(`api_key_${userId}`);
+          if (storedApiKey) {
+            setApiKey(storedApiKey);
+          }
+
+          // Listen for storage changes to update API key when regenerated
+          const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === `api_key_${userId}` && e.newValue) {
+              setApiKey(e.newValue);
+            }
+          };
+
+          window.addEventListener("storage", handleStorageChange);
+
+          return () => {
+            window.removeEventListener("storage", handleStorageChange);
+          };
         }
       } catch (e) {
         console.error("Failed to parse user data:", e);
@@ -78,7 +95,7 @@ export default function Installation() {
   useEffect(() => {
     setCode(generateInstallationCode());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [primaryColor, greeting, position, clientId, botId]);
+  }, [primaryColor, greeting, position, clientId, botId, apiKey]);
 
   useEffect(() => {
     if (copied) {
