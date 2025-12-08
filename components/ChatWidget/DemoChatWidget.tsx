@@ -129,13 +129,15 @@ export default function DemoChatWidget() {
         time: Date.now(),
       },
     ]);
+  }, [greetingMessage]);
 
-    // Send warmup ping to reduce first-message latency
-    if (!warmupPingSent) {
+  // Send warmup ping after clientId is loaded
+  useEffect(() => {
+    if (!warmupPingSent && clientId && sessionId) {
       sendWarmupPing();
       setWarmupPingSent(true);
     }
-  }, [greetingMessage]);
+  }, [clientId, sessionId, warmupPingSent]);
 
   // Smart Auto-scroll
   useEffect(() => {
@@ -236,21 +238,7 @@ export default function DemoChatWidget() {
       return;
     }
 
-    // Get the actual logged-in user's ID from localStorage
-    let actualClientId = "1001"; // Default fallback
-    const userStr = localStorage.getItem("user");
-    if (userStr) {
-      try {
-        const userData = JSON.parse(userStr);
-        if (userData?.id) {
-          actualClientId = userData.id;
-        }
-      } catch (e) {
-        console.error("Failed to parse user data for warmup ping:", e);
-      }
-    }
-
-    console.log("Sending warmup request to warm up the backend...");
+    console.log("Sending warmup request to warm up the backend with client_id:", clientId);
 
     // Send a lightweight warmup request to the main endpoint
     fetch("https://cr-engine.jnowlan21.workers.dev/api/support-bot/query", {
@@ -261,7 +249,7 @@ export default function DemoChatWidget() {
         "x-api-key": generatedApiKey,
       },
       body: JSON.stringify({
-        client_id: actualClientId,
+        client_id: clientId,
         bot_id: "2001",
         session_id: sessionId || crypto.randomUUID(),
         user_message: "", // Empty message for warmup
