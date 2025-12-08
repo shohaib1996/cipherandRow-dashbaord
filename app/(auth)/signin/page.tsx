@@ -10,6 +10,7 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import login from "../../../public/Login.json";
 import Lottie from "lottie-react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -88,12 +89,22 @@ export default function SignInPage() {
       <div className="w-full lg:w-1/2 bg-linear-to-br from-[#8A06E6] via-[#7A05D0] to-[#6A04B8] relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="relative z-10 flex flex-col items-center justify-center w-full p-6 sm:p-8 lg:p-12 text-white min-h-[40vh] lg:min-h-screen">
+          {/* <div className="mb-6 sm:mb-8">
+            <Image
+              src="/images/logo.jpg"
+              alt="Cipher & Row Logo"
+              width={120}
+              height={120}
+              className="rounded-xl shadow-lg"
+            />
+          </div> */}
+
           {/* Lottie Animation */}
           <div className="w-full max-w-xs sm:max-w-sm md:max-w-md aspect-square bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center mb-4 sm:mb-6 lg:mb-8">
             <Lottie animationData={login} loop={true} />
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 lg:mb-4 text-center">
-            Welcome Back!
+            Welcome to Cipher & Row
           </h1>
           <p className="text-sm sm:text-base lg:text-lg opacity-90 text-center max-w-md px-4">
             Sign in to access your dashboard and manage your AI-powered chat
@@ -106,12 +117,23 @@ export default function SignInPage() {
       <div className="flex-1 flex items-center justify-center p-6 sm:p-8 bg-slate-50">
         <Card className="w-full max-w-md border-slate-200 shadow-xl">
           <CardContent className="pt-8 pb-8 px-6 sm:px-8">
+            <div className="flex justify-start mb-6 items-center gap-2">
+              <Image
+                src="/images/logo.jpg"
+                alt="Cipher & Row Logo"
+                width={50}
+                height={50}
+                className="rounded-lg shadow-md"
+              />
+              <span className="text-2xl font-bold">Cipher & Row</span>
+            </div>
+
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-slate-900 mb-2">
                 Sign In
               </h2>
               <p className="text-slate-600">
-                Welcome back! Please enter your credentials
+                Please enter your credentials to continue
               </p>
             </div>
 

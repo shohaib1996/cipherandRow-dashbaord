@@ -73,7 +73,7 @@ export default function ApiKeyManager() {
           },
           body: JSON.stringify({
             client_id: clientId,
-            allowed_domains: ["https://dashboard.cipherandrow.com/"],
+            allowed_domains: ["dashboard.cipherandrow.com"],
           }),
         }
       );
