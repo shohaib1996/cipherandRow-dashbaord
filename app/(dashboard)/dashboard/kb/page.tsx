@@ -10,113 +10,131 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Search,
-  Plus,
-  Eye,
-  Pencil,
-  Trash2,
-  TrendingUp,
-  Calendar,
-} from "lucide-react";
-
-const articles = [
-  {
-    id: 1,
-    title: "How to Reset Your Password",
-    badges: [
-      { text: "password", bg: "#E0F7FA", color: "#0e7490" },
-      { text: "security", bg: "#EDE7F6", color: "#7e22ce" },
-      { text: "login", bg: "#FBE9E7", color: "#c2410c" },
-    ],
-    category: "Account",
-    status: "published",
-    uses: 245,
-    lastUpdated: "1/10/2024",
-  },
-  {
-    id: 2,
-    title: "Shipping Information",
-    badges: [
-      { text: "shipping", bg: "#e0f2fe", color: "#0369a1" },
-      { text: "delivery", bg: "#ffedd5", color: "#c2410c" },
-      { text: "tracking", bg: "#dcfce7", color: "#15803d" },
-    ],
-    category: "Shipping",
-    status: "published",
-    uses: 189,
-    lastUpdated: "1/12/2024",
-  },
-  {
-    id: 3,
-    title: "Return Policy",
-    badges: [
-      { text: "returns", bg: "#f3f4f6", color: "#374151" },
-      { text: "refund", bg: "#fce7f3", color: "#be185d" },
-      { text: "policy", bg: "#ccfbf1", color: "#0f766e" },
-    ],
-    category: "Returns",
-    status: "published",
-    uses: 156,
-    lastUpdated: "1/8/2024",
-  },
-  {
-    id: 4,
-    title: "Order Tracking",
-    badges: [
-      { text: "tracking", bg: "#dcfce7", color: "#15803d" },
-      { text: "orders", bg: "#f3f4f6", color: "#374151" },
-      { text: "shipping", bg: "#e0f2fe", color: "#0369a1" },
-    ],
-    category: "Shipping",
-    status: "published",
-    uses: 198,
-    lastUpdated: "1/11/2024",
-  },
-  {
-    id: 5,
-    title: "Contact Support",
-    badges: [
-      { text: "contact", bg: "#f3f4f6", color: "#374151" },
-      { text: "support", bg: "#f3f4f6", color: "#374151" },
-      { text: "help", bg: "#f3f4f6", color: "#374151" },
-    ],
-    category: "Support",
-    status: "published",
-    uses: 134,
-    lastUpdated: "1/9/2024",
-  },
-];
-
-import { useState } from "react";
-import { ArticleViewDialog } from "./ArticleViewDialog";
+import { Search, Plus, Eye, Pencil, Trash2, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { kbApi, KBArticle } from "@/lib/kbApi";
+import { KBViewDialog } from "@/components/kb/KBViewDialog";
+import { KBCreateDialog } from "@/components/kb/KBCreateDialog";
+import { KBEditDialog } from "@/components/kb/KBEditDialog";
+import { KBDeleteDialog } from "@/components/kb/KBDeleteDialog";
 
 const KBPage = () => {
-  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [articles, setArticles] = useState<KBArticle[]>([]);
+  const [filteredArticles, setFilteredArticles] = useState<KBArticle[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedArticle, setSelectedArticle] = useState<KBArticle | null>(
+    null
+  );
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleViewArticle = (article: any) => {
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredArticles(articles);
+    } else {
+      const query = searchQuery.toLowerCase();
+      setFilteredArticles(
+        articles.filter(
+          (article) =>
+            article.title.toLowerCase().includes(query) ||
+            article.text.toLowerCase().includes(query)
+        )
+      );
+    }
+  }, [searchQuery, articles]);
+
+  const fetchArticles = async () => {
+    try {
+      setIsLoading(true);
+      const data = await kbApi.getAllArticles();
+      setArticles(data);
+      setFilteredArticles(data);
+    } catch (error) {
+      toast.error("Failed to load articles", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleViewArticle = (article: KBArticle) => {
     setSelectedArticle(article);
     setIsViewDialogOpen(true);
   };
 
-  const handleNewArticle = () => {
-    toast.info("Coming Soon", {
-      description: "Article creation feature will be available in v1.1",
-    });
+  const handleEditArticle = (article: KBArticle) => {
+    setSelectedArticle(article);
+    setIsEditDialogOpen(true);
   };
 
-  const handleEdit = () => {
-    toast.info("Coming Soon", {
-      description: "Article editing feature will be available in v1.1",
-    });
+  const handleDeleteArticle = (article: KBArticle) => {
+    setSelectedArticle(article);
+    setIsDeleteDialogOpen(true);
   };
 
-  const handleDelete = () => {
-    toast.info("Coming Soon", {
-      description: "Article deletion feature will be available in v1.1",
-    });
+  const handleCreateSubmit = async (data: { title: string; text: string }) => {
+    try {
+      await kbApi.createArticle({ ...data, type: "manual" });
+      toast.success("Article created successfully");
+      fetchArticles();
+    } catch (error) {
+      toast.error("Failed to create article", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+      throw error;
+    }
+  };
+
+  const handleEditSubmit = async (data: {
+    id: string;
+    title: string;
+    text: string;
+  }) => {
+    try {
+      await kbApi.updateArticle({ ...data, type: "manual" });
+      toast.success("Article updated successfully");
+      fetchArticles();
+    } catch (error) {
+      toast.error("Failed to update article", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+      throw error;
+    }
+  };
+
+  const handleDeleteConfirm = async (id: string) => {
+    try {
+      await kbApi.deleteArticle(id);
+      toast.success("Article deleted successfully");
+      fetchArticles();
+    } catch (error) {
+      toast.error("Failed to delete article", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+      throw error;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch {
+      return dateString;
+    }
   };
 
   return (
@@ -127,8 +145,9 @@ const KBPage = () => {
           Knowledge Base
         </h1>
         <p className="text-xs sm:text-sm text-slate-500">
-          Manage your AI's knowledge and training data — 5 articles across 4
-          categories
+          Manage your AI&apos;s knowledge and training data —{" "}
+          {filteredArticles.length}{" "}
+          {filteredArticles.length === 1 ? "article" : "articles"}
         </p>
       </div>
 
@@ -139,215 +158,199 @@ const KBPage = () => {
           <Input
             placeholder="Search articles..."
             className="pl-10 h-10 sm:h-11 bg-white border-slate-200"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <Button
-          onClick={handleNewArticle}
-          className="bg-[#1a1a1a] hover:bg-black text-white h-10 sm:h-11 px-4 sm:px-6 rounded-sm whitespace-nowrap">
+          onClick={() => setIsCreateDialogOpen(true)}
+          className="bg-[#1a1a1a] hover:bg-black text-white h-10 sm:h-11 px-4 sm:px-6 rounded-sm whitespace-nowrap"
+        >
           <Plus className="mr-2 h-4 w-4" />
           New Article
         </Button>
       </div>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="text-center py-12 text-slate-500">
+          Loading articles...
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && filteredArticles.length === 0 && (
+        <div className="text-center py-12 text-slate-500">
+          {searchQuery
+            ? "No articles found matching your search"
+            : "No articles yet. Create your first article!"}
+        </div>
+      )}
+
       {/* Desktop Table View - Hidden on Mobile */}
-      <div className="hidden lg:block bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent border-slate-100">
-              <TableHead className="px-6 py-4 w-[35%] text-slate-500 font-medium">
-                Title
-              </TableHead>
-              <TableHead className="px-6 py-4 w-[15%] text-slate-500 font-medium">
-                Category
-              </TableHead>
-              <TableHead className="px-6 py-4 w-[15%] text-slate-500 font-medium">
-                Status
-              </TableHead>
-              <TableHead className="px-6 py-4 w-[10%] text-slate-500 font-medium">
-                Uses
-              </TableHead>
-              <TableHead className="px-6 py-4 w-[15%] text-slate-500 font-medium">
-                Last Updated
-              </TableHead>
-              <TableHead className="px-6 py-4 w-[10%] text-right text-slate-500 font-medium">
-                Actions
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {articles.map((article) => (
-              <TableRow
-                key={article.id}
-                className="hover:bg-slate-50/50 transition-colors border-slate-200"
-              >
-                <TableCell className="px-6 py-6">
-                  <div className="space-y-2">
-                    <div className="font-medium text-slate-900 text-base">
-                      {article.title}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {article.badges.map((badge, index) => (
-                        <span
-                          key={index}
-                          className="px-2.5 py-0.5 rounded-[12px] text-xs font-medium"
-                          style={{
-                            backgroundColor: badge.bg,
-                            color: badge.color,
-                          }}
-                        >
-                          {badge.text}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell className="px-6 py-6 text-slate-600 text-sm">
-                  {article.category}
-                </TableCell>
-                <TableCell className="px-6 py-6">
-                  <span
-                    className="px-3 py-1 rounded-full text-sm font-medium inline-flex items-center"
-                    style={{
-                      backgroundColor: "#22c55e1a",
-                      color: "#22C55E",
-                    }}
-                  >
-                    {article.status}
-                  </span>
-                </TableCell>
-                <TableCell className="px-6 py-6">
-                  <div className="flex items-center gap-1.5 text-slate-600 font-medium">
-                    <TrendingUp className="h-3.5 w-3.5 text-blue-500 text-sm" />
-                    {article.uses}
-                  </div>
-                </TableCell>
-                <TableCell className="px-6 py-6">
-                  <div className="flex items-center gap-2 text-slate-700 text-sm">
-                    <Calendar className="h-5 w-5" />
-                    {article.lastUpdated}
-                  </div>
-                </TableCell>
-                <TableCell className="px-6 py-6">
-                  <div className="flex items-center justify-end gap-3">
-                    <button
-                      onClick={() => handleViewArticle(article)}
-                      className="text-slate-800 hover:text-slate-600 transition-colors"
-                    >
-                      <Eye className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={handleEdit}
-                      className="text-slate-800 hover:text-blue-600 transition-colors"
-                    >
-                      <Pencil className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="text-red-400 hover:text-red-500 transition-colors"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </button>
-                  </div>
-                </TableCell>
+      {!isLoading && filteredArticles.length > 0 && (
+        <div className="hidden lg:block bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-slate-100">
+                <TableHead className="px-6 py-4 w-[50%] text-slate-500 font-medium">
+                  Title
+                </TableHead>
+                <TableHead className="px-6 py-4 w-[15%] text-slate-500 font-medium">
+                  Type
+                </TableHead>
+                <TableHead className="px-6 py-4 w-[20%] text-slate-500 font-medium">
+                  Created At
+                </TableHead>
+                <TableHead className="px-6 py-4 w-[15%] text-right text-slate-500 font-medium">
+                  Actions
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {filteredArticles.map((article) => (
+                <TableRow
+                  key={article.id}
+                  className="hover:bg-slate-50/50 transition-colors border-slate-200"
+                >
+                  <TableCell className="px-6 py-6">
+                    <div className="space-y-1">
+                      <div className="font-medium text-slate-900 text-base">
+                        {article.title}
+                      </div>
+                      <div className="text-sm text-slate-500 line-clamp-1">
+                        {article.text}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-6">
+                    <span className="px-2.5 py-1 rounded-full text-xs font-medium capitalize bg-slate-100 text-slate-700">
+                      {article.type}
+                    </span>
+                  </TableCell>
+                  <TableCell className="px-6 py-6">
+                    <div className="flex items-center gap-2 text-slate-700 text-sm">
+                      <Calendar className="h-4 w-4" />
+                      {formatDate(article.created_at)}
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-6">
+                    <div className="flex items-center justify-end gap-3">
+                      <button
+                        onClick={() => handleViewArticle(article)}
+                        className="text-slate-800 hover:text-slate-600 transition-colors"
+                        title="View article"
+                      >
+                        <Eye className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => handleEditArticle(article)}
+                        className="text-slate-800 hover:text-blue-600 transition-colors"
+                        title="Edit article"
+                      >
+                        <Pencil className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteArticle(article)}
+                        className="text-red-400 hover:text-red-500 transition-colors"
+                        title="Delete article"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
 
       {/* Mobile Card View - Visible on Mobile/Tablet */}
-      <div className="lg:hidden space-y-4">
-        {articles.map((article) => (
-          <div
-            key={article.id}
-            className="bg-white rounded-lg border border-slate-200 shadow-sm p-4 space-y-4"
-          >
-            {/* Title and Badges */}
-            <div className="space-y-3">
-              <h3 className="font-medium text-slate-900 text-base">
-                {article.title}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {article.badges.map((badge, index) => (
-                  <span
-                    key={index}
-                    className="px-2.5 py-0.5 rounded-[12px] text-xs font-medium"
-                    style={{
-                      backgroundColor: badge.bg,
-                      color: badge.color,
-                    }}
-                  >
-                    {badge.text}
+      {!isLoading && filteredArticles.length > 0 && (
+        <div className="lg:hidden space-y-4">
+          {filteredArticles.map((article) => (
+            <div
+              key={article.id}
+              className="bg-white rounded-lg border border-slate-200 shadow-sm p-4 space-y-4"
+            >
+              {/* Title */}
+              <div className="space-y-2">
+                <h3 className="font-medium text-slate-900 text-base">
+                  {article.title}
+                </h3>
+                <p className="text-sm text-slate-500 line-clamp-2">
+                  {article.text}
+                </p>
+              </div>
+
+              {/* Info Grid */}
+              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">
+                <div>
+                  <div className="text-xs text-slate-500 mb-1">Type</div>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-medium capitalize bg-slate-100 text-slate-700">
+                    {article.type}
                   </span>
-                ))}
+                </div>
+                <div>
+                  <div className="text-xs text-slate-500 mb-1">Created At</div>
+                  <div className="flex items-center gap-1.5 text-slate-700 text-sm">
+                    <Calendar className="h-4 w-4" />
+                    {formatDate(article.created_at)}
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Info Grid */}
-            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100">
-              <div>
-                <div className="text-xs text-slate-500 mb-1">Category</div>
-                <div className="text-sm text-slate-900">{article.category}</div>
-              </div>
-              <div>
-                <div className="text-xs text-slate-500 mb-1">Status</div>
-                <span
-                  className="px-2 py-0.5 rounded-full text-xs font-medium inline-flex items-center"
-                  style={{
-                    backgroundColor: "#22c55e1a",
-                    color: "#22C55E",
-                  }}
+              {/* Actions */}
+              <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
+                <button
+                  onClick={() => handleViewArticle(article)}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-md transition-colors text-sm"
                 >
-                  {article.status}
-                </span>
-              </div>
-              <div>
-                <div className="text-xs text-slate-500 mb-1">Uses</div>
-                <div className="flex items-center gap-1.5 text-slate-600 font-medium text-sm">
-                  <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
-                  {article.uses}
-                </div>
-              </div>
-              <div>
-                <div className="text-xs text-slate-500 mb-1">Last Updated</div>
-                <div className="flex items-center gap-1.5 text-slate-700 text-sm">
-                  <Calendar className="h-4 w-4" />
-                  {article.lastUpdated}
-                </div>
+                  <Eye className="h-4 w-4" />
+                  View
+                </button>
+                <button
+                  onClick={() => handleEditArticle(article)}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors text-sm"
+                >
+                  <Pencil className="h-4 w-4" />
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteArticle(article)}
+                  className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-md transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
             </div>
+          ))}
+        </div>
+      )}
 
-            {/* Actions */}
-            <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
-              <button
-                onClick={() => handleViewArticle(article)}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-md transition-colors text-sm"
-              >
-                <Eye className="h-4 w-4" />
-                View
-              </button>
-              <button
-                onClick={handleEdit}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md transition-colors text-sm"
-              >
-                <Pencil className="h-4 w-4" />
-                Edit
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-md transition-colors"
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <ArticleViewDialog
+      {/* Dialogs */}
+      <KBViewDialog
         article={selectedArticle}
         open={isViewDialogOpen}
         onOpenChange={setIsViewDialogOpen}
+      />
+      <KBCreateDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+        onSubmit={handleCreateSubmit}
+      />
+      <KBEditDialog
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+        article={selectedArticle}
+        onSubmit={handleEditSubmit}
+      />
+      <KBDeleteDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        article={selectedArticle}
+        onConfirm={handleDeleteConfirm}
       />
     </div>
   );
