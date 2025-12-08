@@ -37,7 +37,7 @@ export default function Installation() {
 </script>
 
 <!-- Widget Script -->
-<script src="https://widget-test-bfq.pages.dev/widget.js"></script>
+<script src="https://cdn.cipherandrow.com/widget.js"></script>
 
 <!-- Initialize Widget -->
 <script>

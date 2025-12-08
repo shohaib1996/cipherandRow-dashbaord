@@ -98,10 +98,12 @@ class KBApiService {
   }
 
   async deleteArticle(id: string): Promise<void> {
-    // Use Next.js API route to avoid CORS issues with DELETE
-    const response = await fetch(`/api/kb?id=${id}`, {
+    const response = await fetch(`${API_BASE_URL}?id=${id}`, {
       method: "DELETE",
-      headers: this.getHeaders(),
+      headers: {
+        accept: "*/*",
+        Authorization: `Bearer ${this.getAuthToken()}`,
+      },
     });
 
     if (!response.ok) {

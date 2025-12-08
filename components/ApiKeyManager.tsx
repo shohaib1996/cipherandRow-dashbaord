@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Key, Copy, Eye, EyeOff, RefreshCw } from "lucide-react";
+import { Key, Copy, Eye, EyeOff, RefreshCw, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface UserData {
@@ -20,6 +20,7 @@ export default function ApiKeyManager() {
   const [apiKey, setApiKey] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [showKey, setShowKey] = useState(false);
+  const [domains, setDomains] = useState<string[]>([]);
 
   useEffect(() => {
     // Load stored API key
@@ -27,9 +28,43 @@ export default function ApiKeyManager() {
     if (storedKey) {
       setApiKey(storedKey);
     }
+
+    // Get current domain without protocol
+    const currentDomain = window.location.hostname;
+    setDomains([currentDomain]);
   }, []);
 
+  const addDomain = () => {
+    setDomains([...domains, ""]);
+  };
+
+  const removeDomain = (index: number) => {
+    if (domains.length > 1) {
+      setDomains(domains.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateDomain = (index: number, value: string) => {
+    // Remove protocol if user accidentally includes it
+    let cleanValue = value.trim();
+    cleanValue = cleanValue.replace(/^https?:\/\//, "");
+    cleanValue = cleanValue.replace(/^www\./, "");
+
+    const newDomains = [...domains];
+    newDomains[index] = cleanValue;
+    setDomains(newDomains);
+  };
+
   const generateApiKey = async () => {
+    // Validate domains
+    const validDomains = domains.filter((d) => d.trim() !== "");
+    if (validDomains.length === 0) {
+      toast.error("Domain Required", {
+        description: "Please enter at least one domain.",
+      });
+      return;
+    }
+
     setIsGenerating(true);
 
     try {
@@ -73,7 +108,7 @@ export default function ApiKeyManager() {
           },
           body: JSON.stringify({
             client_id: clientId,
-            allowed_domains: ["dashboard.cipherandrow.com"],
+            allowed_domains: validDomains,
           }),
         }
       );
@@ -156,6 +191,15 @@ export default function ApiKeyManager() {
   };
 
   const regenerateKey = async () => {
+    // Validate domains before regenerating
+    const validDomains = domains.filter((d) => d.trim() !== "");
+    if (validDomains.length === 0) {
+      toast.error("Domain Required", {
+        description: "Please enter at least one domain before regenerating.",
+      });
+      return;
+    }
+
     // Confirm before regenerating
     const confirmed = window.confirm(
       "Are you sure you want to regenerate your API key? The old key will stop working immediately."
@@ -250,6 +294,43 @@ export default function ApiKeyManager() {
                 Generate an API key to use the chatbot API. This key will be
                 used to authenticate your requests.
               </p>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-xs font-medium text-slate-700">
+                Allowed Domains (without https://)
+              </label>
+
+              {domains.map((domain, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    value={domain}
+                    onChange={(e) => updateDomain(index, e.target.value)}
+                    placeholder="example.com"
+                    className="bg-white border-slate-200 rounded-sm font-mono text-sm"
+                  />
+                  {domains.length > 1 && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removeDomain(index)}
+                      className="shrink-0 rounded-sm border-slate-200 hover:bg-red-50 hover:border-red-300 hover:text-red-600"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+
+              <Button
+                variant="outline"
+                onClick={addDomain}
+                className="w-full border-dashed border-slate-300 hover:border-slate-400 rounded-sm text-sm"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Another Domain
+              </Button>
             </div>
 
             <div className="pt-2">
