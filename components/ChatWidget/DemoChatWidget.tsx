@@ -252,7 +252,7 @@ export default function DemoChatWidget() {
         client_id: clientId,
         bot_id: "2001",
         session_id: sessionId || crypto.randomUUID(),
-        user_message: "", // Empty message for warmup
+        user_message: "ping", // Warmup message - response will be discarded
         page_url: window.location.href,
       }),
     })
