@@ -3,11 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Globe, MessageSquare } from "lucide-react";
 import React, { useState, useEffect } from "react";
-
-const SAMPLE_SCRIPT = `<script src="https://supportbots.cipherandrow.com/widget.js" data-bot-id="sb_1a2b3c4d5e6f"></script>`;
+import { toast } from "sonner";
 
 export default function Installation() {
-  const [code] = useState(SAMPLE_SCRIPT);
   const [copied, setCopied] = useState(false);
   const [position, setPosition] = useState<"bottom-right" | "bottom-left">(
     "bottom-right"
@@ -15,6 +13,42 @@ export default function Installation() {
   const [primaryColor, setPrimaryColor] = useState("#925FF0");
   const [greeting, setGreeting] = useState("Hi! How can we help you today?");
   const [saved, setSaved] = useState(false);
+  const [clientId, setClientId] = useState("1001");
+  const [botId, setBotId] = useState("2001");
+  const [code, setCode] = useState("");
+
+  // Generate installation code based on current settings
+  const generateInstallationCode = () => {
+    // Get API key from localStorage
+    const apiKey = localStorage.getItem("generated_api_key") || "YOUR_API_KEY_HERE";
+
+    return `<!-- Cipher & Row Widget Configuration -->
+<script>
+  window.CipherRowConfig = {
+    clientId: "${clientId}",
+    botId: "${botId}",
+    apiKey: "${apiKey}",
+    primaryColor: "${primaryColor}",
+    greeting: "${greeting}",
+    position: "${position}"
+  };
+</script>
+
+<!-- Widget Container -->
+<div id="cr-widget"></div>
+
+<!-- Widget Script -->
+<script src="https://widget-test-bfq.pages.dev/widget.js"></script>
+
+<!-- Initialize Widget -->
+<script>
+  window.addEventListener("load", function() {
+    if (window.CRWidget) {
+      CRWidget.init({});
+    }
+  });
+</script>`;
+  };
 
   // Load widget settings from localStorage on mount
   useEffect(() => {
@@ -25,7 +59,26 @@ export default function Installation() {
     if (savedColor) setPrimaryColor(savedColor);
     if (savedPosition) setPosition(savedPosition as "bottom-right" | "bottom-left");
     if (savedGreeting) setGreeting(savedGreeting);
+
+    // Load user data for clientId
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        if (userData?.id) {
+          setClientId(userData.id);
+        }
+      } catch (e) {
+        console.error("Failed to parse user data:", e);
+      }
+    }
   }, []);
+
+  // Update installation code whenever settings change
+  useEffect(() => {
+    setCode(generateInstallationCode());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [primaryColor, greeting, position, clientId, botId]);
 
   useEffect(() => {
     if (copied) {
@@ -73,6 +126,12 @@ export default function Installation() {
     }));
 
     setSaved(true);
+  };
+
+  const handlePlatformGuideClick = () => {
+    toast.info("Coming Soon", {
+      description: "Platform-specific guides will be available in v1.1",
+    });
   };
 
   return (
@@ -358,6 +417,7 @@ export default function Installation() {
           ].map((g) => (
             <div
               key={g.title}
+              onClick={handlePlatformGuideClick}
               className="p-3 sm:p-4 border rounded-lg hover:border-[#725FF0] hover:bg-[#725FF0]/5 transition-all duration-200 cursor-pointer"
             >
               <div className="font-semibold text-slate-900 text-sm sm:text-base">

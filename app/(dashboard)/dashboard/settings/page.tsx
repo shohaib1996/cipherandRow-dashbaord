@@ -219,7 +219,8 @@ export default function SettingsPage() {
     } catch (error: any) {
       console.error("Error creating checkout session:", error);
       toast.error("Checkout Failed", {
-        description: error.message || "Failed to start checkout. Please try again.",
+        description:
+          error.message || "Failed to start checkout. Please try again.",
       });
       setIsUpgrading(false);
     }
@@ -450,9 +451,7 @@ export default function SettingsPage() {
                   <div className="text-xs sm:text-sm font-semibold text-slate-900">
                     Current Plan: Professional
                   </div>
-                  <div className="text-xs text-slate-500 mt-1">
-                    $99/month • Next billing: Feb 15, 2024
-                  </div>
+                  <div className="text-xs text-slate-500 mt-1">$79/month</div>
                 </div>
                 <Button
                   onClick={handleUpgrade}

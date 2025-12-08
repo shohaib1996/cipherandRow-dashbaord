@@ -58,23 +58,38 @@ export default function SignUpPage() {
       const data = await response.json();
       console.log("Signup successful:", data);
 
-      // Check if email is already registered but not verified
-      if (data.user_metadata && data.user_metadata.email_verified === false) {
-        setError(
-          "This email is already registered but not verified. Please check your email for the verification link or try to sign in."
-        );
-        setLoading(false);
-        return;
+      // Store authentication token
+      const authToken = data.token || data.access_token;
+      if (authToken) {
+        localStorage.setItem("auth_token", authToken);
+        document.cookie = `auth_token=${authToken}; path=/; max-age=2592000; SameSite=Lax`;
+      }
+
+      // Store user data
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      // Store additional data if provided by backend
+      if (data.client_id) {
+        localStorage.setItem("client_id", data.client_id);
+      }
+      if (data.bot_id) {
+        localStorage.setItem("bot_id", data.bot_id);
+      }
+      if (data.publishable_key) {
+        localStorage.setItem("publishable_key", data.publishable_key);
       }
 
       // Show success toast
-      toast.success("Account created! Redirecting...");
+      toast.success("Account created! Redirecting to dashboard...");
 
-      // Redirect to email verification page
-      router.push("/verify-email");
+      // Redirect directly to dashboard
+      setTimeout(() => {
+        router.push("/dashboard/overview");
+      }, 500);
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
