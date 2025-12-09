@@ -238,15 +238,11 @@ export default function DemoChatWidget() {
 
   // Warmup ping function to reduce first-message latency
   const sendWarmupPing = () => {
-    // Get API key from localStorage (support both user-specific and legacy keys)
-    let apiKey = localStorage.getItem("generated_api_key");
+    let apiKey: string | null = null;
 
-    // Try to get user-specific key if available (preferred)
+    // Get user-specific key if available
     if (clientId && clientId !== "1001") {
-      const userKey = localStorage.getItem(`api_key_${clientId}`);
-      if (userKey) {
-        apiKey = userKey;
-      }
+      apiKey = localStorage.getItem(`api_key_${clientId}`);
     }
 
     if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
@@ -311,15 +307,11 @@ export default function DemoChatWidget() {
     setIsThinking(true);
 
     try {
-      // Get API key from localStorage (support both user-specific and legacy keys)
-      let apiKey = localStorage.getItem("generated_api_key");
+      let apiKey: string | null = null;
 
-      // Try to get user-specific key if available (preferred)
+      // Get user-specific key if available
       if (clientId && clientId !== "1001") {
-        const userKey = localStorage.getItem(`api_key_${clientId}`);
-        if (userKey) {
-          apiKey = userKey;
-        }
+        apiKey = localStorage.getItem(`api_key_${clientId}`);
       }
 
       // Check if we found a valid key
