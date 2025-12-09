@@ -60,7 +60,9 @@ export default function DemoChatWidget() {
 
   // Widget color customization
   const [primaryColor, setPrimaryColor] = useState("#8A06E6");
-  const [greetingMessage, setGreetingMessage] = useState("Hi! I'm ready whenever you are. What would you like to talk about?");
+  const [greetingMessage, setGreetingMessage] = useState(
+    "Hi! I'm ready whenever you are. What would you like to talk about?"
+  );
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -107,11 +109,17 @@ export default function DemoChatWidget() {
     };
 
     window.addEventListener("widgetColorChange" as any, handleColorChange);
-    window.addEventListener("widgetGreetingChange" as any, handleGreetingChange);
+    window.addEventListener(
+      "widgetGreetingChange" as any,
+      handleGreetingChange
+    );
 
     return () => {
       window.removeEventListener("widgetColorChange" as any, handleColorChange);
-      window.removeEventListener("widgetGreetingChange" as any, handleGreetingChange);
+      window.removeEventListener(
+        "widgetGreetingChange" as any,
+        handleGreetingChange
+      );
     };
   }, []);
 
@@ -230,15 +238,26 @@ export default function DemoChatWidget() {
 
   // Warmup ping function to reduce first-message latency
   const sendWarmupPing = () => {
-    // Get generated API key from localStorage
-    const generatedApiKey = localStorage.getItem("generated_api_key");
+    // Get API key from localStorage (support both user-specific and legacy keys)
+    let apiKey = localStorage.getItem("generated_api_key");
 
-    if (!generatedApiKey || generatedApiKey === "YOUR_API_KEY_HERE") {
+    // Try to get user-specific key if available (preferred)
+    if (clientId && clientId !== "1001") {
+      const userKey = localStorage.getItem(`api_key_${clientId}`);
+      if (userKey) {
+        apiKey = userKey;
+      }
+    }
+
+    if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
       console.warn("Cannot send warmup ping: missing API key");
       return;
     }
 
-    console.log("Sending warmup request to warm up the backend with client_id:", clientId);
+    console.log(
+      "Sending warmup request to warm up the backend with client_id:",
+      clientId
+    );
 
     // Send a lightweight warmup request to the main endpoint
     fetch("https://cr-engine.jnowlan21.workers.dev/api/support-bot/query", {
@@ -246,7 +265,7 @@ export default function DemoChatWidget() {
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
-        "x-api-key": generatedApiKey,
+        "x-api-key": apiKey,
       },
       body: JSON.stringify({
         client_id: clientId,
@@ -292,11 +311,19 @@ export default function DemoChatWidget() {
     setIsThinking(true);
 
     try {
-      // Get generated API key from localStorage
-      const generatedApiKey = localStorage.getItem("generated_api_key");
+      // Get API key from localStorage (support both user-specific and legacy keys)
+      let apiKey = localStorage.getItem("generated_api_key");
 
-      // Check if user has generated an API key
-      if (!generatedApiKey) {
+      // Try to get user-specific key if available (preferred)
+      if (clientId && clientId !== "1001") {
+        const userKey = localStorage.getItem(`api_key_${clientId}`);
+        if (userKey) {
+          apiKey = userKey;
+        }
+      }
+
+      // Check if we found a valid key
+      if (!apiKey || apiKey === "YOUR_API_KEY_HERE") {
         const errorText =
           "API key not found. Please generate an API key in Settings to use the chatbot.";
         toast.error("API Key Required", {
@@ -313,7 +340,7 @@ export default function DemoChatWidget() {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",
-            "x-api-key": generatedApiKey,
+            "x-api-key": apiKey,
           },
           body: JSON.stringify({
             client_id: clientId,
@@ -329,7 +356,10 @@ export default function DemoChatWidget() {
         const errorData = await response.json().catch(() => ({}));
 
         // Get error message from backend
-        const backendError = errorData.error || errorData.message || "Something went wrong. Please try again.";
+        const backendError =
+          errorData.error ||
+          errorData.message ||
+          "Something went wrong. Please try again.";
 
         // Show backend error directly
         toast.error("Error", {
