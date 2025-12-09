@@ -56,7 +56,7 @@ export default function SignUpPage() {
       }
 
       const data = await response.json();
-      console.log("Signup successful:", data);
+      // console.log("Signup successful:", data);
 
       // // Store authentication token
       // const authToken = data.token || data.access_token;

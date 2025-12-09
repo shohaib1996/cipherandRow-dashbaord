@@ -19,7 +19,7 @@ export default function Installation() {
   const [code, setCode] = useState("");
   const [apiKey, setApiKey] = useState("YOUR_API_KEY_HERE");
 
-  // Generate installation code based on current settings
+  // Generate installation snippet based on current settings
   const generateInstallationCode = () => {
     return `<!-- Cipher & Row Widget Configuration -->
 <script>
@@ -91,7 +91,7 @@ export default function Installation() {
     }
   }, []);
 
-  // Update installation code whenever settings change
+  // Update installation snippet whenever settings change
   useEffect(() => {
     setCode(generateInstallationCode());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -183,7 +183,7 @@ export default function Installation() {
           {
             id: 1,
             title: "Copy the Code",
-            subtitle: "Copy the installation code snippet from below",
+            subtitle: "Copy the installation snippet snippet from below",
           },
           {
             id: 2,
@@ -217,11 +217,11 @@ export default function Installation() {
         ))}
       </div>
 
-      {/* Installation code block */}
+      {/* installation snippet block */}
       <div className="bg-white rounded-sm shadow mb-6 sm:mb-8">
         <div className="flex items-center justify-between gap-3 px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6">
           <h3 className="text-base sm:text-lg font-medium text-slate-800">
-            Installation Code
+            installation snippet
           </h3>
           <button
             onClick={handleCopy}
