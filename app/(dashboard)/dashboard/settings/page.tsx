@@ -34,6 +34,7 @@ import {
   getCurrentUserId,
 } from "@/lib/userSettings";
 import { toast } from "sonner";
+import { userApi, SubscriptionStatus } from "@/lib/userApi";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -46,6 +47,21 @@ export default function SettingsPage() {
   const [companyName, setCompanyName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] =
+    useState<SubscriptionStatus | null>(null);
+
+  React.useEffect(() => {
+    const fetchSubscriptionStatus = async () => {
+      try {
+        const { subscriptionStatus } = await userApi.getCompleteUserStatus();
+        setSubscriptionStatus(subscriptionStatus);
+      } catch (error) {
+        console.error("Failed to fetch subscription status:", error);
+      }
+    };
+
+    fetchSubscriptionStatus();
+  }, []);
 
   // Load user data from localStorage on mount
   React.useEffect(() => {
@@ -110,6 +126,18 @@ export default function SettingsPage() {
   const handleEnable2FA = () => {
     toast.info("Coming Soon", {
       description: "Two-Factor Authentication will be available in v1.1",
+    });
+  };
+
+  const handleViewInvoices = () => {
+    toast.info("Coming Soon", {
+      description: "Invoices will be available in v1.1",
+    });
+  };
+
+  const handleUpdatePaymentMethod = () => {
+    toast.info("Coming Soon", {
+      description: "Payment method updates will be available in v1.1",
     });
   };
 
@@ -454,6 +482,14 @@ export default function SettingsPage() {
                     Current Plan: Professional
                   </div>
                   <div className="text-xs text-slate-500 mt-1">$79/month</div>
+                  {subscriptionStatus?.currentPeriodEnd && (
+                    <div className="text-xs text-slate-500 mt-1">
+                      Next billing date:{" "}
+                      {new Date(
+                        subscriptionStatus.currentPeriodEnd
+                      ).toLocaleDateString()}
+                    </div>
+                  )}
                 </div>
                 <Button
                   onClick={handleUpgrade}
@@ -472,12 +508,18 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-2 sm:space-y-3 pt-2">
-                <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
+                <div
+                  onClick={handleViewInvoices}
+                  className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors"
+                >
                   <span className="text-xs sm:text-sm font-medium text-purple-700">
                     View Invoices
                   </span>
                 </div>
-                <div className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors">
+                <div
+                  onClick={handleUpdatePaymentMethod}
+                  className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors"
+                >
                   <span className="text-xs sm:text-sm font-medium text-purple-700">
                     Update Payment Method
                   </span>
