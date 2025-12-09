@@ -56,7 +56,7 @@ export default function SignUpPage() {
       }
 
       const data = await response.json();
-      // console.log("Signup successful:", data);
+      console.log("Signup successful:", data);
 
       // // Store authentication token
       // const authToken = data.token || data.access_token;
@@ -82,12 +82,10 @@ export default function SignUpPage() {
       // }
 
       // Show success toast
-      toast.success("Account created! Redirecting to dashboard...");
-
-      // Redirect directly to dashboard
-      setTimeout(() => {
+      if (data.id) {
+        toast.success("Account created! successfully...");
         router.push("/verify-email");
-      }, 500);
+      }
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
       setLoading(false);
