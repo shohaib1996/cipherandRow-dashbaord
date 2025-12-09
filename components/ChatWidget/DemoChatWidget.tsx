@@ -552,7 +552,10 @@ export default function DemoChatWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
-                className="w-full h-10 rounded-[28px] bg-[#f3f4f6] text-[15px] placeholder:text-[#9CA3AF] text-[#374151] pl-6 pr-24 border-0 outline-none shadow-sm focus:ring-2 focus:ring-slate-200 transition"
+                className="w-full h-10 rounded-[28px] bg-[#f3f4f6] text-[15px] placeholder:text-[#9CA3AF] text-[#374151] pl-6 pr-24 border-0 outline-none shadow-sm focus:ring-2 transition"
+                style={
+                  { "--tw-ring-color": primaryColor } as React.CSSProperties
+                }
                 disabled={isThinking || isTyping}
               />
 
