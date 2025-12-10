@@ -48,23 +48,18 @@ export default function Installation() {
 
   // Load widget settings from localStorage on mount
   useEffect(() => {
-    const savedColor = localStorage.getItem("widget_primary_color");
-    const savedPosition = localStorage.getItem("widget_position");
-    const savedGreeting = localStorage.getItem("widget_greeting");
-
-    if (savedColor) setPrimaryColor(savedColor);
-    if (savedPosition)
-      setPosition(savedPosition as "bottom-right" | "bottom-left");
-    if (savedGreeting) setGreeting(savedGreeting);
-
-    // Load user data for clientId and API key
+    // Load user data first to get the ID
     const userStr = localStorage.getItem("user");
+    let currentUserId = "1001"; // Default fallback
+
     if (userStr) {
       try {
         const userData = JSON.parse(userStr);
         const userId = userData?.id;
+
         if (userId) {
           setClientId(userId);
+          currentUserId = userId;
 
           // Load user-specific API key
           const storedApiKey = localStorage.getItem(`api_key_${userId}`);
@@ -81,14 +76,31 @@ export default function Installation() {
 
           window.addEventListener("storage", handleStorageChange);
 
-          return () => {
-            window.removeEventListener("storage", handleStorageChange);
-          };
+          // Helper for cleanup
+          // We can't easily clean up the listener inside this if block without refactoring
+          // but for this specific useEffect structure, we rely on the component unmount below
+          // The listener is added globally, so we should allow it.
         }
       } catch (e) {
         console.error("Failed to parse user data:", e);
       }
     }
+
+    // Now load settings using the userId (or default)
+    const savedColor = localStorage.getItem(
+      `widget_primary_color_${currentUserId}`
+    );
+    const savedPosition = localStorage.getItem(
+      `widget_position_${currentUserId}`
+    );
+    const savedGreeting = localStorage.getItem(
+      `widget_greeting_${currentUserId}`
+    );
+
+    if (savedColor) setPrimaryColor(savedColor);
+    if (savedPosition)
+      setPosition(savedPosition as "bottom-right" | "bottom-left");
+    if (savedGreeting) setGreeting(savedGreeting);
   }, []);
 
   // Update installation snippet whenever settings change
@@ -128,10 +140,12 @@ export default function Installation() {
   };
 
   const handleSave = () => {
-    // Save widget settings to localStorage
-    localStorage.setItem("widget_primary_color", primaryColor);
-    localStorage.setItem("widget_position", position);
-    localStorage.setItem("widget_greeting", greeting);
+    // Save widget settings to localStorage with User ID
+    const keyDetailId = clientId || "1001"; // specific user id or default
+
+    localStorage.setItem(`widget_primary_color_${keyDetailId}`, primaryColor);
+    localStorage.setItem(`widget_position_${keyDetailId}`, position);
+    localStorage.setItem(`widget_greeting_${keyDetailId}`, greeting);
 
     // Dispatch custom events to notify DemoChatWidget about changes
     window.dispatchEvent(

@@ -26,11 +26,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import ApiKeyManager from "@/components/ApiKeyManager";
-import {
-  getUserSettings,
-  saveUserSettings,
-  getCurrentUserId,
-} from "@/lib/userSettings";
+import { getUserSettings, saveUserSettings } from "@/lib/userSettings";
 import { toast } from "sonner";
 import { userApi } from "@/lib/userApi";
 import BillingManager from "@/components/BillingManager";
