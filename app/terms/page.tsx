@@ -172,6 +172,9 @@ export default function TermsPage() {
                   Ensuring your employees or contractors follow these Terms
                 </li>
               </ul>
+              <p className="text-sm text-slate-600 mt-2">
+                We may refuse registration or suspend accounts for any reason.
+              </p>
             </section>
 
             <Separator className="my-6 sm:my-8" />
@@ -215,6 +218,9 @@ export default function TermsPage() {
                   Interfere with performance of the Service or other users
                 </li>
               </ul>
+              <p className="text-sm text-slate-600 mt-2">
+                We may suspend or terminate accounts violating this section.
+              </p>
             </section>
 
             <Separator className="my-6 sm:my-8" />
@@ -239,6 +245,16 @@ export default function TermsPage() {
                 <li>Use it to operate, improve, and maintain the Service</li>
                 <li>Display it within your dashboard</li>
               </ul>
+              <p className="text-sm text-slate-600 mt-2">
+                You represent and warrant that:
+              </p>
+              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                <li>
+                  You have the necessary rights to upload Customer Content
+                </li>
+                <li>Your Content does not infringe any third-party rights</li>
+                <li>Your Content complies with all applicable laws</li>
+              </ul>
             </section>
 
             <Separator className="my-6 sm:my-8" />
@@ -255,7 +271,7 @@ export default function TermsPage() {
               </div>
               <p className="text-sm text-slate-600">
                 The Service uses AI models to generate responses. You
-                acknowledge that:
+                acknowledge and agree that:
               </p>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
                 <li>
@@ -270,7 +286,15 @@ export default function TermsPage() {
                   Cipher & Row makes no guarantees regarding reliability or
                   correctness of AI Output
                 </li>
+                <li>
+                  You will not rely solely on AI for sensitive or regulated
+                  customer communication
+                </li>
               </ul>
+              <p className="text-sm text-slate-600 mt-2">
+                Cipher & Row is not liable for any harm caused by use or misuse
+                of AI Output.
+              </p>
             </section>
 
             <Separator className="my-6 sm:my-8" />
@@ -289,12 +313,21 @@ export default function TermsPage() {
                 You agree NOT to upload or process:
               </p>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>Credit card numbers, Bank account info, SSNs</li>
-                <li>Medical information (PHI)</li>
+                <li>Credit card numbers</li>
+                <li>Bank account info</li>
+                <li>Social Security numbers</li>
+                <li>
+                  Medical information or protected health information (PHI)
+                </li>
                 <li>Financial account credentials</li>
                 <li>Government-issued ID numbers</li>
+                <li>Legal complaints or regulated filings</li>
                 <li>Highly sensitive personal data of any kind</li>
               </ul>
+              <p className="text-sm text-slate-600 mt-2">
+                Cipher & Row is not designed to handle regulated data
+                categories.
+              </p>
             </section>
 
             <Separator className="my-6 sm:my-8" />
@@ -310,12 +343,20 @@ export default function TermsPage() {
                 </h2>
               </div>
               <p className="text-sm text-slate-600">
-                Paid plans are billed via Stripe. All fees are non-refundable,
-                except when required by law.
+                Paid plans are billed via Stripe. By subscribing, you authorize:
+              </p>
+              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                <li>Recurring monthly or annual charges</li>
+                <li>Charges for usage exceeding plan limits</li>
+                <li>Stripe to store your payment method</li>
+              </ul>
+              <p className="text-sm text-slate-600 mt-2">
+                All fees are non-refundable, except when required by law.
               </p>
               <p className="text-xs sm:text-sm text-slate-600 font-medium mt-2 bg-emerald-50 p-2.5 sm:p-3 rounded-lg border border-emerald-100">
                 Trials convert automatically to paid plans unless canceled
-                before the trial ends.
+                before the trial ends. We may update pricing at any time with
+                notice.
               </p>
             </section>
 
@@ -329,12 +370,20 @@ export default function TermsPage() {
                     <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
                   </div>
                   <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                    Availability
+                    Service Availability
                   </h2>
                 </div>
                 <p className="text-sm text-slate-600">
-                  We strive for uptime but do not guarantee uninterrupted
-                  service. We may modify or discontinue parts of the Service.
+                  We strive for uptime but do not guarantee:
+                </p>
+                <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                  <li>Uninterrupted service</li>
+                  <li>Error-free operation</li>
+                  <li>Specific response times</li>
+                </ul>
+                <p className="text-sm text-slate-600 mt-2">
+                  We may modify, suspend, or discontinue any part of the Service
+                  without liability.
                 </p>
               </section>
 
@@ -344,12 +393,22 @@ export default function TermsPage() {
                     <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600" />
                   </div>
                   <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                    Data Security
+                    Data Security & Privacy
                   </h2>
                 </div>
                 <p className="text-sm text-slate-600">
-                  We use reasonable security measures, but no system is 100%
-                  secure. You use the Service at your own risk.
+                  Cipher & Row uses reasonable security measures. However:
+                </p>
+                <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                  <li>No system is 100% secure</li>
+                  <li>You use the Service at your own risk</li>
+                  <li>
+                    We are not responsible for unauthorized access caused by you
+                    or third parties
+                  </li>
+                </ul>
+                <p className="text-sm text-slate-600 mt-2">
+                  See our Privacy Policy for full details.
                 </p>
               </section>
             </div>
@@ -368,8 +427,16 @@ export default function TermsPage() {
                   </h2>
                 </div>
                 <p className="text-sm text-slate-600">
-                  Your use of third-party integrations (e.g., Stripe, LLMs) is
-                  governed by their own terms.
+                  The Service may include integrations with third parties (e.g.,
+                  Stripe, Supabase, LLM providers). You acknowledge:
+                </p>
+                <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                  <li>We do not control these third-party services</li>
+                  <li>They may have outages or limitations</li>
+                  <li>Your use of them is governed by their terms</li>
+                </ul>
+                <p className="text-sm text-slate-600 mt-2">
+                  We are not liable for third-party failures.
                 </p>
               </section>
 
@@ -383,9 +450,20 @@ export default function TermsPage() {
                   </h2>
                 </div>
                 <p className="text-sm text-slate-600">
-                  We may suspend or terminate your account for violations,
-                  abuse, or non-payment.
+                  We may suspend or terminate your Account for:
                 </p>
+                <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                  <li>Violation of these Terms</li>
+                  <li>Abuse or excessive load</li>
+                  <li>Non-payment</li>
+                  <li>Security risks</li>
+                </ul>
+                <p className="text-sm text-slate-600 mt-2">Upon termination:</p>
+                <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                  <li>Your license ends</li>
+                  <li>Access to your dashboard and bot is revoked</li>
+                  <li>We may delete your content after a reasonable period</li>
+                </ul>
               </section>
             </div>
 
@@ -398,17 +476,50 @@ export default function TermsPage() {
                   <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                 </div>
                 <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  Disclaimers & Liability
+                  Disclaimers
                 </h2>
               </div>
+              <p className="text-sm text-slate-600">
+                To the fullest extent permitted by law:
+              </p>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
                 <li>The Service is provided “as-is” and “as available.”</li>
                 <li>We disclaim all warranties, express or implied.</li>
                 <li>
-                  We are not liable for indirect damages, data loss, or errors
-                  in AI Output.
+                  We do not guarantee accuracy, reliability, or completeness of
+                  AI Output.
                 </li>
               </ul>
+            </section>
+
+            <Separator className="my-6 sm:my-8" />
+
+            {/* Limitation of Liability */}
+            <section className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                <div className="p-1.5 sm:p-2 bg-red-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <Ban className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                  Limitation of Liability
+                </h2>
+              </div>
+              <p className="text-sm text-slate-600">
+                To the fullest extent allowed by law, Cipher & Row is not liable
+                for:
+              </p>
+              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                <li>Loss of profits</li>
+                <li>Loss of data</li>
+                <li>Business interruption</li>
+                <li>Indirect or consequential damages</li>
+                <li>Errors or unexpected AI Output</li>
+                <li>Outages, delays, or third-party failures</li>
+              </ul>
+              <p className="text-sm text-slate-600 mt-2">
+                Our total liability for any claim will not exceed the amount you
+                paid us in the last 3 months.
+              </p>
             </section>
 
             <Separator className="my-6 sm:my-8" />
@@ -425,9 +536,15 @@ export default function TermsPage() {
                   </h2>
                 </div>
                 <p className="text-sm text-slate-600">
-                  You agree to indemnify us from claims arising from your use of
-                  the Service or violation of these Terms.
+                  You agree to indemnify and hold Cipher & Row harmless from any
+                  claim arising from:
                 </p>
+                <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                  <li>Your use of the Service</li>
+                  <li>Your Customer Content</li>
+                  <li>Your violation of the Terms</li>
+                  <li>Your misuse of AI Output</li>
+                </ul>
               </section>
 
               <section className="space-y-3 sm:space-y-4">
@@ -436,12 +553,12 @@ export default function TermsPage() {
                     <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-600" />
                   </div>
                   <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                    Modifications
+                    Modifications to Terms
                   </h2>
                 </div>
                 <p className="text-sm text-slate-600">
-                  We may update these Terms at any time. Continued use implies
-                  acceptance.
+                  We may update these Terms at any time. Continued use of the
+                  Service means you accept the updated Terms.
                 </p>
               </section>
             </div>
@@ -460,7 +577,16 @@ export default function TermsPage() {
                   </h2>
                 </div>
                 <p className="text-sm text-slate-600">
-                  Governed by the laws of <strong>Wyoming, USA</strong>.
+                  These Terms are governed by the laws of:
+                  <br />
+                  <strong>Wyoming, USA</strong>
+                  <span className="block text-slate-400 text-xs mt-1">
+                    (or wherever your LLC is registered)
+                  </span>
+                </p>
+                <p className="text-sm text-slate-600">
+                  Any disputes will be resolved exclusively in that
+                  jurisdiction.
                 </p>
               </section>
 
@@ -473,12 +599,26 @@ export default function TermsPage() {
                     Contact
                   </h2>
                 </div>
-                <a
-                  href="mailto:support@cipherandrow.com"
-                  className="text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1.5 font-medium transition-colors duration-300 text-sm"
-                >
-                  support@cipherandrow.com
-                </a>
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm text-slate-600">Questions?</p>
+                  <p className="text-sm font-semibold text-slate-800">
+                    Cipher & Row
+                  </p>
+                  <a
+                    href="mailto:support@cipherandrow.com"
+                    className="text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1.5 font-medium transition-colors duration-300 text-sm"
+                  >
+                    support@cipherandrow.com
+                  </a>
+                  <a
+                    href="https://www.cipherandrow.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1.5 font-medium transition-colors duration-300 text-sm"
+                  >
+                    www.cipherandrow.com
+                  </a>
+                </div>
               </section>
             </div>
           </CardContent>
