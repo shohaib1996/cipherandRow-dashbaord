@@ -7,11 +7,9 @@ import {
   Zap,
   Bell,
   Shield,
-  CreditCard,
+  AlertTriangle,
   Mail,
   Calendar,
-  AlertTriangle,
-  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -34,7 +32,8 @@ import {
   getCurrentUserId,
 } from "@/lib/userSettings";
 import { toast } from "sonner";
-import { userApi, SubscriptionStatus } from "@/lib/userApi";
+import { userApi } from "@/lib/userApi";
+import BillingManager from "@/components/BillingManager";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -46,22 +45,6 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [isUpgrading, setIsUpgrading] = useState(false);
-  const [subscriptionStatus, setSubscriptionStatus] =
-    useState<SubscriptionStatus | null>(null);
-
-  React.useEffect(() => {
-    const fetchSubscriptionStatus = async () => {
-      try {
-        const { subscriptionStatus } = await userApi.getCompleteUserStatus();
-        setSubscriptionStatus(subscriptionStatus);
-      } catch (error) {
-        console.error("Failed to fetch subscription status:", error);
-      }
-    };
-
-    fetchSubscriptionStatus();
-  }, []);
 
   // Load user data from localStorage on mount
   React.useEffect(() => {
@@ -183,75 +166,6 @@ export default function SettingsPage() {
     setTimeout(() => {
       router.push("/signin");
     }, 500);
-  };
-
-  const handleUpgrade = async () => {
-    setIsUpgrading(true);
-    try {
-      // Get auth token from localStorage
-      const authToken = localStorage.getItem("auth_token");
-      console.log("Auth token:", authToken);
-
-      if (!authToken) {
-        throw new Error("Authentication required. Please sign in again.");
-      }
-
-      // Get user id from user data
-      const userStr = localStorage.getItem("user");
-      if (!userStr) {
-        throw new Error("User data not found. Please sign in again.");
-      }
-
-      const userData = JSON.parse(userStr);
-      const clientId = userData?.id;
-
-      if (!clientId) {
-        throw new Error("User ID not found. Please sign in again.");
-      }
-
-      // Make request to create checkout session
-      const response = await fetch(
-        "https://cr-engine.jnowlan21.workers.dev/api/billing/checkout-session",
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            client_id: clientId,
-            return_url: window.location.origin + "/dashboard/settings",
-            plan_slug: "pro",
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error ||
-            errorData.message ||
-            "Failed to create checkout session"
-        );
-      }
-
-      const data = await response.json();
-
-      // Redirect to Stripe checkout URL
-      if (data.url || data.checkout_url) {
-        window.location.href = data.url || data.checkout_url;
-      } else {
-        throw new Error("No checkout URL returned from API");
-      }
-    } catch (error: any) {
-      console.error("Error creating checkout session:", error);
-      toast.error("Checkout Failed", {
-        description:
-          error.message || "Failed to start checkout. Please try again.",
-      });
-      setIsUpgrading(false);
-    }
   };
 
   return (
@@ -466,67 +380,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Billing & Plan */}
-          <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2">
-            <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
-              <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center shrink-0">
-                <CreditCard className="w-4 h-4 text-green-600" />
-              </div>
-              <CardTitle className="text-sm sm:text-base font-semibold text-slate-800">
-                Billing & Plan
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4 pt-4 sm:pt-6 px-4 sm:px-6 pb-4 sm:pb-6">
-              <div className="p-3 sm:p-4 border border-slate-100 rounded-sm bg-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs sm:text-sm font-semibold text-slate-900">
-                    Current Plan: Professional
-                  </div>
-                  <div className="text-xs text-slate-500 mt-1">$79/month</div>
-                  {subscriptionStatus?.currentPeriodEnd && (
-                    <div className="text-xs text-slate-500 mt-1">
-                      Next billing date:{" "}
-                      {new Date(
-                        subscriptionStatus.currentPeriodEnd
-                      ).toLocaleDateString()}
-                    </div>
-                  )}
-                </div>
-                <Button
-                  onClick={handleUpgrade}
-                  disabled={isUpgrading}
-                  className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white text-xs h-8 rounded-sm shrink-0 disabled:opacity-50"
-                >
-                  {isUpgrading ? (
-                    <>
-                      <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
-                      Loading...
-                    </>
-                  ) : (
-                    "Upgrade"
-                  )}
-                </Button>
-              </div>
-
-              <div className="space-y-2 sm:space-y-3 pt-2">
-                <div
-                  onClick={handleViewInvoices}
-                  className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors"
-                >
-                  <span className="text-xs sm:text-sm font-medium text-purple-700">
-                    View Invoices
-                  </span>
-                </div>
-                <div
-                  onClick={handleUpdatePaymentMethod}
-                  className="group flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 rounded-sm cursor-pointer transition-colors"
-                >
-                  <span className="text-xs sm:text-sm font-medium text-purple-700">
-                    Update Payment Method
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <BillingManager />
 
           {/* Email Integrations */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
