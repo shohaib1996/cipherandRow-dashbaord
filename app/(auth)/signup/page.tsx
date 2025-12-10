@@ -21,6 +21,7 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +31,14 @@ export default function SignUpPage() {
     // Validate full name - check if it's empty or contains only whitespace
     if (!formData.full_name.trim()) {
       setError("Please enter a valid full name");
+      setLoading(false);
+      return;
+    }
+
+    if (!termsAccepted) {
+      setError(
+        "You must agree to the Terms and Conditions to create an account"
+      );
       setLoading(false);
       return;
     }
@@ -218,6 +227,27 @@ export default function SignUpPage() {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+              </div>
+
+              {/* Terms and Conditions Checkbox */}
+              <div className="flex items-start space-x-2 mt-4">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-slate-300 text-[#8A06E6] focus:ring-[#8A06E6]"
+                />
+                <label htmlFor="terms" className="text-sm text-slate-600">
+                  I have read and agree to the{" "}
+                  <Link
+                    href="/terms"
+                    className="text-[#8A06E6] hover:text-[#7505C7] hover:underline"
+                    target="_blank"
+                  >
+                    Terms and Conditions
+                  </Link>
+                </label>
               </div>
 
               {/* Submit Button */}

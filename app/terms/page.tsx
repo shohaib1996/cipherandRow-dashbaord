@@ -4,15 +4,23 @@ import Link from "next/link";
 import {
   ArrowLeft,
   FileText,
+  BookOpen,
   UserCheck,
-  ShieldAlert,
-  FileCode,
-  Bot,
-  CreditCard,
-  Server,
+  UserPlus,
+  ShieldCheck,
+  UploadCloud,
+  Sparkles,
   Ban,
-  AlertTriangle,
+  CreditCard,
+  Activity,
+  Lock,
+  Globe,
+  XCircle,
+  AlertCircle,
+  Shield,
   RefreshCw,
+  Gavel,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,261 +44,443 @@ export default function TermsPage() {
           </Link>
         </div>
 
-        {/* Terms of Service Section */}
-        <Card className="border-slate-200 bg-white overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700 pt-0 pb-6">
-          <CardHeader className="pb-6 sm:pb-8 border-b border-slate-100 bg-linear-to-br from-blue-50 via-white to-purple-50 px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+        {/* Terms Header */}
+        <Card className="border-slate-200 duration-500 bg-white overflow-hidden animate-in fade-in slide-in-from-bottom-8 pt-0 pb-6">
+          <CardHeader className="pb-6 sm:pb-8 border-b border-slate-100 bg-linear-to-br from-purple-50 via-white to-indigo-50 px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
             <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
-              <div className="p-2.5 sm:p-3 bg-linear-to-br from-blue-100 to-blue-200 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-                <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
+              <div className="p-2.5 sm:p-3 bg-linear-to-br from-purple-100 to-purple-200 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+                <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600" />
               </div>
               <div className="space-y-2 flex-1 w-full">
-                <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight">
+                <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold bg-linear-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent leading-tight">
                   Terms of Service
                   <span className="block text-base sm:text-lg md:text-xl mt-1 font-medium bg-clip-text text-transparent bg-linear-to-r from-slate-600 to-slate-500">
-                    Cipher & Row v1.0
+                    Cipher & Row
                   </span>
                 </CardTitle>
                 <p className="text-xs sm:text-sm text-slate-500 flex items-center gap-1.5 sm:gap-2 flex-wrap">
                   <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
                   <span>Last Updated: </span>
-                  <span className="font-medium">
-                    {new Date().toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
+                  <span className="font-medium">January 2025</span>
                 </p>
               </div>
             </div>
             <p className="mt-4 sm:mt-6 text-sm sm:text-base text-slate-600 leading-relaxed">
-              These Terms govern your use of the Cipher & Row dashboard, widget,
-              and support bot services ("Services"). By using the Services, you
-              agree to these Terms.
+              Welcome to Cipher & Row. By creating an account, accessing the
+              dashboard, using the widget, or installing our code snippet, you
+              agree to these Terms of Service (“Terms”). If you do not agree,
+              you may not use the Service.
             </p>
           </CardHeader>
+
           <CardContent className="pt-6 sm:pt-8 px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
+            {/* Definitions */}
+            <section className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                <div className="p-1.5 sm:p-2 bg-slate-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                  Definitions
+                </h2>
+              </div>
+              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-2 ml-2">
+                <li>
+                  <strong>“Company,” “we,” “us,” “Cipher & Row”</strong> refers
+                  to Cipherandrow LLC.
+                </li>
+                <li>
+                  <strong>“Service”</strong> refers to our AI support platform,
+                  including the dashboard, widget, APIs, documentation, website,
+                  and any related tools.
+                </li>
+                <li>
+                  <strong>“User,” “you,” “Customer”</strong> refers to the
+                  individual or entity creating an account and/or using the
+                  Service.
+                </li>
+                <li>
+                  <strong>“Account”</strong> means your workspace, client ID,
+                  bot ID, settings, and configuration.
+                </li>
+                <li>
+                  <strong>“AI Output”</strong> means any response generated by
+                  our AI systems or third-party models.
+                </li>
+                <li>
+                  <strong>“Customer Content”</strong> means KB articles, text,
+                  questions, answers, or other materials you upload or input
+                  into the Service.
+                </li>
+              </ul>
+            </section>
+
+            <Separator className="my-6 sm:my-8" />
+
+            {/* Eligibility */}
             <section className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
                 <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                   <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                 </div>
                 <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  Your Account
+                  Eligibility
                 </h2>
               </div>
+              <p className="text-sm text-slate-600">You must:</p>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>You must create an account to access the Services.</li>
+                <li>Be at least 18 years old.</li>
                 <li>
-                  You are responsible for keeping your account secure and for
-                  any activity that occurs under it.
+                  Have authority to enter into a binding agreement on behalf of
+                  your organization.
+                </li>
+                <li>
+                  Not be located in a jurisdiction prohibited by U.S. law.
                 </li>
               </ul>
             </section>
 
             <Separator className="my-6 sm:my-8" />
 
-            <section className="space-y-3 sm:space-y-4">
-              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
-                <div className="p-1.5 sm:p-2 bg-red-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
-                </div>
-                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  Acceptable Use
-                </h2>
-              </div>
-              <p className="text-sm sm:text-base text-slate-600 mb-2">
-                You agree not to:
-              </p>
-              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>Use the Services for illegal or harmful purposes</li>
-                <li>Send spam, threats, or abusive content through the bot</li>
-                <li>
-                  Attempt to reverse engineer, misuse, or overload the system
-                </li>
-                <li>
-                  Store sensitive personal information (e.g., medical,
-                  financial, legal) in the chatbot
-                </li>
-              </ul>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-2 bg-red-50 p-2.5 sm:p-3 rounded-lg border border-red-100">
-                We may suspend accounts that violate this policy.
-              </p>
-            </section>
-
-            <Separator className="my-6 sm:my-8" />
-
+            {/* Account Registration */}
             <section className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
                 <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <FileCode className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                  <UserPlus className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                  Account Registration
+                </h2>
+              </div>
+              <p className="text-sm text-slate-600">
+                To create an account, you must provide accurate information
+                including:
+              </p>
+              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                <li>Your name</li>
+                <li>Email address</li>
+                <li>Company name (optional)</li>
+                <li>Website URL (optional)</li>
+              </ul>
+              <p className="text-sm text-slate-600 mt-2">
+                You are responsible for:
+              </p>
+              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                <li>Maintaining the security of your login credentials</li>
+                <li>All activity occurring under your Account</li>
+                <li>
+                  Ensuring your employees or contractors follow these Terms
+                </li>
+              </ul>
+            </section>
+
+            <Separator className="my-6 sm:my-8" />
+
+            {/* License & Acceptable Use */}
+            <section className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                <div className="p-1.5 sm:p-2 bg-yellow-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                  License & Acceptable Use
+                </h2>
+              </div>
+              <p className="text-sm text-slate-600">
+                Cipher & Row grants you a non-exclusive, non-transferable,
+                revocable license to use the Service strictly as intended. You
+                agree NOT to:
+              </p>
+              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                <li>
+                  Use the Service for unlawful, harmful, fraudulent, or abusive
+                  purposes
+                </li>
+                <li>
+                  Attempt to access source code, bypass security, or reverse
+                  engineer any part of the system
+                </li>
+                <li>
+                  Use the Service to process regulated data (HIPAA, PCI,
+                  financial records, children’s data)
+                </li>
+                <li>
+                  Send spam or unauthorized marketing messages through our
+                  platform
+                </li>
+                <li>
+                  Misrepresent the Service as your own proprietary technology
+                </li>
+                <li>
+                  Interfere with performance of the Service or other users
+                </li>
+              </ul>
+            </section>
+
+            <Separator className="my-6 sm:my-8" />
+
+            {/* Customer Content */}
+            <section className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <UploadCloud className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                 </div>
                 <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
                   Customer Content
                 </h2>
               </div>
+              <p className="text-sm text-slate-600">
+                You retain ownership of all Customer Content you upload. By
+                using the Service, you grant Cipher & Row a limited license to:
+              </p>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>
-                  Anything you input into the Services including Knowledge Base
-                  entries, messages, and configurations remains your content.
-                </li>
-                <li>
-                  You grant us a limited license to process this content solely
-                  for the purpose of operating the Services.
-                </li>
-                <li>We do not own your data.</li>
+                <li>Store Customer Content</li>
+                <li>Process it to generate AI Output</li>
+                <li>Use it to operate, improve, and maintain the Service</li>
+                <li>Display it within your dashboard</li>
               </ul>
             </section>
 
             <Separator className="my-6 sm:my-8" />
 
+            {/* AI Output & Reliability */}
             <section className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
-                <div className="p-1.5 sm:p-2 bg-purple-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+                <div className="p-1.5 sm:p-2 bg-pink-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-pink-600" />
                 </div>
                 <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  AI-Generated Output
+                  AI Output & Reliability
                 </h2>
               </div>
-              <p className="text-sm sm:text-base text-slate-600 mb-2">
-                Our support bots may generate automated responses. You
-                understand that:
+              <p className="text-sm text-slate-600">
+                The Service uses AI models to generate responses. You
+                acknowledge that:
               </p>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>Responses may contain errors</li>
                 <li>
-                  You are responsible for reviewing and validating important or
-                  high-risk information
+                  AI Output may contain inaccuracies, errors, or unexpected
+                  language
                 </li>
                 <li>
-                  The system is not a replacement for professional advice
-                  (legal, medical, financial)
+                  You are solely responsible for reviewing, approving, and using
+                  AI Output
                 </li>
-              </ul>
-              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-2 bg-purple-50 p-2.5 sm:p-3 rounded-lg border border-purple-100">
-                We do not guarantee accuracy of AI-generated responses.
-              </p>
-            </section>
-
-            <Separator className="my-6 sm:my-8" />
-
-            <section className="space-y-3 sm:space-y-4">
-              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
-                <div className="p-1.5 sm:p-2 bg-emerald-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
-                </div>
-                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  Payments & Billing
-                </h2>
-              </div>
-              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>Paid plans are billed through Stripe.</li>
-                <li>Subscriptions renew automatically unless cancelled.</li>
                 <li>
-                  You may cancel at any time; cancellations take effect at the
-                  end of the billing period.
+                  Cipher & Row makes no guarantees regarding reliability or
+                  correctness of AI Output
                 </li>
               </ul>
             </section>
 
             <Separator className="my-6 sm:my-8" />
 
-            <section className="space-y-3 sm:space-y-4">
-              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
-                <div className="p-1.5 sm:p-2 bg-orange-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <Server className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
-                </div>
-                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  Service Availability
-                </h2>
-              </div>
-              <p className="text-sm sm:text-base text-slate-600 mb-2">
-                We strive for high uptime, but the Services may experience:
-              </p>
-              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>Maintenance windows</li>
-                <li>Network outages</li>
-                <li>API slowdowns</li>
-                <li>Third-party provider disruptions</li>
-              </ul>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2">
-                We are not liable for downtime or temporary interruptions.
-              </p>
-            </section>
-
-            <Separator className="my-6 sm:my-8" />
-
+            {/* Prohibited Data Types */}
             <section className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
                 <div className="p-1.5 sm:p-2 bg-red-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                   <Ban className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
                 </div>
                 <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  Termination
+                  Prohibited Data Types
                 </h2>
               </div>
-              <p className="text-sm sm:text-base text-slate-600 mb-2">
-                We may suspend or terminate access if:
+              <p className="text-sm text-slate-600">
+                You agree NOT to upload or process:
               </p>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>You violate these Terms</li>
-                <li>You misuse or abuse the system</li>
-                <li>You fail to pay for Services</li>
+                <li>Credit card numbers, Bank account info, SSNs</li>
+                <li>Medical information (PHI)</li>
+                <li>Financial account credentials</li>
+                <li>Government-issued ID numbers</li>
+                <li>Highly sensitive personal data of any kind</li>
               </ul>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2">
-                You may cancel your account at any time.
+            </section>
+
+            <Separator className="my-6 sm:my-8" />
+
+            {/* Billing & Payment */}
+            <section className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                <div className="p-1.5 sm:p-2 bg-emerald-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                  Billing & Payment Terms
+                </h2>
+              </div>
+              <p className="text-sm text-slate-600">
+                Paid plans are billed via Stripe. All fees are non-refundable,
+                except when required by law.
+              </p>
+              <p className="text-xs sm:text-sm text-slate-600 font-medium mt-2 bg-emerald-50 p-2.5 sm:p-3 rounded-lg border border-emerald-100">
+                Trials convert automatically to paid plans unless canceled
+                before the trial ends.
               </p>
             </section>
 
             <Separator className="my-6 sm:my-8" />
 
+            {/* Availability & Security */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <section className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                  <div className="p-1.5 sm:p-2 bg-orange-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                    Availability
+                  </h2>
+                </div>
+                <p className="text-sm text-slate-600">
+                  We strive for uptime but do not guarantee uninterrupted
+                  service. We may modify or discontinue parts of the Service.
+                </p>
+              </section>
+
+              <section className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                  <div className="p-1.5 sm:p-2 bg-sky-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-sky-600" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                    Data Security
+                  </h2>
+                </div>
+                <p className="text-sm text-slate-600">
+                  We use reasonable security measures, but no system is 100%
+                  secure. You use the Service at your own risk.
+                </p>
+              </section>
+            </div>
+
+            <Separator className="my-6 sm:my-8" />
+
+            {/* Third Party & Termination */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <section className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                  <div className="p-1.5 sm:p-2 bg-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <Globe className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                    Third-Party Services
+                  </h2>
+                </div>
+                <p className="text-sm text-slate-600">
+                  Your use of third-party integrations (e.g., Stripe, LLMs) is
+                  governed by their own terms.
+                </p>
+              </section>
+
+              <section className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                  <div className="p-1.5 sm:p-2 bg-rose-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <XCircle className="w-4 h-4 sm:w-5 sm:h-5 text-rose-600" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                    Termination
+                  </h2>
+                </div>
+                <p className="text-sm text-slate-600">
+                  We may suspend or terminate your account for violations,
+                  abuse, or non-payment.
+                </p>
+              </section>
+            </div>
+
+            <Separator className="my-6 sm:my-8" />
+
+            {/* Disclaimers & Liability */}
             <section className="space-y-3 sm:space-y-4">
               <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
-                <div className="p-1.5 sm:p-2 bg-yellow-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+                <div className="p-1.5 sm:p-2 bg-amber-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                 </div>
                 <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  Limitation of Liability
+                  Disclaimers & Liability
                 </h2>
               </div>
-              <p className="text-sm sm:text-base text-slate-600 mb-2">
-                To the maximum extent permitted by law:
-              </p>
               <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
+                <li>The Service is provided “as-is” and “as available.”</li>
+                <li>We disclaim all warranties, express or implied.</li>
                 <li>
-                  Cipher & Row is not liable for indirect, incidental, or
-                  consequential damages.
-                </li>
-                <li>
-                  Our total liability will not exceed the amount you paid us in
-                  the last 6 months.
+                  We are not liable for indirect damages, data loss, or errors
+                  in AI Output.
                 </li>
               </ul>
-              <p className="text-xs sm:text-sm text-slate-600 mt-2">
-                This standard clause protects early-stage startups.
-              </p>
             </section>
 
             <Separator className="my-6 sm:my-8" />
 
-            <section className="space-y-3 sm:space-y-4">
-              <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
-                <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+            {/* Indemnification & Modifications */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <section className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                  <div className="p-1.5 sm:p-2 bg-teal-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                    Indemnification
+                  </h2>
                 </div>
-                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                  Changes to Terms
-                </h2>
-              </div>
-              <ul className="list-disc list-inside text-xs sm:text-sm text-slate-600 space-y-1.5 ml-2">
-                <li>We may modify these Terms from time to time.</li>
-                <li>
-                  Continued use of the Services constitutes acceptance of
-                  updated Terms.
-                </li>
-              </ul>
-            </section>
+                <p className="text-sm text-slate-600">
+                  You agree to indemnify us from claims arising from your use of
+                  the Service or violation of these Terms.
+                </p>
+              </section>
+
+              <section className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                  <div className="p-1.5 sm:p-2 bg-cyan-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-600" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                    Modifications
+                  </h2>
+                </div>
+                <p className="text-sm text-slate-600">
+                  We may update these Terms at any time. Continued use implies
+                  acceptance.
+                </p>
+              </section>
+            </div>
+
+            <Separator className="my-6 sm:my-8" />
+
+            {/* Governing Law & Contact */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <section className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                  <div className="p-1.5 sm:p-2 bg-violet-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <Gavel className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                    Governing Law
+                  </h2>
+                </div>
+                <p className="text-sm text-slate-600">
+                  Governed by the laws of <strong>Wyoming, USA</strong>.
+                </p>
+              </section>
+
+              <section className="space-y-3 sm:space-y-4">
+                <div className="flex items-center gap-2.5 sm:gap-3 pb-2">
+                  <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+                    Contact
+                  </h2>
+                </div>
+                <a
+                  href="mailto:support@cipherandrow.com"
+                  className="text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1.5 font-medium transition-colors duration-300 text-sm"
+                >
+                  support@cipherandrow.com
+                </a>
+              </section>
+            </div>
           </CardContent>
         </Card>
       </div>
