@@ -190,7 +190,7 @@ const KBPage = () => {
       {/* Desktop Table View - Hidden on Mobile */}
       {!isLoading && filteredArticles.length > 0 && (
         <div className="hidden lg:block bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent border-slate-100">
                 <TableHead className="px-6 py-4 w-[50%] text-slate-500 font-medium">
@@ -213,13 +213,16 @@ const KBPage = () => {
                   key={article.id}
                   className="hover:bg-slate-50/50 transition-colors border-slate-200"
                 >
-                  <TableCell className="px-6 py-6">
-                    <div className="space-y-1">
-                      <div className="font-medium text-slate-900 text-base">
+                  <TableCell className="px-6 py-6 overflow-hidden">
+                    <div className="space-y-1 max-w-full">
+                      <div
+                        className="font-medium text-slate-900 text-base truncate"
+                        title={article.title}
+                      >
                         {article.title}
                       </div>
                       <div className="text-sm text-slate-500 line-clamp-1">
-                        {article.text}
+                        {article.text.slice(0, 75) + "..."}
                       </div>
                     </div>
                   </TableCell>
