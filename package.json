@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "env-cmd -f .env.production next dev",
+    "dev:staging": "env-cmd -f .env.development next dev",
     "build": "next build",
+    "build:staging": "env-cmd -f .env.development next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -19,6 +21,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@sentry/nextjs": "^10.29.0",
     "@stripe/stripe-js": "^8.5.3",
+    "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lottie-react": "^2.4.1",
@@ -38,6 +41,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "baseline-browser-mapping": "^2.9.2",
+    "env-cmd": "^11.0.0",
     "eslint": "^9",
     "eslint-config-next": "^16.0.6",
     "tailwindcss": "^4",

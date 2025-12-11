@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Key, Copy, Eye, EyeOff, RefreshCw, Plus, X } from "lucide-react";
 import { toast } from "sonner";
+import axiosInstance from "@/lib/axiosInstance";
 
 interface UserData {
   id: string;
@@ -52,7 +53,9 @@ export default function ApiKeyManager() {
     }
 
     // Load stored domains for this user
-    const storedDomains = localStorage.getItem(`api_key_domains_${currentUserId}`);
+    const storedDomains = localStorage.getItem(
+      `api_key_domains_${currentUserId}`
+    );
     if (storedDomains) {
       try {
         const parsedDomains = JSON.parse(storedDomains);
@@ -104,21 +107,14 @@ export default function ApiKeyManager() {
     setIsGenerating(true);
 
     try {
-      // Get auth token and client_id from localStorage
-      const authToken = localStorage.getItem("auth_token");
+      // Get client_id from localStorage
       const userStr = localStorage.getItem("user");
-
-      if (!authToken) {
-        toast.error("Authentication Error", {
-          description: "No authentication token found. Please sign in again.",
-        });
-        return;
-      }
 
       if (!userStr) {
         toast.error("User Data Missing", {
           description: "User data not found. Please sign in again.",
         });
+        setIsGenerating(false);
         return;
       }
 
@@ -129,70 +125,17 @@ export default function ApiKeyManager() {
         toast.error("Client ID Missing", {
           description: "Could not retrieve client ID from user data.",
         });
-        return;
-      }
-
-      // Make API request to generate key
-      const response = await fetch(
-        "https://cr-engine.jnowlan21.workers.dev/api/keys/generate",
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            client_id: clientId,
-            allowed_domains: validDomains,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-
-        // Get error message from backend
-        const backendError = errorData.error || errorData.message;
-
-        // Handle specific error cases
-        if (response.status === 401) {
-          toast.error("Authentication Failed", {
-            description:
-              backendError || "Your session has expired. Please sign in again.",
-          });
-          setIsGenerating(false);
-          return;
-        }
-
-        if (response.status === 403) {
-          toast.error("Access Denied", {
-            description:
-              backendError ||
-              "You need to complete payment before generating an API key.",
-          });
-          setIsGenerating(false);
-          return;
-        }
-
-        if (backendError === "No plan selected.") {
-          toast.error("No Plan Selected", {
-            description:
-              "Please upgrade your plan first before generating an API key.",
-          });
-          setIsGenerating(false);
-          return;
-        }
-
-        // Generic error with backend message
-        toast.error("Failed to Generate API Key", {
-          description: backendError || "An error occurred. Please try again.",
-        });
         setIsGenerating(false);
         return;
       }
 
-      const data = await response.json();
+      // Make API request to generate key (auth token automatically attached)
+      const response = await axiosInstance.post("/keys/generate", {
+        client_id: clientId,
+        allowed_domains: validDomains,
+      });
+
+      const data = response.data;
       const newApiKey = data.apiKey || data.api_key || data.key;
 
       if (!newApiKey) {
@@ -203,7 +146,10 @@ export default function ApiKeyManager() {
       setApiKey(newApiKey);
       if (clientId) {
         localStorage.setItem(`api_key_${clientId}`, newApiKey);
-        localStorage.setItem(`api_key_domains_${clientId}`, JSON.stringify(validDomains));
+        localStorage.setItem(
+          `api_key_domains_${clientId}`,
+          JSON.stringify(validDomains)
+        );
       }
 
       toast.success("API Key Generated", {
@@ -211,10 +157,38 @@ export default function ApiKeyManager() {
       });
     } catch (error: any) {
       console.error("Error generating API key:", error);
-      toast.error("Generation Failed", {
-        description:
-          error.message || "Failed to generate API key. Please try again.",
-      });
+
+      // Get error message from axios response
+      const backendError =
+        error.response?.data?.error || error.response?.data?.message;
+      const statusCode = error.response?.status;
+
+      // Handle specific error cases
+      if (statusCode === 401) {
+        toast.error("Authentication Failed", {
+          description:
+            backendError || "Your session has expired. Please sign in again.",
+        });
+      } else if (statusCode === 403) {
+        toast.error("Access Denied", {
+          description:
+            backendError ||
+            "You need to complete payment before generating an API key.",
+        });
+      } else if (backendError === "No plan selected.") {
+        toast.error("No Plan Selected", {
+          description:
+            "Please upgrade your plan first before generating an API key.",
+        });
+      } else {
+        // Generic error with backend message
+        toast.error("Failed to Generate API Key", {
+          description:
+            backendError ||
+            error.message ||
+            "An error occurred. Please try again.",
+        });
+      }
     } finally {
       setIsGenerating(false);
     }

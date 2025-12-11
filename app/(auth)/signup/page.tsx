@@ -10,6 +10,7 @@ import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import login from "../../../public/Login.json";
 import Lottie from "lottie-react";
 import { toast } from "sonner";
+import axiosInstance from "@/lib/axiosInstance";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -44,27 +45,11 @@ export default function SignUpPage() {
     }
 
     try {
-      const response = await fetch(
-        "https://cr-engine.jnowlan21.workers.dev/api/auth/signup",
-        {
-          method: "POST",
-          headers: {
-            accept: "*/*",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await axiosInstance.post("/auth/signup", formData, {
+        skipAuth: true,
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        // Extract error message from API response (could be in 'error' or 'message' field)
-        const errorMessage =
-          errorData.error || errorData.message || "Signup failed";
-        throw new Error(errorMessage);
-      }
-
-      const data = await response.json();
+      const data = response.data;
       // console.log("Signup successful:", data);
 
       // // Store authentication token
@@ -96,7 +81,12 @@ export default function SignUpPage() {
         router.push("/verify-email");
       }
     } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+      const errorMessage =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        err.message ||
+        "Something went wrong. Please try again.";
+      setError(errorMessage);
       setLoading(false);
     }
   };

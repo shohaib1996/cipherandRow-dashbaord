@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
+import axiosInstance from "@/lib/axiosInstance";
 
 interface Message {
   role: "user" | "bot";
@@ -237,7 +238,7 @@ export default function DemoChatWidget() {
   };
 
   // Warmup ping function to reduce first-message latency
-  const sendWarmupPing = () => {
+  const sendWarmupPing = async () => {
     let apiKey: string | null = null;
 
     // Get user-specific key if available
@@ -255,36 +256,26 @@ export default function DemoChatWidget() {
       clientId
     );
 
-    // Send a lightweight warmup request to the main endpoint
-    fetch("https://cr-engine.jnowlan21.workers.dev/api/support-bot/query", {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        client_id: clientId,
-        bot_id: "2001",
-        session_id: sessionId || crypto.randomUUID(),
-        user_message: "ping", // Warmup message - response will be discarded
-        page_url: window.location.href,
-      }),
-    })
-      .then(async (response) => {
-        if (response.ok) {
-          // Consume the response body but don't display it
-          await response.json();
-          console.log("Warmup complete - backend is ready:", response.status);
-          // Response is discarded - not shown to user
-        } else {
-          console.warn("Warmup request returned error:", response.status);
+    try {
+      // Send a lightweight warmup request to the main endpoint
+      await axiosInstance.post(
+        "/support-bot/query",
+        {
+          client_id: clientId,
+          bot_id: "2001",
+          session_id: sessionId || crypto.randomUUID(),
+          user_message: "ping", // Warmup message - response will be discarded
+          page_url: window.location.href,
+        },
+        {
+          headers: { "x-api-key": apiKey },
         }
-      })
-      .catch((err) => {
-        // Silently fail - not critical
-        console.warn("Warmup request failed:", err);
-      });
+      );
+      console.log("Warmup complete - backend is ready");
+    } catch (err) {
+      // Silently fail - not critical
+      console.warn("Warmup request failed:", err);
+    }
   };
 
   const handleSend = async (e?: React.FormEvent) => {
@@ -325,43 +316,21 @@ export default function DemoChatWidget() {
         throw new Error(errorText);
       }
 
-      const response = await fetch(
-        "https://cr-engine.jnowlan21.workers.dev/api/support-bot/query",
+      const response = await axiosInstance.post(
+        "/support-bot/query",
         {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-          },
-          body: JSON.stringify({
-            client_id: clientId,
-            user_message: userText,
-            session_id: sessionId || crypto.randomUUID(),
-            page_url: window.location.href,
-            bot_id: "2001",
-          }),
+          client_id: clientId,
+          user_message: userText,
+          session_id: sessionId || crypto.randomUUID(),
+          page_url: window.location.href,
+          bot_id: "2001",
+        },
+        {
+          headers: { "x-api-key": apiKey },
         }
       );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-
-        // Get error message from backend
-        const backendError =
-          errorData.error ||
-          errorData.message ||
-          "Something went wrong. Please try again.";
-
-        // Show backend error directly
-        toast.error("Error", {
-          description: backendError,
-        });
-
-        throw new Error(backendError);
-      }
-
-      const data = await response.json();
+      const data = response.data;
       const botText =
         data.bot_answer ||
         data.reply ||
@@ -373,9 +342,22 @@ export default function DemoChatWidget() {
       startTyping(botText, speed);
     } catch (error: any) {
       console.error("Error sending message:", error);
-      const errorText =
-        error.message || "Sorry, something went wrong. Please try again.";
-      startTyping(errorText, 10);
+
+      // Get error message from axios response
+      const backendError =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Sorry, something went wrong. Please try again.";
+
+      // Show backend error directly
+      if (error.response?.data?.error || error.response?.data?.message) {
+        toast.error("Error", {
+          description: backendError,
+        });
+      }
+
+      startTyping(backendError, 10);
     } finally {
       // do not change thinking/typing here — startTyping will clear thinking
     }
