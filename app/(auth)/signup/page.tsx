@@ -130,7 +130,12 @@ export default function SignUpPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-5"
+              action="#"
+              method="post"
+            >
               {/* Full Name */}
               <div className="space-y-2">
                 <label
