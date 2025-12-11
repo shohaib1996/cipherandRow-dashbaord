@@ -7,33 +7,9 @@ declare module "axios" {
   }
 }
 
-/**
- * Automatically determine the correct API URL based on the environment
- */
-const getApiUrl = (): string => {
-  // Check if we have an explicit NEXT_PUBLIC_API_URL set
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
-
-  // Vercel provides VERCEL_ENV: 'production' | 'preview' | 'development'
-  const vercelEnv = process.env.VERCEL_ENV;
-
-  if (vercelEnv === "production") {
-    // Production deployment
-    return "https://cr-engine.jnowlan21.workers.dev";
-  } else if (vercelEnv === "preview") {
-    // Preview/staging deployment
-    return "https://cr-engine-staging.jnowlan21.workers.dev";
-  }
-
-  // Local development fallback
-  return "http://localhost:3000/api";
-};
-
 // Create a configured Axios instance
 const axiosInstance = axios.create({
-  baseURL: getApiUrl(),
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api", // Fallback for local dev
   headers: {
     "Content-Type": "application/json",
   },
