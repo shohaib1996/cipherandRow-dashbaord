@@ -1,137 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Download, MessageSquare, Clock, Star } from "lucide-react";
+import {
+  Download,
+  ExternalLink,
+  Calendar,
+  User,
+  Hash,
+  Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-
-// --- Types ---
-
-type ConversationStatus = "active" | "resolved" | "pending";
-
-interface Conversation {
-  id: string;
-  user_name: string;
-  user_email: string;
-  user_avatar?: string; // Initials for now
-  last_message: string;
-  status: ConversationStatus;
-  rating: string; // e.g., "5/5", "N/A"
-  response_time: string; // e.g., "15s"
-  message_count: number;
-}
-
-// --- Mock Data ---
-
-const MOCK_CONVERSATIONS: Conversation[] = [
-  {
-    id: "c1",
-    user_name: "Sarah Johnson",
-    user_email: "sarah@example.com",
-    user_avatar: "SJ",
-    last_message: "Perfect, thank you!",
-    status: "resolved",
-    rating: "5/5",
-    response_time: "15s",
-    message_count: 3,
-  },
-  {
-    id: "c2",
-    user_name: "Michael Chen",
-    user_email: "michael@example.com",
-    user_avatar: "MC",
-    last_message: "Yes! Once your order ships, you'll receive a tracki...",
-    status: "active",
-    rating: "N/A",
-    response_time: "10s",
-    message_count: 4,
-  },
-  {
-    id: "c3",
-    user_name: "Emma Wilson",
-    user_email: "emma@example.com",
-    user_avatar: "EW",
-    last_message: "Yes! We have a 30-day money-back guarantee. I...",
-    status: "resolved",
-    rating: "4/5",
-    response_time: "12s",
-    message_count: 2,
-  },
-  {
-    id: "c4",
-    user_name: "David Park",
-    user_email: "david.park@example.com",
-    user_avatar: "DP",
-    last_message: "Order #12345",
-    status: "pending",
-    rating: "N/A",
-    response_time: "15s",
-    message_count: 3,
-  },
-  {
-    id: "c5",
-    user_name: "Jessica Thompson",
-    user_email: "jess.t@example.com",
-    user_avatar: "JT",
-    last_message: "I sincerely apologize for this discrepancy. This is ...",
-    status: "active",
-    rating: "3/5",
-    response_time: "20s",
-    message_count: 2,
-  },
-  {
-    id: "c6",
-    user_name: "Michael Rodriguez",
-    user_email: "michael.r@example.com",
-    user_avatar: "MR",
-    last_message: "I need this resolved NOW or I'm canceling my su...",
-    status: "active",
-    rating: "N/A",
-    response_time: "15s",
-    message_count: 3,
-  },
-  {
-    id: "c7",
-    user_name: "Amanda White",
-    user_email: "amanda.w@example.com",
-    user_avatar: "AW",
-    last_message: "I'm truly sorry to hear about your experience. Thi...",
-    status: "active",
-    rating: "N/A",
-    response_time: "20s",
-    message_count: 2,
-  },
-  {
-    id: "c8",
-    user_name: "Robert Taylor",
-    user_email: "robert.t@example.com",
-    user_avatar: "RT",
-    last_message: "Great, thanks!",
-    status: "resolved",
-    rating: "5/5",
-    response_time: "10s",
-    message_count: 3,
-  },
-  {
-    id: "c9",
-    user_name: "Lisa Anderson",
-    user_email: "lisa.a@example.com",
-    user_avatar: "LA",
-    last_message: "I sincerely apologize for your experience. I'm esc...",
-    status: "pending",
-    rating: "N/A",
-    response_time: "25s",
-    message_count: 2,
-  },
-];
+import { conversationsApi, Conversation } from "@/lib/conversationsApi";
+import { format } from "date-fns";
+import { GlobalTable, Column } from "@/components/GlobalTable";
+import Link from "next/link";
 
 export default function ConversationsPage() {
   const router = useRouter();
-  const [filter, setFilter] = useState<"all" | ConversationStatus>("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [limit] = useState(10);
+  const [offset, setOffset] = useState(1);
+  const [hasMore, setHasMore] = useState(true); // Helper to track if we might have more data
+
+  useEffect(() => {
+    fetchConversations();
+  }, [offset]);
+
+  const fetchConversations = async () => {
+    setLoading(true);
+    try {
+      const data = await conversationsApi.getConversations({ limit, offset });
+      setConversations(data.conversations);
+      // specific logic for hasMore could be improved if API returned total count
+      // for now, assume if we got full limit, there might be more
+      setHasMore(data.conversations.length === limit);
+    } catch (error) {
+      console.error("Failed to fetch conversations:", error);
+      toast.error("Failed to load conversations");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNextPage = () => {
+    setOffset((prev) => prev + 1);
+  };
+
+  const handlePrevPage = () => {
+    setOffset((prev) => Math.max(1, prev - 1));
+  };
 
   const handleExportCSV = () => {
     toast.info("Coming Soon", {
@@ -139,39 +60,86 @@ export default function ConversationsPage() {
     });
   };
 
-  const filteredConversations = MOCK_CONVERSATIONS.filter((c) => {
-    const matchesFilter = filter === "all" || c.status === filter;
-    const matchesSearch =
-      c.user_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.user_email.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
-
-  const getStatusColor = (status: ConversationStatus) => {
-    switch (status) {
-      case "resolved":
-        return "bg-emerald-100 text-emerald-700 hover:bg-emerald-200";
-      case "active":
-        return "bg-blue-100 text-blue-700 hover:bg-blue-200";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700 hover:bg-yellow-200";
-      default:
-        return "bg-gray-100 text-gray-700";
+  // Simple formatting helpers
+  const formatDate = (dateString: string) => {
+    try {
+      return format(new Date(dateString), "MMM d, yyyy h:mm a");
+    } catch (e) {
+      return dateString;
     }
   };
 
-  const getRowHoverClass = (status: ConversationStatus) => {
-    switch (status) {
-      case "resolved":
-        return "hover:bg-emerald-50";
-      case "active":
-        return "hover:bg-blue-50";
-      case "pending":
-        return "hover:bg-yellow-50";
-      default:
-        return "hover:bg-gray-50";
-    }
-  };
+  const columns: Column<Conversation>[] = [
+    {
+      header: "Client ID",
+      className: "w-[200px] xl:w-[250px]",
+      cell: (item: Conversation) => (
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 shrink-0">
+            <User className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col">
+            <span
+              className="font-medium text-zinc-900 truncate max-w-[120px] xl:max-w-[150px]"
+              title={item.client_id}
+            >
+              {item.client_id}
+            </span>
+            <span className="text-xs text-zinc-400">Bot: {item.bot_id}</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Session / Page",
+      accessorKey: "session_id",
+      cell: (item: Conversation) => (
+        <div className="flex flex-col gap-1">
+          <span
+            className="text-zinc-600 text-xs font-mono"
+            title={item.session_id}
+          >
+            Session: {item.session_id.slice(0, 8)}...
+          </span>
+          {item.page_url && (
+            <Link
+              href={item.page_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-blue-500 hover:text-blue-600 truncate max-w-[150px] xl:max-w-[200px] flex items-center gap-1"
+            >
+              {item.page_url}
+            </Link>
+          )}
+        </div>
+      ),
+    },
+    {
+      header: "Created At",
+      accessorKey: "created_at",
+      cell: (item: Conversation) => (
+        <div className="flex items-center gap-1.5 text-zinc-600">
+          <Calendar className="h-3.5 w-3.5 text-zinc-400" />
+          <span>{formatDate(item.created_at)}</span>
+        </div>
+      ),
+    },
+    {
+      header: "Conversation",
+      className: "w-[80px] xl:w-[100px]",
+      cell: (item: Conversation) =>
+        item.session_id && (
+          <Link
+            href={`/dashboard/conversations/${item.session_id}`}
+            className="text-zinc-400 hover:text-[#925FF0]"
+          >
+            <Button className="hover:bg-[#925FF0] cursor-pointer" size="sm">
+              View
+            </Button>
+          </Link>
+        ),
+    },
+  ];
 
   return (
     <div className="px-4 sm:px-6 lg:px-10 pb-6 sm:pb-10 mx-0 sm:mx-4 lg:mx-10 font-sans text-zinc-900 bg-white my-0 sm:my-6 lg:my-10">
@@ -181,236 +149,136 @@ export default function ConversationsPage() {
           Recent Conversations
         </h1>
         <p className="text-zinc-500 text-sm">
-          Click on any conversation to view details
+          View and manage your chatbot interactions
         </p>
       </div>
 
       {/* Controls */}
       <div className="flex flex-col gap-4 mb-6">
-        {/* Search Bar */}
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-          <Input
-            placeholder="Search conversations..."
-            className="pl-10 bg-white border-zinc-200 h-10 w-full"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-
         {/* Filter Buttons and Export */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center">
-          <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
-            {(["all", "active", "resolved", "pending"] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={cn(
-                  "px-3 sm:px-4 py-2 sm:py-2.5 rounded-sm text-xs sm:text-sm font-medium transition-all capitalize border whitespace-nowrap",
-                  filter === f
-                    ? f === "all"
-                      ? "bg-[#925FF0]/10 text-[#925FF0] border-[#925FF0]"
-                      : f === "active"
-                      ? "bg-blue-50 text-blue-600 border-blue-200"
-                      : f === "resolved"
-                      ? "bg-emerald-50 text-emerald-600 border-emerald-200"
-                      : "bg-yellow-50 text-yellow-600 border-yellow-200"
-                    : cn(
-                        "bg-zinc-100 text-zinc-600 border-transparent",
-                        f === "all"
-                          ? "hover:bg-[#925FF0]/10 hover:text-[#925FF0]"
-                          : f === "active"
-                          ? "hover:bg-blue-50 hover:text-blue-600"
-                          : f === "resolved"
-                          ? "hover:bg-emerald-50 hover:text-emerald-600"
-                          : "hover:bg-yellow-50 hover:text-yellow-600"
-                      )
-                )}
-              >
-                {f}
-              </button>
-            ))}
+        <div className="flex flex-col sm:flex-row gap-3 justify-end items-stretch sm:items-center">
+          <div className="flex gap-2">
+            <Button
+              onClick={fetchConversations}
+              variant="outline"
+              size="sm"
+              className="h-9 gap-2"
+              disabled={loading}
+            >
+              Refresh
+            </Button>
+            <Button
+              onClick={handleExportCSV}
+              variant="ghost"
+              className="h-9 gap-2 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-sm text-xs sm:text-sm"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden sm:inline">Export CSV</span>
+              <span className="sm:hidden">Export</span>
+            </Button>
           </div>
-          <Button
-            onClick={handleExportCSV}
-            variant="ghost"
-            className="h-10 gap-2 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 rounded-sm text-xs sm:text-sm"
-          >
-            <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">Export CSV</span>
-            <span className="sm:hidden">Export</span>
-          </Button>
         </div>
       </div>
 
-      {/* Table - Desktop View (hidden on mobile) */}
-      <div className="hidden lg:block bg-white rounded-xl border border-zinc-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-zinc-100 bg-zinc-50/50">
-                <th className="px-6 py-4 font-medium text-zinc-500 w-[300px]">
-                  Customer
-                </th>
-                <th className="px-6 py-4 font-medium text-zinc-500">
-                  Last Message
-                </th>
-                <th className="px-6 py-4 font-medium text-zinc-500 w-[120px]">
-                  Status
-                </th>
-                <th className="px-6 py-4 font-medium text-zinc-500 w-[100px]">
-                  Rating
-                </th>
-                <th className="px-6 py-4 font-medium text-zinc-500 w-[140px]">
-                  Response Time
-                </th>
-                <th className="px-6 py-4 font-medium text-zinc-500 w-[100px]">
-                  Messages
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {filteredConversations.map((conversation) => (
-                <tr
-                  key={conversation.id}
-                  onClick={() =>
-                    router.push(`/dashboard/conversations/${conversation.id}`)
-                  }
-                  className="group transition-colors duration-200 cursor-pointer hover:bg-zinc-50"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 font-medium text-sm shrink-0 transition-colors duration-200 group-hover:bg-[#925FF0] group-hover:text-white">
-                        {conversation.user_avatar}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-zinc-900">
-                          {conversation.user_name}
-                        </span>
-                        <span className="text-xs text-zinc-500">
-                          {conversation.user_email}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <p className="text-zinc-600 truncate max-w-[300px]">
-                      {conversation.last_message}
-                    </p>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={cn(
-                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize transition-colors duration-200 bg-zinc-100 text-zinc-600",
-                        conversation.status === "resolved" &&
-                          "group-hover:bg-emerald-100 group-hover:text-emerald-700",
-                        conversation.status === "active" &&
-                          "group-hover:bg-blue-100 group-hover:text-blue-700",
-                        conversation.status === "pending" &&
-                          "group-hover:bg-yellow-100 group-hover:text-yellow-700"
-                      )}
-                    >
-                      {conversation.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5 text-zinc-600 group-hover:text-[#925FF0] transition-colors duration-200">
-                      <Star className="h-3.5 w-3.5 text-zinc-400 group-hover:text-[#925FF0] transition-colors duration-200" />
-                      <span>{conversation.rating}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5 text-zinc-600 group-hover:text-[#925FF0] transition-colors duration-200">
-                      <Clock className="h-3.5 w-3.5 text-zinc-400 group-hover:text-[#925FF0] transition-colors duration-200" />
-                      <span>{conversation.response_time}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5 text-zinc-600 group-hover:text-[#925FF0] transition-colors duration-200">
-                      <MessageSquare className="h-3.5 w-3.5 text-zinc-400 group-hover:text-[#925FF0] transition-colors duration-200" />
-                      <span>{conversation.message_count}</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {filteredConversations.length === 0 && (
-          <div className="p-12 text-center text-zinc-500">
-            No conversations found matching your criteria.
-          </div>
-        )}
+      {/* Table - Desktop View */}
+      <div className="hidden lg:block">
+        <GlobalTable<Conversation>
+          columns={columns}
+          data={conversations}
+          isLoading={loading}
+          emptyMessage="No conversations found."
+        />
       </div>
 
-      {/* Card View - Mobile/Tablet (visible on mobile and tablet) */}
+      {/* Card View - Mobile */}
       <div className="lg:hidden flex flex-col gap-3">
-        {filteredConversations.length === 0 ? (
+        {loading ? (
+          <div className="p-12 text-center text-zinc-500">
+            <Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+            Loading...
+          </div>
+        ) : conversations.length === 0 ? (
           <div className="bg-white rounded-xl border border-zinc-100 shadow-sm p-12 text-center text-zinc-500">
-            No conversations found matching your criteria.
+            No conversations found.
           </div>
         ) : (
-          filteredConversations.map((conversation) => (
+          conversations.map((conversation) => (
             <div
               key={conversation.id}
-              onClick={() =>
-                router.push(`/dashboard/conversations/${conversation.id}`)
-              }
-              className="bg-white rounded-lg border border-zinc-100 shadow-sm p-4 cursor-pointer hover:shadow-md transition-all duration-200 active:scale-[0.98]"
+              // onClick={() => router.push(`/dashboard/conversations/${conversation.id}`)}
+              className="bg-white rounded-lg border border-zinc-100 shadow-sm p-4 hover:shadow-md transition-all duration-200"
             >
-              {/* Customer Info */}
               <div className="flex items-start gap-3 mb-3">
-                <div className="h-10 w-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 font-medium text-sm shrink-0">
-                  {conversation.user_avatar}
+                <div className="h-10 w-10 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 shrink-0">
+                  <User className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="font-medium text-zinc-900 truncate">
-                      {conversation.user_name}
-                    </span>
+                  <div className="flex items-center justify-between mb-1">
                     <span
-                      className={cn(
-                        "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize shrink-0",
-                        conversation.status === "resolved" &&
-                          "bg-emerald-100 text-emerald-700",
-                        conversation.status === "active" &&
-                          "bg-blue-100 text-blue-700",
-                        conversation.status === "pending" &&
-                          "bg-yellow-100 text-yellow-700"
-                      )}
+                      className="font-medium text-zinc-900 text-sm truncate"
+                      title={conversation.client_id}
                     >
-                      {conversation.status}
+                      {conversation.client_id.length > 20 ?
+                        `${conversation.client_id.slice(0, 20)}...` :
+                        conversation.client_id}
                     </span>
                   </div>
-                  <span className="text-xs text-zinc-500 truncate block">
-                    {conversation.user_email}
-                  </span>
+                  <div className="text-xs text-zinc-500 flex items-center gap-2">
+                    <span className="flex items-center gap-1">
+                      <Hash className="h-3 w-3" />{" "}
+                      {conversation.session_id.slice(0, 8)}...
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Last Message */}
-              <p className="text-sm text-zinc-600 mb-3 line-clamp-2">
-                {conversation.last_message}
-              </p>
-
-              {/* Stats Row */}
-              <div className="flex items-center justify-between text-xs text-zinc-500 pt-3 border-t border-zinc-100">
+              <div className="flex items-center justify-between text-xs text-zinc-500 pt-3 border-t border-zinc-100 mt-2">
                 <div className="flex items-center gap-1">
-                  <Star className="h-3.5 w-3.5 text-zinc-400" />
-                  <span>{conversation.rating}</span>
+                  <Calendar className="h-3.5 w-3.5 text-zinc-400" />
+                  <span>{formatDate(conversation.created_at)}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5 text-zinc-400" />
-                  <span>{conversation.response_time}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <MessageSquare className="h-3.5 w-3.5 text-zinc-400" />
-                  <span>{conversation.message_count}</span>
-                </div>
+                {conversation.session_id && (
+                  <Link
+                    href={`/dashboard/conversations/${conversation.session_id}`}
+                    className="text-zinc-400 hover:text-[#925FF0]"
+                  >
+                    <Button
+                      size="sm"
+                      className="h-7 text-xs hover:bg-[#925FF0]"
+                    >
+                      View
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           ))
         )}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0 mt-6">
+        <div className="text-sm text-zinc-500 order-2 sm:order-1">Page {offset}</div>
+        <div className="flex gap-2 order-1 sm:order-2 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePrevPage}
+            disabled={offset <= 1 || loading}
+            className="flex-1 sm:flex-initial"
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleNextPage}
+            disabled={!hasMore || loading}
+            className="flex-1 sm:flex-initial"
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

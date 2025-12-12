@@ -44,6 +44,10 @@ export default function BillingManager() {
   const [isUpgrading, setIsUpgrading] = useState<string | null>(null);
   const [currentPriceId, setCurrentPriceId] = useState<string | null>(null);
   const [nextBillingDate, setNextBillingDate] = useState<string | null>(null);
+  const [subscribedPlanName, setSubscribedPlanName] = useState<string | null>(
+    null
+  );
+  const [isTrialing, setIsTrialing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [plans, setPlans] = useState<{ monthly: Plan[]; yearly: Plan[] }>({
     monthly: [],
@@ -110,9 +114,22 @@ export default function BillingManager() {
         const { profile, subscriptionStatus } =
           await userApi.getCompleteUserStatus();
 
-        if (profile?.subscription?.status === "active") {
+        if (
+          profile?.subscription?.status === "active" ||
+          profile?.subscription?.status === "trialing"
+        ) {
           setCurrentPriceId(profile.subscription.price_id);
-          setNextBillingDate(profile.subscription.current_period_end);
+          setIsTrialing(profile.subscription.status === "trialing");
+
+          // Set the correct date: trial_end for trialing, current_period_end for active
+          if (
+            profile.subscription.status === "trialing" &&
+            profile.subscription.trial_end
+          ) {
+            setNextBillingDate(profile.subscription.trial_end);
+          } else {
+            setNextBillingDate(profile.subscription.current_period_end);
+          }
         }
       } catch (error) {
         console.error("Failed to fetch subscription status:", error);
@@ -123,6 +140,24 @@ export default function BillingManager() {
 
     fetchStatus();
   }, []);
+
+  // Find and set the subscribed plan name when plans are loaded and we have a price_id
+  useEffect(() => {
+    if (
+      currentPriceId &&
+      (plans.monthly.length > 0 || plans.yearly.length > 0)
+    ) {
+      // Search in all plans (both monthly and yearly)
+      const allPlans = [...plans.monthly, ...plans.yearly];
+      const subscribedPlan = allPlans.find(
+        (plan) => plan.stripe_price_id === currentPriceId
+      );
+
+      if (subscribedPlan) {
+        setSubscribedPlanName(subscribedPlan.name);
+      }
+    }
+  }, [currentPriceId, plans]);
 
   const handleUpgrade = async (planSlug: string) => {
     setIsUpgrading(planSlug);
@@ -166,7 +201,7 @@ export default function BillingManager() {
   // Prevent hydration mismatch by showing loading state until mounted
   if (!mounted) {
     return (
-      <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2">
+      <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2 py-0">
         <CardHeader className="flex flex-row items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
           <div className="flex flex-row items-center gap-3">
             <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center shrink-0">
@@ -177,7 +212,7 @@ export default function BillingManager() {
             </CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6 pt-6 px-4 sm:px-6 pb-6">
+        <CardContent className="space-y-6 pt-0 px-4 sm:px-6 pb-6">
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
           </div>
@@ -187,7 +222,7 @@ export default function BillingManager() {
   }
 
   return (
-    <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2">
+    <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2 py-0">
       <CardHeader className="flex flex-row items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
         <div className="flex flex-row items-center gap-3">
           <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center shrink-0">
@@ -224,14 +259,30 @@ export default function BillingManager() {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6 pt-6 px-4 sm:px-6 pb-6">
-        {nextBillingDate && (
-          <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-sm text-sm border border-blue-100 flex items-center gap-2">
-            <CreditCard className="w-4 h-4" />
-            <span>
-              Next billing date:{" "}
-              <strong>{new Date(nextBillingDate).toLocaleDateString()}</strong>
-            </span>
+      <CardContent className="space-y-6 pt-0 px-4 sm:px-6 pb-6">
+        {(subscribedPlanName || nextBillingDate) && (
+          <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-sm text-sm border border-blue-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            {subscribedPlanName && (
+              <div className="flex items-center gap-2">
+                <Check className="w-4 h-4 shrink-0" />
+                <span>
+                  Current Plan: <strong>{subscribedPlanName}</strong>
+                  {/* {isTrialing && " (Trial Period)"} */}
+                </span>
+              </div>
+            )}
+
+            {nextBillingDate && (
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 shrink-0" />
+                <span>
+                  {isTrialing ? "Trial ends on" : "Next billing date"}:{" "}
+                  <strong>
+                    {new Date(nextBillingDate).toLocaleDateString()}
+                  </strong>
+                </span>
+              </div>
+            )}
           </div>
         )}
 
@@ -287,25 +338,25 @@ export default function BillingManager() {
                   </ul>
 
                   <Button
-                    onClick={() => !isCurrentPlan && handleUpgrade(plan.slug)}
-                    disabled={isCurrentPlan || !!isUpgrading}
+                    onClick={() => handleUpgrade(plan.slug)}
+                    disabled={isUpgrading === plan.slug}
                     variant={isCurrentPlan ? "outline" : "default"}
                     className={cn(
                       "w-full rounded-sm h-10 font-medium",
                       isCurrentPlan
-                        ? "border-green-200 text-green-700 hover:bg-green-50 bg-green-50/50 cursor-default opacity-100"
-                        : "bg-slate-900 hover:bg-slate-800 text-white"
+                        ? "border-green-500 text-green-700 hover:bg-green-100 bg-green-50"
+                        : "bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50"
                     )}
                   >
-                    {isCurrentPlan ? (
-                      <span className="flex items-center gap-2">
-                        <Check className="w-4 h-4" /> Current Plan
-                      </span>
-                    ) : isUpgrading === plan.slug ? (
+                    {isUpgrading === plan.slug ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />{" "}
                         Processing...
                       </>
+                    ) : isCurrentPlan ? (
+                      <span className="flex items-center gap-2">
+                        <Check className="w-4 h-4" /> Renew Plan
+                      </span>
                     ) : (
                       "Upgrade"
                     )}

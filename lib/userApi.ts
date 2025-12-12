@@ -1,7 +1,7 @@
 export interface Subscription {
   id: string;
   user_id: string;
-  status: "active" | "canceled" | "past_due" | "unpaid" | "incomplete";
+  status: "active" | "canceled" | "past_due" | "unpaid" | "incomplete" | "trialing";
   price_id: string;
   quantity: number;
   cancel_at_period_end: boolean;
@@ -88,7 +88,7 @@ class UserApiService {
   calculateSubscriptionStatus(
     subscription: Subscription | null
   ): SubscriptionStatus {
-    if (!subscription || subscription.status !== "active") {
+    if (!subscription || (subscription.status !== "active" && subscription.status !== "trialing")) {
       return {
         isSubscribed: false,
         status: subscription?.status || null,
