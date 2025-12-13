@@ -64,6 +64,23 @@ class KBApiService {
       params: { id },
     });
   }
+
+  async importCSV(file: File): Promise<{ success: boolean; message: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await axiosInstance.post<{ success: boolean; message: string }>(
+      "/kb/import",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return response.data;
+  }
 }
 
 export const kbApi = new KBApiService();

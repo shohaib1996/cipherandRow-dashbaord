@@ -342,6 +342,7 @@ const KBPage = () => {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
         onSubmit={handleCreateSubmit}
+        onSuccess={fetchArticles}
       />
       <KBEditDialog
         open={isEditDialogOpen}
