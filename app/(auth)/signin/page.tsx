@@ -11,6 +11,7 @@ import login from "../../../public/Login.json";
 import Lottie from "lottie-react";
 import { toast } from "sonner";
 import Image from "next/image";
+import axiosInstance from "@/lib/axiosInstance";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -28,27 +29,11 @@ export default function SignInPage() {
     setLoading(true);
 
     try {
-      const response = await fetch(
-        "https://cr-engine.jnowlan21.workers.dev/api/auth/signin",
-        {
-          method: "POST",
-          headers: {
-            accept: "*/*",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await axiosInstance.post("/auth/signin", formData, {
+        skipAuth: true,
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        // Extract error message from API response (could be in 'error' or 'message' field)
-        const errorMessage =
-          errorData.error || errorData.message || "Sign in failed";
-        throw new Error(errorMessage);
-      }
-
-      const data = await response.json();
+      const data = response.data;
       // console.log("Sign in successful:", data);
 
       // Store token if provided (supports both 'token' and 'access_token')
@@ -77,7 +62,12 @@ export default function SignInPage() {
         throw new Error("No authentication token received");
       }
     } catch (err: any) {
-      setError(err.message || "Invalid email or password. Please try again.");
+      const errorMessage =
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        err.message ||
+        "Invalid email or password. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -89,16 +79,6 @@ export default function SignInPage() {
       <div className="w-full lg:w-1/2 bg-linear-to-br from-[#8A06E6] via-[#7A05D0] to-[#6A04B8] relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
         <div className="relative z-10 flex flex-col items-center justify-center w-full p-6 sm:p-8 lg:p-12 text-white min-h-[40vh] lg:min-h-screen">
-          {/* <div className="mb-6 sm:mb-8">
-            <Image
-              src="/images/logo.jpg"
-              alt="Cipher & Row Logo"
-              width={120}
-              height={120}
-              className="rounded-xl shadow-lg"
-            />
-          </div> */}
-
           {/* Lottie Animation */}
           <div className="w-full max-w-xs sm:max-w-sm md:max-w-md aspect-square bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center mb-4 sm:mb-6 lg:mb-8">
             <Lottie animationData={login} loop={true} />
@@ -143,7 +123,12 @@ export default function SignInPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-5"
+              action="#"
+              method="post"
+            >
               {/* Email */}
               <div className="space-y-2">
                 <label

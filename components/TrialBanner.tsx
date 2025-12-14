@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { X, Zap, Calendar, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { userApi } from "@/lib/userApi";
+import axiosInstance from "@/lib/axiosInstance";
 
 export function TrialBanner() {
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
@@ -43,13 +44,6 @@ export function TrialBanner() {
   const handleUpgrade = async () => {
     setIsUpgrading(true);
     try {
-      // Get auth token from localStorage
-      const authToken = localStorage.getItem("auth_token");
-
-      if (!authToken) {
-        throw new Error("Authentication required. Please sign in again.");
-      }
-
       // Get user id from user data
       const userStr = localStorage.getItem("user");
       if (!userStr) {
@@ -64,33 +58,13 @@ export function TrialBanner() {
       }
 
       // Make request to create checkout session
-      const response = await fetch(
-        "https://cr-engine.jnowlan21.workers.dev/api/billing/checkout-session",
-        {
-          method: "POST",
-          headers: {
-            accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`,
-          },
-          body: JSON.stringify({
-            client_id: clientId,
-            return_url: window.location.origin + "/dashboard/overview",
-            plan_slug: "pro",
-          }),
-        }
-      );
+      const response = await axiosInstance.post("/billing/checkout-session", {
+        client_id: clientId,
+        return_url: window.location.origin + "/dashboard/overview",
+        plan_slug: "pro",
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error ||
-            errorData.message ||
-            "Failed to create checkout session"
-        );
-      }
-
-      const data = await response.json();
+      const data = response.data;
 
       // Redirect to Stripe checkout URL
       if (data.url || data.checkout_url) {
@@ -100,9 +74,13 @@ export function TrialBanner() {
       }
     } catch (error: any) {
       console.error("Error creating checkout session:", error);
+      const errorMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to start checkout. Please try again.";
       toast.error("Checkout Failed", {
-        description:
-          error.message || "Failed to start checkout. Please try again.",
+        description: errorMessage,
       });
       setIsUpgrading(false);
     }

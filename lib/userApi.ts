@@ -1,7 +1,7 @@
 export interface Subscription {
   id: string;
   user_id: string;
-  status: "active" | "canceled" | "past_due" | "unpaid" | "incomplete";
+  status: "active" | "canceled" | "past_due" | "unpaid" | "incomplete" | "trialing";
   price_id: string;
   quantity: number;
   cancel_at_period_end: boolean;
@@ -40,14 +40,9 @@ export interface SubscriptionStatus {
   currentPeriodEnd: string | null;
 }
 
-const API_BASE_URL = "https://cr-engine.jnowlan21.workers.dev/api/user";
+import axiosInstance from "./axiosInstance";
 
 class UserApiService {
-  private getAuthToken(): string | null {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("auth_token");
-  }
-
   private getClientId(): string | null {
     if (typeof window === "undefined") return null;
     const userStr = localStorage.getItem("user");
@@ -60,33 +55,17 @@ class UserApiService {
     }
   }
 
-  private getHeaders(): HeadersInit {
-    const token = this.getAuthToken();
-    return {
-      accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    };
-  }
-
   async getUserProfile(): Promise<UserProfile> {
     const clientId = this.getClientId();
     if (!clientId) {
       throw new Error("Client ID not found in localStorage");
     }
 
-    const response = await fetch(
-      `${API_BASE_URL}/profile?client_id=${clientId}`,
-      {
-        method: "GET",
-        headers: this.getHeaders(),
-      }
-    );
+    const response = await axiosInstance.get<UserProfile>("/user/profile", {
+      params: { client_id: clientId },
+    });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch user profile: ${response.statusText}`);
-    }
-
-    return response.json();
+    return response.data;
   }
 
   calculateTrialStatus(createdAt: string): TrialStatus {
@@ -109,7 +88,7 @@ class UserApiService {
   calculateSubscriptionStatus(
     subscription: Subscription | null
   ): SubscriptionStatus {
-    if (!subscription || subscription.status !== "active") {
+    if (!subscription || (subscription.status !== "active" && subscription.status !== "trialing")) {
       return {
         isSubscribed: false,
         status: subscription?.status || null,

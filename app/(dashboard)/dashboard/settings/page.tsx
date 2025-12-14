@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -28,7 +27,6 @@ import {
 import ApiKeyManager from "@/components/ApiKeyManager";
 import { getUserSettings, saveUserSettings } from "@/lib/userSettings";
 import { toast } from "sonner";
-import { userApi } from "@/lib/userApi";
 import BillingManager from "@/components/BillingManager";
 
 export default function SettingsPage() {
