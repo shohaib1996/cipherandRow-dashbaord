@@ -267,7 +267,7 @@ export default function BillingManager() {
                 <Check className="w-4 h-4 shrink-0" />
                 <span>
                   Current Plan: <strong>{subscribedPlanName}</strong>
-                  {/* {isTrialing && " (Trial Period)"} */}
+                  {isTrialing && " (Trial Period)"}
                 </span>
               </div>
             )}
@@ -361,6 +361,13 @@ export default function BillingManager() {
                       "Upgrade"
                     )}
                   </Button>
+
+                  {!isCurrentPlan && (
+                    <p className="text-[10px] text-slate-500 text-center mt-2 leading-tight">
+                      Your free trial ends when you upgrade. Billing starts
+                      immediately.
+                    </p>
+                  )}
                 </div>
               );
             })}
