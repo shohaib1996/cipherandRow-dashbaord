@@ -374,7 +374,10 @@ export default function SettingsPage() {
           </div>
 
           {/* Billing & Plan */}
-          <BillingManager />
+          {/* Billing & Plan */}
+          <div id="billing-plans" className="scroll-mt-20 lg:col-span-2">
+            <BillingManager />
+          </div>
 
           {/* Email Integrations */}
           <Card className="border-slate-200 shadow-sm rounded-sm bg-white">

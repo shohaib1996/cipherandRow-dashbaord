@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { X, Zap, Calendar, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
@@ -8,6 +9,7 @@ import { userApi } from "@/lib/userApi";
 import axiosInstance from "@/lib/axiosInstance";
 
 export function TrialBanner() {
+  const router = useRouter();
   const [daysRemaining, setDaysRemaining] = useState<number | null>(null);
   const [isTrialActive, setIsTrialActive] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -41,49 +43,8 @@ export function TrialBanner() {
     fetchUserStatus();
   }, []);
 
-  const handleUpgrade = async () => {
-    setIsUpgrading(true);
-    try {
-      // Get user id from user data
-      const userStr = localStorage.getItem("user");
-      if (!userStr) {
-        throw new Error("User data not found. Please sign in again.");
-      }
-
-      const userData = JSON.parse(userStr);
-      const clientId = userData?.id;
-
-      if (!clientId) {
-        throw new Error("User ID not found. Please sign in again.");
-      }
-
-      // Make request to create checkout session
-      const response = await axiosInstance.post("/billing/checkout-session", {
-        client_id: clientId,
-        return_url: window.location.origin + "/dashboard/overview",
-        plan_slug: "pro",
-      });
-
-      const data = response.data;
-
-      // Redirect to Stripe checkout URL
-      if (data.url || data.checkout_url) {
-        window.location.href = data.url || data.checkout_url;
-      } else {
-        throw new Error("No checkout URL returned from API");
-      }
-    } catch (error: any) {
-      console.error("Error creating checkout session:", error);
-      const errorMessage =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to start checkout. Please try again.";
-      toast.error("Checkout Failed", {
-        description: errorMessage,
-      });
-      setIsUpgrading(false);
-    }
+  const handleUpgrade = () => {
+    router.push("/dashboard/settings#billing-plans");
   };
 
   const handleDismiss = () => {
@@ -188,24 +149,14 @@ export function TrialBanner() {
           <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
             <Button
               onClick={handleUpgrade}
-              disabled={isUpgrading}
               className={`flex-1 sm:flex-none font-bold text-sm px-5 sm:px-8 h-10 sm:h-11 rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 disabled:opacity-50 transform hover:scale-105 ${
                 isUrgent
                   ? "bg-white text-red-600 hover:bg-gray-50"
                   : "bg-white text-[#8A06E6] hover:bg-gray-50"
               }`}
             >
-              {isUpgrading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Upgrade Now
-                </>
-              )}
+              <Sparkles className="w-4 h-4 mr-2" />
+              Upgrade Now
             </Button>
 
             <button

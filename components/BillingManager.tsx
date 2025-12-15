@@ -201,7 +201,7 @@ export default function BillingManager() {
   // Prevent hydration mismatch by showing loading state until mounted
   if (!mounted) {
     return (
-      <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2 py-0">
+      <Card className="border-slate-200 shadow-sm rounded-sm bg-whites py-0">
         <CardHeader className="flex flex-row items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
           <div className="flex flex-row items-center gap-3">
             <div className="w-8 h-8 rounded-sm bg-green-100 flex items-center justify-center shrink-0">
