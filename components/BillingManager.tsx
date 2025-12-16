@@ -47,7 +47,6 @@ export default function BillingManager() {
   const [subscribedPlanName, setSubscribedPlanName] = useState<string | null>(
     null
   );
-  const [isTrialing, setIsTrialing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [plans, setPlans] = useState<{ monthly: Plan[]; yearly: Plan[] }>({
     monthly: [],
@@ -119,7 +118,6 @@ export default function BillingManager() {
           profile?.subscription?.status === "trialing"
         ) {
           setCurrentPriceId(profile.subscription.price_id);
-          setIsTrialing(profile.subscription.status === "trialing");
 
           // Set the correct date: trial_end for trialing, current_period_end for active
           if (
@@ -260,31 +258,29 @@ export default function BillingManager() {
       </CardHeader>
 
       <CardContent className="space-y-6 pt-0 px-4 sm:px-6 pb-6">
-        {(subscribedPlanName || nextBillingDate) && (
-          <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-sm text-sm border border-blue-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            {subscribedPlanName && (
-              <div className="flex items-center gap-2">
-                <Check className="w-4 h-4 shrink-0" />
-                <span>
-                  Current Plan: <strong>{subscribedPlanName}</strong>
-                  {isTrialing && " (Trial Period)"}
-                </span>
-              </div>
-            )}
-
-            {nextBillingDate && (
-              <div className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4 shrink-0" />
-                <span>
-                  {isTrialing ? "Trial ends on" : "Next billing date"}:{" "}
-                  <strong>
-                    {new Date(nextBillingDate).toLocaleDateString()}
-                  </strong>
-                </span>
-              </div>
-            )}
+        <div className="bg-blue-50 text-blue-700 px-4 py-3 rounded-sm text-sm border border-blue-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 shrink-0" />
+            <span>
+              Current Plan:{" "}
+              <strong>
+                {subscribedPlanName ? subscribedPlanName : "Trial Period"}
+              </strong>
+            </span>
           </div>
-        )}
+
+          {nextBillingDate && (
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4 shrink-0" />
+              <span>
+                {subscribedPlanName ? "Next billing date" : "Trial ends on"}:{" "}
+                <strong>
+                  {new Date(nextBillingDate).toLocaleDateString()}
+                </strong>
+              </span>
+            </div>
+          )}
+        </div>
 
         {isLoadingPlans ? (
           <div className="flex items-center justify-center py-12">
@@ -310,7 +306,6 @@ export default function BillingManager() {
                       Popular
                     </div>
                   )}
-
                   <div className="mb-4">
                     <h3 className="font-semibold text-slate-900 text-lg">
                       {plan.name}
