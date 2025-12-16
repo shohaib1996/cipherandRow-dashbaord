@@ -40,7 +40,7 @@ export default function Installation() {
 <script>
   window.addEventListener("load", function() {
     if (window.CRWidget) {
-      CRWidget.init({});
+      CRWidget.init();
     }
   });
 </script>`;
@@ -235,7 +235,7 @@ export default function Installation() {
       <div className="bg-white rounded-sm shadow mb-6 sm:mb-8">
         <div className="flex items-center justify-between gap-3 px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6">
           <h3 className="text-base sm:text-lg font-medium text-slate-800">
-            installation snippet
+            Installation snippet
           </h3>
           <button
             onClick={handleCopy}
