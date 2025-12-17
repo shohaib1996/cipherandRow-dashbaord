@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Loader2, CheckCircle2, Clock } from "lucide-react";
+import { AlertTriangle, Loader2, CheckCircle2, Clock, X } from "lucide-react";
 import { toast } from "sonner";
 import { userApi } from "@/lib/userApi";
 import axiosInstance from "@/lib/axiosInstance";
@@ -69,23 +69,26 @@ export function TrialExpiredModal() {
   // Show subscription info modal if user has active subscription
   if (showSubscriptionInfo) {
     return (
-      <AlertDialog open={showSubscriptionInfo}>
-        <AlertDialogContent className="sm:max-w-[520px] border-green-200 [&>button]:hidden">
-          <AlertDialogHeader>
+      <Dialog
+        open={showSubscriptionInfo}
+        onOpenChange={setShowSubscriptionInfo}
+      >
+        <DialogContent className="sm:max-w-[520px] border-green-200 max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
             <div className="flex flex-col items-center text-center gap-4 mb-2">
               <div className="w-20 h-20 rounded-full bg-linear-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-lg ring-4 ring-green-100">
                 <CheckCircle2 className="w-10 h-10 text-white" />
               </div>
               <div>
-                <AlertDialogTitle className="text-3xl font-bold text-slate-900 mb-2">
+                <DialogTitle className="text-3xl font-bold text-slate-900 mb-2">
                   You're All Set!
-                </AlertDialogTitle>
+                </DialogTitle>
                 <p className="text-base text-slate-600">
                   Your subscription is active and your bot is live
                 </p>
               </div>
             </div>
-            <AlertDialogDescription className="text-base text-slate-600 pt-4 space-y-4">
+            <DialogDescription className="text-base text-slate-600 pt-4 space-y-4">
               <div className="bg-linear-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5">
                 <div className="flex items-center gap-3 mb-3">
                   <Clock className="w-5 h-5 text-green-600" />
@@ -120,26 +123,26 @@ export function TrialExpiredModal() {
                   ))}
                 </div>
               </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="sm:justify-center">
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
             <Button
               onClick={() => setShowSubscriptionInfo(false)}
               className="w-full sm:w-auto bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-lg px-8 shadow-lg"
             >
               Continue to Dashboard
             </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 
   // Show trial expired modal
   return (
-    <AlertDialog open={isExpired}>
-      <AlertDialogContent className="sm:max-w-[550px] border-red-200 [&>button]:hidden">
-        <AlertDialogHeader>
+    <Dialog open={isExpired} onOpenChange={setIsExpired}>
+      <DialogContent className="sm:max-w-[550px] border-red-200 max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
           <div className="flex flex-col items-center text-center gap-4 mb-2">
             <div className="relative">
               <div className="w-20 h-20 rounded-full bg-linear-to-br from-orange-400 via-red-500 to-pink-600 flex items-center justify-center shadow-2xl ring-4 ring-red-100 animate-pulse">
@@ -150,15 +153,15 @@ export function TrialExpiredModal() {
               </div>
             </div>
             <div>
-              <AlertDialogTitle className="text-3xl font-bold text-slate-900 mb-2">
+              <DialogTitle className="text-3xl font-bold text-slate-900 mb-2">
                 Trial Period Ended
-              </AlertDialogTitle>
+              </DialogTitle>
               <p className="text-base text-slate-600">
                 Your 7-day free trial has expired
               </p>
             </div>
           </div>
-          <AlertDialogDescription className="text-base text-slate-700 pt-4 space-y-4">
+          <DialogDescription className="text-base text-slate-700 pt-4 space-y-4">
             <div className="bg-linear-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-5">
               <p className="font-bold text-red-900 mb-2 text-center text-lg">
                 ⚠️ Your Bot is Currently Offline
@@ -224,9 +227,9 @@ export function TrialExpiredModal() {
                 Contact our support team to discuss your options.
               </p>
             </div>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter className="flex-col sm:flex-row gap-3 sm:gap-3 pt-2">
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="flex-col sm:flex-row gap-3 sm:gap-3 pt-2">
           <Button
             onClick={handleContactSupport}
             variant="outline"
@@ -241,8 +244,8 @@ export function TrialExpiredModal() {
             <CheckCircle2 className="w-5 h-5 mr-2" />
             Upgrade Now
           </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

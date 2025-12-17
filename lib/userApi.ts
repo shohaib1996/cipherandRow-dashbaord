@@ -1,7 +1,13 @@
 export interface Subscription {
   id: string;
   user_id: string;
-  status: "active" | "canceled" | "past_due" | "unpaid" | "incomplete" | "trialing";
+  status:
+    | "active"
+    | "canceled"
+    | "past_due"
+    | "unpaid"
+    | "incomplete"
+    | "trialing";
   price_id: string;
   quantity: number;
   cancel_at_period_end: boolean;
@@ -23,6 +29,7 @@ export interface UserProfile {
   stripe_customer_id: string | null;
   created_at: string;
   updated_at: string;
+  trial_ends_at: string | null;
   subscription: Subscription | null;
 }
 
@@ -30,7 +37,7 @@ export interface TrialStatus {
   isActive: boolean;
   daysRemaining: number;
   isExpired: boolean;
-  createdAt: string;
+  trialEndsAt: string | null;
 }
 
 export interface SubscriptionStatus {
@@ -68,27 +75,37 @@ class UserApiService {
     return response.data;
   }
 
-  calculateTrialStatus(createdAt: string): TrialStatus {
-    const signupDate = new Date(createdAt);
-    const today = new Date();
-    const diffTime = today.getTime() - signupDate.getTime();
-    const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  calculateTrialStatus(trialEndsAt: string | null): TrialStatus {
+    // If trial_ends_at is null, trial has ended (user has subscription)
+    if (!trialEndsAt) {
+      return {
+        isActive: false,
+        daysRemaining: 0,
+        isExpired: true,
+        trialEndsAt: null,
+      };
+    }
 
-    const trialDays = 7;
-    const remaining = trialDays - daysPassed;
+    const trialEndDate = new Date(trialEndsAt);
+    const today = new Date();
+    const diffTime = trialEndDate.getTime() - today.getTime();
+    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     return {
-      isActive: remaining > 0,
-      daysRemaining: Math.max(0, remaining),
-      isExpired: remaining <= 0,
-      createdAt,
+      isActive: daysRemaining > 0,
+      daysRemaining: Math.max(0, daysRemaining),
+      isExpired: daysRemaining <= 0,
+      trialEndsAt,
     };
   }
 
   calculateSubscriptionStatus(
     subscription: Subscription | null
   ): SubscriptionStatus {
-    if (!subscription || (subscription.status !== "active" && subscription.status !== "trialing")) {
+    if (
+      !subscription ||
+      (subscription.status !== "active" && subscription.status !== "trialing")
+    ) {
       return {
         isSubscribed: false,
         status: subscription?.status || null,
@@ -112,7 +129,7 @@ class UserApiService {
 
   async getCompleteUserStatus() {
     const profile = await this.getUserProfile();
-    const trialStatus = this.calculateTrialStatus(profile.created_at);
+    const trialStatus = this.calculateTrialStatus(profile.trial_ends_at);
     const subscriptionStatus = this.calculateSubscriptionStatus(
       profile.subscription
     );

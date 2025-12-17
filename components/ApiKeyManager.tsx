@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Key, Copy, Eye, EyeOff, RefreshCw, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import axiosInstance from "@/lib/axiosInstance";
+import { userApi } from "@/lib/userApi";
 
 interface UserData {
   id: string;
@@ -107,6 +108,22 @@ export default function ApiKeyManager() {
     setIsGenerating(true);
 
     try {
+      // Check trial status and subscription before generating API key
+      const userStatus = await userApi.getCompleteUserStatus();
+
+      // If trial is expired and user doesn't have an active subscription
+      if (
+        userStatus.trialStatus.isExpired &&
+        !userStatus.subscriptionStatus.isSubscribed
+      ) {
+        toast.error("Trial Period Ended", {
+          description:
+            "Your trial period has ended. Please purchase a package to generate an API key.",
+        });
+        setIsGenerating(false);
+        return;
+      }
+
       // Get client_id from localStorage
       const userStr = localStorage.getItem("user");
 

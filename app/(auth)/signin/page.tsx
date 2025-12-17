@@ -43,6 +43,20 @@ export default function SignInPage() {
         // Store token in localStorage
         localStorage.setItem("auth_token", authToken);
 
+        // Store refresh token if provided
+        if (data.refresh_token) {
+          localStorage.setItem("refresh_token", data.refresh_token);
+        }
+
+        // Store token expiration time
+        if (data.expires_at) {
+          localStorage.setItem("token_expires_at", data.expires_at.toString());
+        } else if (data.expires_in) {
+          // Calculate expires_at from expires_in (in seconds)
+          const expiresAt = Math.floor(Date.now() / 1000) + data.expires_in;
+          localStorage.setItem("token_expires_at", expiresAt.toString());
+        }
+
         // Store user info if available
         if (data.user) {
           localStorage.setItem("user", JSON.stringify(data.user));

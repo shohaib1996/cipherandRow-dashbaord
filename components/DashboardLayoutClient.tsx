@@ -4,8 +4,11 @@ import { TrialBanner } from "@/components/TrialBanner";
 import { TrialExpiredModal } from "@/components/TrialExpiredModal";
 import { DashboardFooter } from "@/components/DashboardFooter";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useTokenRefresh } from "@/hooks/useTokenRefresh";
 
 export function DashboardLayoutClient({ children }: { children: React.ReactNode }) {
+  // Enable proactive token refresh
+  useTokenRefresh();
   return (
     <div className="flex flex-1 flex-col min-h-screen bg-linear-to-br from-[#925FF0]/5 via-[#925FF0]/5 to-[#3B82F6]/5">
       {/* Trial Expired Modal - Blocks access when trial is over */}
