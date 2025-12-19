@@ -34,7 +34,7 @@ export default function Installation() {
 </script>
 
 <!-- Widget Script -->
-<script src="https://cdn.cipherandrow.com/widget.js"></script>
+<script type="module" src="https://cdn.cipherandrow.com/widget.js"></script>
 
 <!-- Initialize Widget -->
 <script>
