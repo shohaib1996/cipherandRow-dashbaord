@@ -269,6 +269,7 @@ export default function DemoChatWidget() {
         },
         {
           headers: { "x-api-key": apiKey },
+          skipAuth: true,
         }
       );
       console.log("Warmup complete - backend is ready");
@@ -327,6 +328,7 @@ export default function DemoChatWidget() {
         },
         {
           headers: { "x-api-key": apiKey },
+          skipAuth: true,
         }
       );
 
