@@ -11,8 +11,11 @@ export default function Installation() {
   const [position, setPosition] = useState<"bottom-right" | "bottom-left">(
     "bottom-right"
   );
+  const [botName, setBotName] = useState("Support Assistant");
   const [primaryColor, setPrimaryColor] = useState("#925FF0");
   const [greeting, setGreeting] = useState("Hi! How can we help you today?");
+  const [offsetX, setOffsetX] = useState(20);
+  const [offsetY, setOffsetY] = useState(20);
   const [saved, setSaved] = useState(false);
   const [clientId, setClientId] = useState("1001");
   const [botId, setBotId] = useState("2001");
@@ -27,9 +30,12 @@ export default function Installation() {
     clientId: "${clientId}",
     botId: "${botId}",
     apiKey: "${apiKey}",
+    botName: "${botName}",
     primaryColor: "${primaryColor}",
     greeting: "${greeting}",
-    position: "${position}"
+    position: "${position}",
+    offsetX: ${offsetX},
+    offsetY: ${offsetY}
   };
 </script>
 
@@ -87,6 +93,9 @@ export default function Installation() {
     }
 
     // Now load settings using the userId (or default)
+    const savedBotName = localStorage.getItem(
+      `widget_bot_name_${currentUserId}`
+    );
     const savedColor = localStorage.getItem(
       `widget_primary_color_${currentUserId}`
     );
@@ -96,18 +105,27 @@ export default function Installation() {
     const savedGreeting = localStorage.getItem(
       `widget_greeting_${currentUserId}`
     );
+    const savedOffsetX = localStorage.getItem(
+      `widget_offset_x_${currentUserId}`
+    );
+    const savedOffsetY = localStorage.getItem(
+      `widget_offset_y_${currentUserId}`
+    );
 
+    if (savedBotName) setBotName(savedBotName);
     if (savedColor) setPrimaryColor(savedColor);
     if (savedPosition)
       setPosition(savedPosition as "bottom-right" | "bottom-left");
     if (savedGreeting) setGreeting(savedGreeting);
+    if (savedOffsetX) setOffsetX(Number(savedOffsetX));
+    if (savedOffsetY) setOffsetY(Number(savedOffsetY));
   }, []);
 
   // Update installation snippet whenever settings change
   useEffect(() => {
     setCode(generateInstallationCode());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [primaryColor, greeting, position, clientId, botId, apiKey]);
+  }, [botName, primaryColor, greeting, position, offsetX, offsetY, clientId, botId, apiKey]);
 
   useEffect(() => {
     if (copied) {
@@ -143,9 +161,12 @@ export default function Installation() {
     // Save widget settings to localStorage with User ID
     const keyDetailId = clientId || "1001"; // specific user id or default
 
+    localStorage.setItem(`widget_bot_name_${keyDetailId}`, botName);
     localStorage.setItem(`widget_primary_color_${keyDetailId}`, primaryColor);
     localStorage.setItem(`widget_position_${keyDetailId}`, position);
     localStorage.setItem(`widget_greeting_${keyDetailId}`, greeting);
+    localStorage.setItem(`widget_offset_x_${keyDetailId}`, String(offsetX));
+    localStorage.setItem(`widget_offset_y_${keyDetailId}`, String(offsetY));
 
     // Dispatch custom events to notify DemoChatWidget about changes
     window.dispatchEvent(
@@ -157,6 +178,12 @@ export default function Installation() {
     window.dispatchEvent(
       new CustomEvent("widgetGreetingChange", {
         detail: { greeting },
+      })
+    );
+
+    window.dispatchEvent(
+      new CustomEvent("widgetBotNameChange", {
+        detail: { botName },
       })
     );
 
@@ -233,30 +260,35 @@ export default function Installation() {
 
       {/* installation snippet block */}
       <div className="bg-white rounded-sm shadow mb-6 sm:mb-8">
-        <div className="flex items-center justify-between gap-3 px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6">
-          <h3 className="text-base sm:text-lg font-medium text-slate-800">
-            Installation snippet
-          </h3>
-          <button
-            onClick={handleCopy}
-            className="inline-flex items-center gap-2 bg-slate-900 text-white px-3 py-2 rounded-md shadow hover:opacity-95 text-sm shrink-0"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <h3 className="text-base sm:text-lg font-medium text-slate-800">
+              Universal Install — Works Everywhere
+            </h3>
+            <button
+              onClick={handleCopy}
+              className="inline-flex items-center gap-2 bg-slate-900 text-white px-3 py-2 rounded-md shadow hover:opacity-95 text-sm shrink-0"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 16h8M8 12h8m-6-8h6a2 2 0 012 2v6"
-              />
-            </svg>
-            <span>{copied ? "Copied!" : "Copy Code"}</span>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 16h8M8 12h8m-6-8h6a2 2 0 012 2v6"
+                />
+              </svg>
+              <span>{copied ? "Copied!" : "Copy Code"}</span>
+            </button>
+          </div>
+          <p className="text-xs sm:text-sm text-slate-500">
+            Paste in footer or anywhere before &lt;/body&gt;
+          </p>
         </div>
 
         <div className="rounded-sm overflow-hidden">
@@ -276,6 +308,25 @@ export default function Installation() {
         </h3>
 
         <div className="grid grid-cols-1 gap-4 sm:gap-5">
+          {/* Bot Name */}
+          <div>
+            <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+              <MessageSquare
+                width={16}
+                height={16}
+                className="text-[#725FF0]"
+              />
+              Bot Name
+            </label>
+            <Input
+              type="text"
+              value={botName}
+              onChange={(e) => setBotName(e.target.value)}
+              placeholder="Support Assistant"
+              className="w-full rounded-md border px-3 py-2 text-xs sm:text-sm"
+            />
+          </div>
+
           {/* Position */}
           <div>
             <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
@@ -303,6 +354,42 @@ export default function Installation() {
               >
                 Bottom Left
               </button>
+            </div>
+          </div>
+
+          {/* Position Offsets */}
+          <div>
+            <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+              <Globe width={16} height={16} className="text-[#725FF0]" />
+              Position Offset (pixels from edge)
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-slate-600 mb-1 block">
+                  Horizontal (X)
+                </label>
+                <Input
+                  type="number"
+                  value={offsetX}
+                  onChange={(e) => setOffsetX(Number(e.target.value))}
+                  min="0"
+                  max="200"
+                  className="w-full rounded-md border px-3 py-2 text-xs sm:text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-slate-600 mb-1 block">
+                  Vertical (Y)
+                </label>
+                <Input
+                  type="number"
+                  value={offsetY}
+                  onChange={(e) => setOffsetY(Number(e.target.value))}
+                  min="0"
+                  max="200"
+                  className="w-full rounded-md border px-3 py-2 text-xs sm:text-sm"
+                />
+              </div>
             </div>
           </div>
 
@@ -438,11 +525,30 @@ export default function Installation() {
             >
               Save Changes
             </Button>
-            {saved && (
-              <div className="mt-2 text-xs sm:text-sm text-emerald-600 font-medium">
-                Saved ✓
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                saved ? "max-h-20 opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-md flex items-center gap-2">
+                <svg
+                  className="w-5 h-5 text-emerald-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                <span className="text-sm font-medium text-emerald-700">
+                  Settings saved successfully!
+                </span>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>

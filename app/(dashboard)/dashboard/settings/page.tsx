@@ -295,7 +295,13 @@ export default function SettingsPage() {
           </Card>
 
           {/* Notifications */}
-          <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2">
+          <Card className="border-slate-200 shadow-sm rounded-sm bg-white lg:col-span-2 relative">
+            {/* Coming Soon Banner */}
+            <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm rounded-sm z-10 flex items-center justify-center">
+              <div className="bg-white px-6 py-3 rounded-lg shadow-lg border-2 border-purple-500">
+                <p className="text-lg font-bold text-slate-900">Coming Soon</p>
+              </div>
+            </div>
             <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
               <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <Bell className="w-4 h-4 text-purple-600" />
@@ -380,7 +386,13 @@ export default function SettingsPage() {
           </div>
 
           {/* Email Integrations */}
-          <Card className="border-slate-200 shadow-sm rounded-sm bg-white">
+          <Card className="border-slate-200 shadow-sm rounded-sm bg-white relative">
+            {/* Coming Soon Banner */}
+            <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm rounded-sm z-10 flex items-center justify-center">
+              <div className="bg-white px-6 py-3 rounded-lg shadow-lg border-2 border-purple-500">
+                <p className="text-lg font-bold text-slate-900">Coming Soon</p>
+              </div>
+            </div>
             <CardHeader className="flex flex-row items-center gap-3 pb-3 sm:pb-4 border-b border-slate-100 px-4 sm:px-6 pt-4 sm:pt-6">
               <div className="w-8 h-8 rounded-sm bg-purple-100 flex items-center justify-center shrink-0">
                 <Mail className="w-4 h-4 text-purple-600" />
