@@ -21,13 +21,17 @@ export default function Installation() {
   const [botId, setBotId] = useState("2001");
   const [code, setCode] = useState("");
   const [apiKey, setApiKey] = useState("YOUR_API_KEY_HERE");
+  const [widgetType, setWidgetType] = useState<"classic" | "glass">("classic");
+  const [blurIntensity, setBlurIntensity] = useState(50);
 
   // Generate installation snippet based on current settings
   const generateInstallationCode = () => {
-    return `<!-- Cipher & Row Widget Configuration -->
-<script>
-  window.CipherRowConfig = {
-    clientId: "${clientId}",
+    const widgetScript = widgetType === "glass"
+      ? "https://cdn.cipherandrow.com/widget-glass.js"
+      : "https://cdn.cipherandrow.com/widget.js";
+
+    const configParams = widgetType === "glass"
+      ? `    clientId: "${clientId}",
     botId: "${botId}",
     apiKey: "${apiKey}",
     botName: "${botName}",
@@ -35,12 +39,27 @@ export default function Installation() {
     greeting: "${greeting}",
     position: "${position}",
     offsetX: ${offsetX},
-    offsetY: ${offsetY}
+    offsetY: ${offsetY},
+    blurIntensity: ${blurIntensity}`
+      : `    clientId: "${clientId}",
+    botId: "${botId}",
+    apiKey: "${apiKey}",
+    botName: "${botName}",
+    primaryColor: "${primaryColor}",
+    greeting: "${greeting}",
+    position: "${position}",
+    offsetX: ${offsetX},
+    offsetY: ${offsetY}`;
+
+    return `<!-- Cipher & Row Widget Configuration -->
+<script>
+  window.CipherRowConfig = {
+${configParams}
   };
 </script>
 
 <!-- Widget Script -->
-<script type="module" src="https://cdn.cipherandrow.com/widget.js"></script>
+<script type="module" src="${widgetScript}"></script>
 
 <!-- Initialize Widget -->
 <script>
@@ -111,6 +130,12 @@ export default function Installation() {
     const savedOffsetY = localStorage.getItem(
       `widget_offset_y_${currentUserId}`
     );
+    const savedWidgetType = localStorage.getItem(
+      `widget_type_${currentUserId}`
+    );
+    const savedBlurIntensity = localStorage.getItem(
+      `widget_blur_intensity_${currentUserId}`
+    );
 
     if (savedBotName) setBotName(savedBotName);
     if (savedColor) setPrimaryColor(savedColor);
@@ -119,13 +144,15 @@ export default function Installation() {
     if (savedGreeting) setGreeting(savedGreeting);
     if (savedOffsetX) setOffsetX(Number(savedOffsetX));
     if (savedOffsetY) setOffsetY(Number(savedOffsetY));
+    if (savedWidgetType) setWidgetType(savedWidgetType as "classic" | "glass");
+    if (savedBlurIntensity) setBlurIntensity(Number(savedBlurIntensity));
   }, []);
 
   // Update installation snippet whenever settings change
   useEffect(() => {
     setCode(generateInstallationCode());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [botName, primaryColor, greeting, position, offsetX, offsetY, clientId, botId, apiKey]);
+  }, [botName, primaryColor, greeting, position, offsetX, offsetY, clientId, botId, apiKey, widgetType, blurIntensity]);
 
   useEffect(() => {
     if (copied) {
@@ -167,6 +194,8 @@ export default function Installation() {
     localStorage.setItem(`widget_greeting_${keyDetailId}`, greeting);
     localStorage.setItem(`widget_offset_x_${keyDetailId}`, String(offsetX));
     localStorage.setItem(`widget_offset_y_${keyDetailId}`, String(offsetY));
+    localStorage.setItem(`widget_type_${keyDetailId}`, widgetType);
+    localStorage.setItem(`widget_blur_intensity_${keyDetailId}`, String(blurIntensity));
 
     // Dispatch custom events to notify DemoChatWidget about changes
     window.dispatchEvent(
@@ -327,6 +356,98 @@ export default function Installation() {
             />
           </div>
 
+          {/* Widget Type */}
+          <div>
+            <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-[#725FF0]"
+              >
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <line x1="7" y1="2" x2="7" y2="22"></line>
+                <line x1="17" y1="2" x2="17" y2="22"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <line x1="2" y1="7" x2="7" y2="7"></line>
+                <line x1="2" y1="17" x2="7" y2="17"></line>
+                <line x1="17" y1="17" x2="22" y2="17"></line>
+                <line x1="17" y1="7" x2="22" y2="7"></line>
+              </svg>
+              Widget Type
+            </label>
+            <div className="flex rounded-sm bg-slate-100 p-1 w-full">
+              <button
+                onClick={() => setWidgetType("classic")}
+                className={`flex-1 px-3 sm:px-4 py-2 rounded-sm font-medium text-xs sm:text-sm ${
+                  widgetType === "classic"
+                    ? "bg-slate-900 text-white"
+                    : "text-[#725FF0] bg-[#725FF0]/10"
+                }`}
+              >
+                Classic Chat Bot
+              </button>
+              <button
+                onClick={() => setWidgetType("glass")}
+                className={`flex-1 px-3 sm:px-4 py-2 rounded-sm font-medium text-xs sm:text-sm ${
+                  widgetType === "glass"
+                    ? "bg-slate-900 text-white"
+                    : "text-[#725FF0] bg-[#725FF0]/10"
+                }`}
+              >
+                Glass Chat Bot
+              </button>
+            </div>
+          </div>
+
+          {/* Blur Intensity - Only show for Glass widget */}
+          {widgetType === "glass" && (
+            <div>
+              <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-[#725FF0]"
+                >
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path>
+                </svg>
+                Blur Intensity (0-100)
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={blurIntensity}
+                  onChange={(e) => setBlurIntensity(Number(e.target.value))}
+                  className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[#725FF0]"
+                />
+                <div className="w-12 text-center">
+                  <span className="text-sm font-semibold text-slate-700">
+                    {blurIntensity}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-slate-500 mt-2">
+                Controls the glassmorphism effect strength (Default: 50)
+              </p>
+            </div>
+          )}
+
           {/* Position */}
           <div>
             <label className="text-xs sm:text-sm font-medium text-slate-700 mb-2 flex items-center gap-2">
@@ -334,16 +455,6 @@ export default function Installation() {
               Position
             </label>
             <div className="flex rounded-sm bg-slate-100 p-1 w-full">
-              <button
-                onClick={() => setPosition("bottom-right")}
-                className={`flex-1 px-3 sm:px-4 py-2 rounded-sm font-medium text-xs sm:text-sm ${
-                  position === "bottom-right"
-                    ? "bg-slate-900 text-white"
-                    : "text-[#725FF0] bg-[#725FF0]/10"
-                }`}
-              >
-                Bottom Right
-              </button>
               <button
                 onClick={() => setPosition("bottom-left")}
                 className={`flex-1 px-3 sm:px-4 py-2 rounded-sm font-medium text-xs sm:text-sm ${
@@ -353,6 +464,16 @@ export default function Installation() {
                 }`}
               >
                 Bottom Left
+              </button>
+              <button
+                onClick={() => setPosition("bottom-right")}
+                className={`flex-1 px-3 sm:px-4 py-2 rounded-sm font-medium text-xs sm:text-sm ${
+                  position === "bottom-right"
+                    ? "bg-slate-900 text-white"
+                    : "text-[#725FF0] bg-[#725FF0]/10"
+                }`}
+              >
+                Bottom Right
               </button>
             </div>
           </div>
