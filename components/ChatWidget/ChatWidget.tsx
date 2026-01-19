@@ -13,6 +13,35 @@ interface Message {
   time: number;
 }
 
+// Helper function to render message text with clickable links
+function renderMessageText(text: string, isUser: boolean) {
+  // URL regex pattern to match http, https, and www URLs
+  const urlPattern = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+
+  const parts = text.split(urlPattern);
+
+  return parts.map((part, index) => {
+    if (urlPattern.test(part)) {
+      // Reset regex lastIndex since we're using global flag
+      urlPattern.lastIndex = 0;
+      const href = part.startsWith("http") ? part : `https://${part}`;
+      return (
+        <a
+          key={index}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`underline hover:opacity-80 ${isUser ? "text-white" : "text-[#8A06E6]"
+            }`}
+        >
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
 export default function ChatWidget({
   embedded = false,
 }: {
@@ -72,8 +101,8 @@ export default function ChatWidget({
     if (scrollArea) {
       const isNearBottom =
         scrollArea.scrollHeight -
-          scrollArea.scrollTop -
-          scrollArea.clientHeight <
+        scrollArea.scrollTop -
+        scrollArea.clientHeight <
         100;
 
       if (
@@ -280,11 +309,10 @@ export default function ChatWidget({
         className={
           embedded
             ? "relative w-full h-full flex flex-col"
-            : `fixed bottom-[90px] right-5 z-50 transition-all duration-300 ease-in-out transform origin-bottom-right ${
-                isOpen
-                  ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
-                  : "opacity-0 scale-95 translate-y-4 pointer-events-none"
-              }`
+            : `fixed bottom-[90px] right-5 z-50 transition-all duration-300 ease-in-out transform origin-bottom-right ${isOpen
+              ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+              : "opacity-0 scale-95 translate-y-4 pointer-events-none"
+            }`
         }
         aria-hidden={!isOpen && !embedded}
       >
@@ -333,9 +361,8 @@ export default function ChatWidget({
               {messages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex gap-[10px] items-end ${
-                    msg.role === "user" ? "justify-end" : "justify-start"
-                  }`}
+                  className={`flex gap-[10px] items-end ${msg.role === "user" ? "justify-end" : "justify-start"
+                    }`}
                 >
                   {msg.role === "bot" && (
                     <div className="w-[34px] h-[34px] rounded-full shrink-0 grid place-items-center font-bold text-white select-none text-xs bg-[#8A06E6]">
@@ -344,17 +371,16 @@ export default function ChatWidget({
                   )}
 
                   <div
-                    className={`max-w-[78%] p-[10px_12px] rounded-[12px] text-[14px] leading-[1.45] wrap-break-words shadow-[0_2px_6px_rgba(2,6,23,0.04)] ${
-                      msg.role === "user"
-                        ? "bg-[#8A06E6] text-white rounded-tr-[2px] shadow-[0_2px_6px_rgba(138,6,230,0.25)]"
-                        : "bg-white text-[#111827] border-[#E5E7EB] rounded-tl-[2px]"
-                    }`}
+                    className={`max-w-[78%] p-[10px_12px] rounded-[12px] text-[14px] leading-[1.45] wrap-break-words shadow-[0_2px_6px_rgba(2,6,23,0.04)] ${msg.role === "user"
+                      ? "bg-[#8A06E6] text-white rounded-tr-[2px] shadow-[0_2px_6px_rgba(138,6,230,0.25)]"
+                      : "bg-white text-[#111827] border-[#E5E7EB] rounded-tl-[2px]"
+                      }`}
                     style={{
                       borderStyle: msg.role === "user" ? "none" : "solid",
                       borderWidth: msg.role === "user" ? 0 : 1,
                     }}
                   >
-                    {msg.text}
+                    {renderMessageText(msg.text, msg.role === "user")}
                   </div>
 
                   {msg.role === "user" && (

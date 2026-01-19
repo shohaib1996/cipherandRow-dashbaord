@@ -15,6 +15,35 @@ interface Message {
   time: number;
 }
 
+// Helper function to render message text with clickable links
+function renderMessageText(text: string, isUser: boolean, primaryColor: string) {
+  // URL regex pattern to match http, https, and www URLs
+  const urlPattern = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+
+  const parts = text.split(urlPattern);
+
+  return parts.map((part, index) => {
+    if (urlPattern.test(part)) {
+      // Reset regex lastIndex since we're using global flag
+      urlPattern.lastIndex = 0;
+      const href = part.startsWith("http") ? part : `https://${part}`;
+      return (
+        <a
+          key={index}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:opacity-80"
+          style={{ color: isUser ? "white" : primaryColor }}
+        >
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
 // Helper function to adjust color brightness
 function adjustColorBrightness(hex: string, percent: number): string {
   // Remove # if present
@@ -154,8 +183,8 @@ export default function DemoChatWidget() {
     if (scrollArea) {
       const isNearBottom =
         scrollArea.scrollHeight -
-          scrollArea.scrollTop -
-          scrollArea.clientHeight <
+        scrollArea.scrollTop -
+        scrollArea.clientHeight <
         100;
 
       if (
@@ -440,9 +469,8 @@ export default function DemoChatWidget() {
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex gap-[10px] items-end ${
-                  msg.role === "user" ? "justify-end" : "justify-start"
-                }`}
+                className={`flex gap-[10px] items-end ${msg.role === "user" ? "justify-end" : "justify-start"
+                  }`}
               >
                 {msg.role === "bot" && (
                   <div
@@ -454,11 +482,10 @@ export default function DemoChatWidget() {
                 )}
 
                 <div
-                  className={`max-w-[78%] p-[10px_12px] rounded-[12px] text-[14px] leading-[1.45] wrap-break-words shadow-[0_2px_6px_rgba(2,6,23,0.04)] ${
-                    msg.role === "user"
-                      ? "text-white rounded-tr-[2px]"
-                      : "bg-white text-[#111827] border-[#E5E7EB] rounded-tl-[2px]"
-                  }`}
+                  className={`max-w-[78%] p-[10px_12px] rounded-[12px] text-[14px] leading-[1.45] wrap-break-words shadow-[0_2px_6px_rgba(2,6,23,0.04)] ${msg.role === "user"
+                    ? "text-white rounded-tr-[2px]"
+                    : "bg-white text-[#111827] border-[#E5E7EB] rounded-tl-[2px]"
+                    }`}
                   style={{
                     backgroundColor:
                       msg.role === "user" ? primaryColor : undefined,
@@ -470,7 +497,7 @@ export default function DemoChatWidget() {
                         : undefined,
                   }}
                 >
-                  {msg.text}
+                  {renderMessageText(msg.text, msg.role === "user", primaryColor)}
                 </div>
 
                 {msg.role === "user" && (
