@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Globe, MessageSquare, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 export default function Installation() {
@@ -26,12 +26,14 @@ export default function Installation() {
 
   // Generate installation snippet based on current settings
   const generateInstallationCode = () => {
-    const widgetScript = widgetType === "glass"
-      ? "https://cdn.cipherandrow.com/widget-glass.js"
-      : "https://cdn.cipherandrow.com/widget.js";
+    const widgetScript =
+      widgetType === "glass"
+        ? "https://cdn.cipherandrow.com/widget-glass.js"
+        : "https://cdn.cipherandrow.com/widget.js";
 
-    const configParams = widgetType === "glass"
-      ? `    clientId: "${clientId}",
+    const configParams =
+      widgetType === "glass"
+        ? `    clientId: "${clientId}",
     botId: "${botId}",
     apiKey: "${apiKey}",
     botName: "${botName}",
@@ -41,7 +43,7 @@ export default function Installation() {
     offsetX: ${offsetX},
     offsetY: ${offsetY},
     blurIntensity: ${blurIntensity}`
-      : `    clientId: "${clientId}",
+        : `    clientId: "${clientId}",
     botId: "${botId}",
     apiKey: "${apiKey}",
     botName: "${botName}",
@@ -152,7 +154,19 @@ ${configParams}
   useEffect(() => {
     setCode(generateInstallationCode());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [botName, primaryColor, greeting, position, offsetX, offsetY, clientId, botId, apiKey, widgetType, blurIntensity]);
+  }, [
+    botName,
+    primaryColor,
+    greeting,
+    position,
+    offsetX,
+    offsetY,
+    clientId,
+    botId,
+    apiKey,
+    widgetType,
+    blurIntensity,
+  ]);
 
   useEffect(() => {
     if (copied) {
@@ -195,7 +209,10 @@ ${configParams}
     localStorage.setItem(`widget_offset_x_${keyDetailId}`, String(offsetX));
     localStorage.setItem(`widget_offset_y_${keyDetailId}`, String(offsetY));
     localStorage.setItem(`widget_type_${keyDetailId}`, widgetType);
-    localStorage.setItem(`widget_blur_intensity_${keyDetailId}`, String(blurIntensity));
+    localStorage.setItem(
+      `widget_blur_intensity_${keyDetailId}`,
+      String(blurIntensity)
+    );
 
     // Dispatch custom events to notify DemoChatWidget about changes
     window.dispatchEvent(
@@ -371,7 +388,14 @@ ${configParams}
                 strokeLinejoin="round"
                 className="text-[#725FF0]"
               >
-                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <rect
+                  x="2"
+                  y="2"
+                  width="20"
+                  height="20"
+                  rx="2.18"
+                  ry="2.18"
+                ></rect>
                 <line x1="7" y1="2" x2="7" y2="22"></line>
                 <line x1="17" y1="2" x2="17" y2="22"></line>
                 <line x1="2" y1="12" x2="22" y2="12"></line>
