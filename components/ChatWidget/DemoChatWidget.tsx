@@ -17,31 +17,63 @@ interface Message {
 
 // Helper function to render message text with clickable links
 function renderMessageText(text: string, isUser: boolean, primaryColor: string) {
-  // URL regex pattern to match http, https, and www URLs
-  const urlPattern = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+  const elements: React.ReactNode[] = [];
+  let keyIndex = 0;
 
-  const parts = text.split(urlPattern);
+  // First, strip out all HTML tags but extract links from <a> tags
+  // Pattern to match full <a ...>text</a> including malformed ones
+  const htmlLinkPattern = /<a\s+[^>]*href=["']?([^"'\s>]+)["']?[^>]*>([^<]*)<\/a>/gi;
 
-  return parts.map((part, index) => {
-    if (urlPattern.test(part)) {
-      // Reset regex lastIndex since we're using global flag
-      urlPattern.lastIndex = 0;
-      const href = part.startsWith("http") ? part : `https://${part}`;
-      return (
-        <a
-          key={index}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:opacity-80"
-          style={{ color: isUser ? "white" : primaryColor }}
-        >
-          {part}
-        </a>
-      );
-    }
-    return part;
+  // Store extracted links and replace with placeholder tokens
+  const links: { href: string; text: string }[] = [];
+  let processedText = text.replace(htmlLinkPattern, (_, href, linkText) => {
+    // Clean the href - remove trailing quotes or other junk
+    const cleanHref = href.replace(/["']+$/, '');
+    links.push({ href: cleanHref, text: linkText || cleanHref });
+    return `\u0000HTMLLINK${links.length - 1}\u0000`;
   });
+
+  // Remove any remaining HTML tags (cleanup)
+  processedText = processedText.replace(/<[^>]+>/g, '');
+
+  // Now handle plain URLs (http, https, www) that aren't inside placeholders
+  const urlPattern = /(https?:\/\/[^\s<\u0000"']+|www\.[^\s<\u0000"']+)/gi;
+  processedText = processedText.replace(urlPattern, (match) => {
+    // Clean up any trailing punctuation
+    const cleaned = match.replace(/[.,;:!?)]+$/, '');
+    const trailing = match.slice(cleaned.length);
+    links.push({ href: cleaned, text: cleaned });
+    return `\u0000HTMLLINK${links.length - 1}\u0000${trailing}`;
+  });
+
+  // Split by placeholder pattern
+  const parts = processedText.split(/\u0000/);
+
+  for (const part of parts) {
+    const linkMatch = part.match(/^HTMLLINK(\d+)$/);
+    if (linkMatch) {
+      const linkData = links[parseInt(linkMatch[1])];
+      if (linkData) {
+        const href = linkData.href.startsWith("http") ? linkData.href : `https://${linkData.href}`;
+        elements.push(
+          <a
+            key={keyIndex++}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:opacity-80"
+            style={{ color: isUser ? "white" : primaryColor }}
+          >
+            {linkData.text}
+          </a>
+        );
+      }
+    } else if (part) {
+      elements.push(part);
+    }
+  }
+
+  return elements;
 }
 
 // Helper function to adjust color brightness
@@ -214,6 +246,22 @@ export default function DemoChatWidget() {
       window.clearInterval(typingIntervalRef.current);
       typingIntervalRef.current = null;
       typingMessageIndexRef.current = null;
+    }
+
+    // Check if text contains HTML - if so, skip typing effect and show instantly
+    const containsHtml = /<[a-z][\s\S]*>/i.test(fullText);
+    if (containsHtml) {
+      setIsThinking(false);
+      setIsTyping(false);
+      setMessages((prev: Message[]) => [
+        ...prev,
+        {
+          role: "bot",
+          text: fullText,
+          time: Date.now(),
+        },
+      ]);
+      return;
     }
 
     // As soon as we start actual typing, remove the thinking/loader UI
