@@ -36,8 +36,8 @@ function renderMessageText(text: string, isUser: boolean, primaryColor: string) 
   // Remove any remaining HTML tags (cleanup)
   processedText = processedText.replace(/<[^>]+>/g, '');
 
-  // Now handle plain URLs (http, https, www) that aren't inside placeholders
-  const urlPattern = /(https?:\/\/[^\s<\u0000"']+|www\.[^\s<\u0000"']+)/gi;
+  // Now handle plain URLs (http, https, www, and domain.com/path patterns) that aren't inside placeholders
+  const urlPattern = /(https?:\/\/[^\s<\u0000"']+|www\.[^\s<\u0000"']+|[a-zA-Z0-9][-a-zA-Z0-9]*\.[a-zA-Z]{2,}(?:[-a-zA-Z0-9._~:/?#\[\]@!$&'()*+,;=%]*[a-zA-Z0-9/])?)/gi;
   processedText = processedText.replace(urlPattern, (match) => {
     // Clean up any trailing punctuation
     const cleaned = match.replace(/[.,;:!?)]+$/, '');

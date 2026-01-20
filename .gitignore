@@ -31,7 +31,6 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
 !.env.example
 # !.env.development
 # !.env.production
@@ -48,3 +47,7 @@ next-env.d.ts
 
 # Widget test (nested git repo)
 widget-test/
+temp_auto_push.bat
+temp_interactive_push.bat
+branch_structure.json
+config.bat

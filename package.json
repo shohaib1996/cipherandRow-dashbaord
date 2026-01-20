@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "env-cmd -f .env.production next dev",
-    "dev:staging": "env-cmd -f .env.development next dev",
-    "build": "next build",
-    "build:staging": "env-cmd -f .env.development next build",
-    "start": "next start",
+    "dev": "node init && env-cmd -f .env.production next dev",
+    "dev:staging": "node init && env-cmd -f .env.development next dev",
+    "build": "node init && next build",
+    "build:staging": "node init && env-cmd -f .env.development next build",
+    "start": "node init && next start",
     "lint": "eslint"
   },
   "dependencies": {
